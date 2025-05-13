@@ -23,6 +23,13 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    settings: {
+      'import/resolver': {
+        typecript: {
+          project: './tsconfig.json',
+        },
+      },
+    },
   },
   {
     rules: {
