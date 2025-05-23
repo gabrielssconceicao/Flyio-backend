@@ -3,7 +3,7 @@
 /node_modules
 /build
 .editorconfig
-/prisma/generated/prisma/
+generated/prisma/
 # Logs
 logs
 *.log
