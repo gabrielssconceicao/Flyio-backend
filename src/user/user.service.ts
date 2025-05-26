@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserMapper } from './user.mapper';
+import { UserEntity } from './entities/user.entity';
 
 type CheckUserParams = {
   username?: string;
@@ -15,7 +16,7 @@ export class UserService {
     private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const { email, name, username, bio, password } = createUserDto;
 
     const isTaken = await this.isUserOrEmailTaken({
@@ -24,7 +25,7 @@ export class UserService {
     });
 
     if (isTaken) {
-      throw new BadRequestException(
+      throw new ConflictException(
         'User with this email or username already exists',
       );
     }
@@ -41,7 +42,7 @@ export class UserService {
       select: UserMapper.createUser,
     });
 
-    return { user };
+    return user;
   }
 
   findAll() {

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserController <create /> should create a user 1`] = `
+{
+  "bio": "bio",
+  "createdAt": 2000-01-01T00:00:00.000Z,
+  "id": "1",
+  "name": "John Doe",
+  "profileImg": null,
+  "username": "johndoe",
+}
+`;
