@@ -8,6 +8,7 @@ const envSchema = z.object({
   JWT_REFRESH_TOKEN_EXPIRES_IN: z.string(),
   JWT_TOKEN_AUDIENCE: z.string().url(),
   JWT_TOKEN_ISSUER: z.string().url(),
+  COOKIE_SECRET: z.string(),
 });
 
 const _env = envSchema.safeParse(process.env);

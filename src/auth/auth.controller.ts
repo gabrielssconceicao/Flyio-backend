@@ -1,13 +1,35 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserLoginDto } from './dto/user-login.dto';
+import { Response } from 'express';
+import { COOKIE_ACCESS_TOKEN } from './cookie.contant';
+import { env } from '@/env';
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @HttpCode(HttpStatus.CREATED)
   @Post('sign-in')
-  signIn(@Body() userLoginDto: UserLoginDto) {
-    return this.authService.signIn(userLoginDto);
+  async signIn(
+    @Body() userLoginDto: UserLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken } = await this.authService.signIn(userLoginDto);
+    res.cookie(COOKIE_ACCESS_TOKEN, accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+      maxAge: Number(env.JWT_ACCESS_TOKEN_EXPIRES_IN),
+    });
+
+    return { message: 'Login successful' };
   }
 }
