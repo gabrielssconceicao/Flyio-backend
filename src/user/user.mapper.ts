@@ -5,6 +5,5 @@ export class UserMapper {
     username: true,
     profileImg: true,
     bio: true,
-    createdAt: true,
   };
 }
