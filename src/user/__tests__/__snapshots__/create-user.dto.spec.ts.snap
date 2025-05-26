@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<CreateUserDto> should fail if data is out of range 1`] = `
+[
+  {
+    "constraints": {
+      "minLength": "Name must be at least 3 characters long",
+    },
+    "property": "name",
+  },
+  {
+    "constraints": {
+      "isNotEmpty": "Username is required",
+      "minLength": "Username must be at least 3 characters long",
+    },
+    "property": "username",
+  },
+  {
+    "constraints": {
+      "isEmail": "email must be an email",
+    },
+    "property": "email",
+  },
+  {
+    "constraints": {
+      "minLength": "Password must be at least 6 characters long",
+    },
+    "property": "password",
+  },
+  {
+    "constraints": {
+      "maxLength": "Bio must be at most 200 characters long",
+    },
+    "property": "bio",
+  },
+]
+`;
