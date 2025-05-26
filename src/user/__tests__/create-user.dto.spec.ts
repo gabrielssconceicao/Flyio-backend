@@ -1,5 +1,6 @@
 import { validate } from 'class-validator';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { formatDtoErrors } from '@/common/utils/dto-format-error';
 describe('<CreateUserDto>', () => {
   it('should validate', async () => {
     const dto = new CreateUserDto();
@@ -21,10 +22,7 @@ describe('<CreateUserDto>', () => {
     dto.bio = 'a'.repeat(201);
     const errors = await validate(dto);
     expect(errors.length).toBe(5);
-    const result = errors.map((err) => ({
-      property: err.property,
-      constraints: err.constraints,
-    }));
+    const result = formatDtoErrors(errors);
 
     expect(result).toMatchSnapshot();
   });
