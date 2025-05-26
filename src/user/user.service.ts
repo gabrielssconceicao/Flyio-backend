@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { BcryptService } from '@/auth/bcrypt.service';
+import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserMapper } from './user.mapper';
 
@@ -12,7 +12,7 @@ type CheckUserParams = {
 @Injectable()
 export class UserService {
   constructor(
-    private readonly bcryptService: BcryptService,
+    private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
   ) {}
   async create(createUserDto: CreateUserDto) {
@@ -22,12 +22,13 @@ export class UserService {
       username,
       email,
     });
+
     if (isTaken) {
-      throw new BadRequestException({
-        message: 'Username or email already taken',
-      });
+      throw new BadRequestException(
+        'User with this email or username already exists',
+      );
     }
-    const hashedPassword = await this.bcryptService.hash(password);
+    const hashedPassword = await this.hashing.hash(password);
 
     const user = await this.prisma.user.create({
       data: {

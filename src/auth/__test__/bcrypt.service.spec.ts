@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcryptjs';
-import { BcryptService } from '../bcrypt.service';
+import { BcryptService } from '../../hash/hashing.service';
 jest.mock('bcryptjs');
 
 describe('BcryptService', () => {
