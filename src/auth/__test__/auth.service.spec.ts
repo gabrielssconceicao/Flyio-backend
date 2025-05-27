@@ -176,6 +176,8 @@ describe('AuthService', () => {
       expect(result).toEqual({
         newAccessToken: 'newAccessToken',
       });
+
+      expect(result).toMatchSnapshot();
     });
 
     it('should thow an UnauthorizedException if token is missing', async () => {
