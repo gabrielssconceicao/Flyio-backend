@@ -46,7 +46,6 @@ export class AuthService {
     }
     try {
       const payload = this.jwt.verify<JwtPayload>(token, this.jwtConfiguration);
-      // console.log({ refreshToken: token, payload });
       const { accessToken: newAccessToken } = await this.generateAccessToken({
         id: payload.id,
         username: payload.username,

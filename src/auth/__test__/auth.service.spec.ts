@@ -42,6 +42,7 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: {
             signAsync: jest.fn(),
+            verify: jest.fn(),
           },
         },
         {
@@ -85,7 +86,10 @@ describe('AuthService', () => {
         password: 'hashedPassword',
       } as any);
       jest.spyOn(hashing, 'compare').mockResolvedValue(true);
-      jest.spyOn(jwt, 'signAsync').mockResolvedValue('accessToken');
+      jest
+        .spyOn(jwt, 'signAsync')
+        .mockResolvedValueOnce('accessToken')
+        .mockResolvedValueOnce('refreshToken');
 
       const result = await service.signIn(userLoginDto);
 
@@ -105,8 +109,20 @@ describe('AuthService', () => {
           expiresIn: jwtConfigMock.accessTokenExpiresIn,
         },
       );
+      expect(jwt.signAsync).toHaveBeenCalledWith(
+        { id: '1', username: 'johndoe' },
+        {
+          secret: jwtConfigMock.secret,
+          audience: jwtConfigMock.audience,
+          issuer: jwtConfigMock.issuer,
+          expiresIn: jwtConfigMock.refreshTokenExpiresIn,
+        },
+      );
 
-      expect(result).toEqual({ accessToken: 'accessToken' });
+      expect(result).toEqual({
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      });
 
       expect(result).toMatchSnapshot();
     });
@@ -137,6 +153,42 @@ describe('AuthService', () => {
         password: userLoginDto.password,
         hash: 'hashedPassword',
       });
+    });
+  });
+
+  describe('Refresh', () => {
+    it('should refresh a token', async () => {
+      jest.spyOn(jwt, 'verify').mockReturnValue({
+        id: '1',
+        username: 'johndoe',
+      });
+
+      jest
+        .spyOn(jwt, 'signAsync')
+        .mockResolvedValueOnce('newAccessToken')
+        .mockResolvedValueOnce('newRefreshToken');
+
+      const result = await service.refresh('token');
+
+      expect(jwt.verify).toHaveBeenCalledWith('token', jwtConfigMock);
+
+      expect(jwt.signAsync).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        newAccessToken: 'newAccessToken',
+      });
+    });
+
+    it('should thow an UnauthorizedException if token is missing', async () => {
+      await expect(service.refresh('')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should thow an UnauthorizedException if token is invalid', async () => {
+      jest.spyOn(jwt, 'verify').mockImplementation(() => {
+        throw new Error();
+      });
+      await expect(service.refresh('invalid-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

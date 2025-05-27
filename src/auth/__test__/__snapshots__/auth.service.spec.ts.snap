@@ -3,5 +3,6 @@
 exports[`AuthService SignIn should generate access token 1`] = `
 {
   "accessToken": "accessToken",
+  "refreshToken": "refreshToken",
 }
 `;
