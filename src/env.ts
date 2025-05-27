@@ -10,7 +10,7 @@ config();
 const envSchema = z.object({
   APP_PORT: z.string().default('3000'),
   NODE_ENV: z
-    .enum(['development', 'production,', 'test'])
+    .enum(['development', 'production', 'test'])
     .default('development'),
   JWT_SECRET: z.string(),
   JWT_ACCESS_TOKEN_EXPIRES_IN: z.string(),

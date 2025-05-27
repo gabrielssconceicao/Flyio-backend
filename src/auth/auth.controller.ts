@@ -9,7 +9,7 @@ import {
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { UserLoginDto } from './dto/user-login.dto';
-import { COOKIE_ACCESS_TOKEN } from './cookie.contant';
+import { COOKIE_ACCESS_TOKEN } from './cookie.constant';
 import { env } from '@/env';
 import { SignInSwaggerDoc } from './swagger/sign-in-swagger';
 
@@ -28,7 +28,7 @@ export class AuthController {
     res.cookie(COOKIE_ACCESS_TOKEN, accessToken, {
       httpOnly: true,
       sameSite: 'lax',
-      secure: true,
+      secure: env.NODE_ENV === 'production',
       maxAge: Number(env.JWT_ACCESS_TOKEN_EXPIRES_IN),
     });
 

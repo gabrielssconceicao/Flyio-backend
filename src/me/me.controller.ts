@@ -1,13 +1,14 @@
 import { Controller, Get, Patch, Delete } from '@nestjs/common';
 import { MeService } from './me.service';
+import { CookieTokenParam } from '@/common/params/cookie-token.params';
 
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}
 
   @Get()
-  find() {
-    return 'get me';
+  getMe(@CookieTokenParam() token: string) {
+    return { token };
   }
 
   @Patch()

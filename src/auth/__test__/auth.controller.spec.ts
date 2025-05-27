@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { COOKIE_ACCESS_TOKEN } from '../cookie.contant';
+import { COOKIE_ACCESS_TOKEN } from '../cookie.constant';
 import { UserLoginDto } from '../dto/user-login.dto';
 
 describe('AuthController', () => {
