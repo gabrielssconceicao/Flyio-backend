@@ -1,14 +1,18 @@
-import { Controller, Get, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, UseGuards } from '@nestjs/common';
 import { MeService } from './me.service';
-import { CookieTokenParam } from '@/common/params/cookie-token.params';
 
+import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
+import { CurrentUser } from '@/common/params/current-user.params';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
+
+@UseGuards(JwtAuthGuard)
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}
 
   @Get()
-  getMe(@CookieTokenParam() token: string) {
-    return { token };
+  getMe(@CurrentUser() user: JwtPayload) {
+    return { user };
   }
 
   @Patch()
