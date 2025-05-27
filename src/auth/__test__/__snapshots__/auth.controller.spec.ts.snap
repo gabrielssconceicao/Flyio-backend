@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuthController SignIn should sign in a user and set a cookie 1`] = `
+{
+  "message": "Login successful",
+}
+`;
