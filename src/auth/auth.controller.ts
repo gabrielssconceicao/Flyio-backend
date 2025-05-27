@@ -11,11 +11,13 @@ import { AuthService } from './auth.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { COOKIE_ACCESS_TOKEN } from './cookie.contant';
 import { env } from '@/env';
+import { SignInSwaggerDoc } from './swagger/sign-in-swagger';
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @SignInSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
   @Post('sign-in')
   async signIn(
