@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<UserLoginDto> should fail if data is out of range 1`] = `
+[
+  {
+    "constraints": {
+      "isNotEmpty": "login should not be empty",
+    },
+    "property": "login",
+  },
+  {
+    "constraints": {
+      "isNotEmpty": "password should not be empty",
+    },
+    "property": "password",
+  },
+]
+`;

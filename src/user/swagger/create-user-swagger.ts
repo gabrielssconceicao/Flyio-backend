@@ -11,13 +11,13 @@ export const GetUserSwaggerDoc = () => {
     );
 
     ApiResponse({
-      status: 201,
+      status: HttpStatus.CREATED,
       description: 'User created successfully',
       type: UserEntity,
     })(target, propertyKey, descriptor);
 
     ApiResponse({
-      status: 409,
+      status: HttpStatus.CONFLICT,
       description: 'User with this email or username already exists',
       schema: {
         example: {

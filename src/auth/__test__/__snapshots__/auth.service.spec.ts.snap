@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AuthService SignIn should generate access token 1`] = `
+{
+  "accessToken": "accessToken",
+}
+`;
