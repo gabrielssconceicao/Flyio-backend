@@ -1,11 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UserController <create /> should create a user 1`] = `
+exports[`UserController Create should create a user 1`] = `
 {
   "bio": "bio",
   "id": "1",
   "name": "John Doe",
   "profileImg": null,
   "username": "johndoe",
+}
+`;
+
+exports[`UserController FindOne should find a user 1`] = `
+{
+  "user": {
+    "bio": "bio",
+    "createdAt": 2000-01-01T00:00:00.000Z,
+    "isActive": true,
+    "name": "John Doe",
+    "profileImg": null,
+    "username": "johndoe",
+  },
 }
 `;

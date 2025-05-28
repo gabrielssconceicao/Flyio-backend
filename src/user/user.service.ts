@@ -8,6 +8,7 @@ import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './entities/user.entity';
+import { FindOneUserEntity } from './entities/find-one-user.entity';
 
 type CheckUserParams = {
   username?: string;
@@ -44,7 +45,7 @@ export class UserService {
         bio,
         password: hashedPassword,
       },
-      select: UserMapper.defaultFields,
+      select: UserMapper.createUserFields,
     });
 
     return user;
@@ -54,7 +55,7 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  async findOne(username: string) {
+  async findOne(username: string): Promise<{ user: FindOneUserEntity }> {
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: UserMapper.findUserFields,

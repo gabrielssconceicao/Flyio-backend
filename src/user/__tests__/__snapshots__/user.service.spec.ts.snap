@@ -1,11 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UserService <Create /> should create a user without profile and banner 1`] = `
+exports[`UserService Create should create a user without profile and banner 1`] = `
 {
   "bio": "bio",
   "id": "1",
   "name": "John Doe",
   "profileImg": null,
   "username": "johndoe",
+}
+`;
+
+exports[`UserService FindOne should find a user 1`] = `
+{
+  "user": {
+    "bio": "bio",
+    "createdAt": 2000-01-01T00:00:00.000Z,
+    "isActive": true,
+    "name": "John Doe",
+    "profileImg": null,
+    "username": "johndoe",
+  },
 }
 `;
