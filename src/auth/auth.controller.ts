@@ -13,7 +13,7 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from './cookie.constant';
 import { env } from '@/env';
 import { SignInSwaggerDoc } from './swagger/sign-in-swagger';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 export class AuthController {
@@ -44,6 +44,7 @@ export class AuthController {
     return { message: 'Login successful' };
   }
 
+  @ApiCookieAuth('refresh_token')
   @ApiOperation({ summary: 'Refresh access token' })
   @HttpCode(HttpStatus.CREATED)
   @Post('refresh')

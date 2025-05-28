@@ -12,9 +12,10 @@ import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 
 import { MeService } from './me.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserEntity } from '@/user/entities/user.entity';
 
+@ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
 @ApiResponse({
   status: HttpStatus.UNAUTHORIZED,
