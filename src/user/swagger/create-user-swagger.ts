@@ -2,7 +2,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 
-export const GetUserSwaggerDoc = () => {
+export const CreateUserSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     ApiOperation({ summary: 'Creates a new user' })(
       target,

@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -16,6 +20,7 @@ export class UserService {
     private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
   ) {}
+
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const { email, name, username, bio, password } = createUserDto;
 
@@ -39,7 +44,7 @@ export class UserService {
         bio,
         password: hashedPassword,
       },
-      select: UserMapper.createUser,
+      select: UserMapper.defaultFields,
     });
 
     return user;
@@ -49,8 +54,17 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: UserMapper.findUserFields,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return { user };
   }
 
   private async isUserOrEmailTaken(params: CheckUserParams): Promise<boolean> {

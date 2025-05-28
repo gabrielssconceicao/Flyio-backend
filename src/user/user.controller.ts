@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUserSwaggerDoc } from './swagger/create-user-swagger';
+import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
+import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @GetUserSwaggerDoc()
+  @CreateUserSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -27,8 +28,10 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @GetUserSwaggerDoc()
+  @HttpCode(HttpStatus.OK)
+  @Get(':username')
+  findOne(@Param('username') username: string) {
+    return this.userService.findOne(username);
   }
 }
