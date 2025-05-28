@@ -25,10 +25,10 @@ export class MeService {
   }
 
   async updateMe({
-    user,
+    payload,
     updateMeDto,
   }: {
-    user: JwtPayload;
+    payload: JwtPayload;
     updateMeDto: UpdateMeDto;
   }): Promise<{ user: CurrentUserEntity }> {
     const { bio, name, password } = updateMeDto;
@@ -39,12 +39,25 @@ export class MeService {
 
     const updatedUser = await this.prisma.user.update({
       where: {
-        id: user.id,
+        id: payload.id,
       },
       data: { bio, name, password: hashedPassword },
       select: MeMapper.defaultFields,
     });
 
     return { user: updatedUser };
+  }
+
+  async desactivateMe(payload: JwtPayload) {
+    await this.prisma.user.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        active: false,
+      },
+    });
+
+    return;
   }
 }

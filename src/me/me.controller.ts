@@ -6,6 +6,7 @@ import {
   UseGuards,
   HttpStatus,
   Body,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -41,8 +42,8 @@ export class MeController {
     type: CurrentUserEntity,
   })
   @Get()
-  getMe(@CurrentUser() user: JwtPayload) {
-    return this.meService.getMe(user);
+  getMe(@CurrentUser() payload: JwtPayload) {
+    return this.meService.getMe(payload);
   }
 
   @ApiResponse({
@@ -51,12 +52,16 @@ export class MeController {
     type: CurrentUserEntity,
   })
   @Patch()
-  updateMe(@CurrentUser() user: JwtPayload, @Body() updateMeDto: UpdateMeDto) {
-    return this.meService.updateMe({ user, updateMeDto });
+  updateMe(
+    @CurrentUser() payload: JwtPayload,
+    @Body() updateMeDto: UpdateMeDto,
+  ) {
+    return this.meService.updateMe({ payload, updateMeDto });
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete()
-  remove() {
-    return 'delete me';
+  desactivateMe(@CurrentUser() payload: JwtPayload) {
+    return this.meService.desactivateMe(payload);
   }
 }
