@@ -5,6 +5,7 @@ import {
   Delete,
   UseGuards,
   HttpStatus,
+  Body,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
@@ -14,6 +15,7 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { MeService } from './me.service';
 import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserEntity } from '@/user/entities/user.entity';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
@@ -43,9 +45,14 @@ export class MeController {
     return this.meService.getMe(user);
   }
 
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User updated successfully',
+    type: UserEntity,
+  })
   @Patch()
-  update() {
-    return 'update me';
+  update(@CurrentUser() user: JwtPayload, @Body() updateMeDto: UpdateMeDto) {
+    return this.meService.updateMe({ user, updateMeDto });
   }
 
   @Delete()
