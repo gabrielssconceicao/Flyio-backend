@@ -5,6 +5,7 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { HashingService } from '@/hash/hashing.service';
 import jwtConfig from './jwt.config';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -29,13 +30,30 @@ export class AuthService {
     if (!isPasswordCorrect) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const { accessToken } = await this.generateAccessToken({
+    const { accessToken, refreshToken } = await this.generateAccessToken({
       id: user.id,
       username: user.username,
     });
     return {
       accessToken,
+      refreshToken,
     };
+  }
+
+  async refresh(token: string) {
+    if (!token) {
+      throw new UnauthorizedException('Invalid or missing token');
+    }
+    try {
+      const payload = this.jwt.verify<JwtPayload>(token, this.jwtConfiguration);
+      const { accessToken: newAccessToken } = await this.generateAccessToken({
+        id: payload.id,
+        username: payload.username,
+      });
+      return { newAccessToken };
+    } catch {
+      throw new UnauthorizedException('Invalid or missing token');
+    }
   }
 
   private async userExists(login: string) {
@@ -60,7 +78,13 @@ export class AuthService {
       issuer: this.jwtConfiguration.issuer,
       expiresIn: this.jwtConfiguration.accessTokenExpiresIn,
     });
+    const refreshToken = await this.jwt.signAsync(payload, {
+      secret: this.jwtConfiguration.secret,
+      audience: this.jwtConfiguration.audience,
+      issuer: this.jwtConfiguration.issuer,
+      expiresIn: this.jwtConfiguration.refreshTokenExpiresIn,
+    });
 
-    return { accessToken };
+    return { accessToken, refreshToken };
   }
 }

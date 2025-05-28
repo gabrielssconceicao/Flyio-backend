@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpdateMeDto should fail if data is out of range 1`] = `
+[
+  {
+    "constraints": {
+      "minLength": "Name must be at least 3 characters long",
+    },
+    "property": "name",
+  },
+  {
+    "constraints": {
+      "maxLength": "Password must be at most 50 characters long",
+    },
+    "property": "password",
+  },
+]
+`;

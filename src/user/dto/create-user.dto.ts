@@ -54,8 +54,7 @@ export class CreateUserDto {
   @ApiProperty({
     description: 'User bio',
     example: "John Doe's bio",
-    minLength: 3,
-    maxLength: 50,
+    maxLength: 200,
   })
   bio?: string;
 }

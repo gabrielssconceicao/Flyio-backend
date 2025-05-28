@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MeController GetMe should get current user 1`] = `
+{
+  "user": {
+    "bio": "bio",
+    "createdAt": 2000-01-01T00:00:00.000Z,
+    "id": "1",
+    "name": "John Doe",
+    "profileImg": null,
+    "username": "johndoe",
+  },
+}
+`;
+
+exports[`MeController UpdateMe should update current user 1`] = `
+{
+  "user": {
+    "bio": "updated bio",
+    "createdAt": 2000-01-01T00:00:00.000Z,
+    "id": "1",
+    "name": "Updated name",
+    "profileImg": null,
+    "username": "johndoe",
+  },
+}
+`;
