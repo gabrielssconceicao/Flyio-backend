@@ -59,6 +59,11 @@ export class MeController {
     return this.meService.updateMe({ payload, updateMeDto });
   }
 
+  @ApiOperation({ summary: 'Desactivate current user' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'User desactivated successfully',
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete()
   desactivateMe(@CurrentUser() payload: JwtPayload) {

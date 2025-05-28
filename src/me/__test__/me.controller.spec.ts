@@ -16,7 +16,11 @@ describe('MeController', () => {
       providers: [
         {
           provide: MeService,
-          useValue: { getMe: jest.fn(), updateMe: jest.fn() },
+          useValue: {
+            getMe: jest.fn(),
+            updateMe: jest.fn(),
+            desactivateMe: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -60,10 +64,17 @@ describe('MeController', () => {
       });
       const result = await controller.updateMe(payload, updateMeDto);
       expect(service.updateMe).toHaveBeenCalledWith({
-        user: payload,
+        payload,
         updateMeDto,
       });
       expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('DesactivateMe', () => {
+    it('should desactivate current user', async () => {
+      await controller.desactivateMe(payload);
+      expect(service.desactivateMe).toHaveBeenCalledWith(payload);
     });
   });
 });

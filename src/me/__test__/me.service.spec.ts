@@ -75,7 +75,7 @@ describe('MeService', () => {
         .spyOn(prisma.user, 'update')
         .mockResolvedValue({ ...currentUserMock(), ...updateMeDto });
 
-      const result = await service.updateMe({ user: payload, updateMeDto });
+      const result = await service.updateMe({ payload, updateMeDto });
 
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: {
@@ -103,7 +103,7 @@ describe('MeService', () => {
         ...currentUserMock(),
       });
       const result = await service.updateMe({
-        user: payload,
+        payload,
         updateMeDto: {
           password: 'newPassword',
         },
@@ -124,6 +124,20 @@ describe('MeService', () => {
       expect(result).toBeDefined();
 
       expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('DesactivateMe', () => {
+    it('should desactivate current user', async () => {
+      await service.desactivateMe(payload);
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: {
+          id: payload.id,
+        },
+        data: {
+          isActive: false,
+        },
+      });
     });
   });
 });

@@ -54,7 +54,7 @@ export class MeService {
         id: payload.id,
       },
       data: {
-        active: false,
+        isActive: false,
       },
     });
 
