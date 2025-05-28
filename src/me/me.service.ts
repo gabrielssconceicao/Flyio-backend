@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { MeMapper } from './me.mapper';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { HashingService } from '@/hash/hashing.service';
+import { CurrentUserEntity } from './entities/current-user.entity';
 
 @Injectable()
 export class MeService {
@@ -12,13 +13,13 @@ export class MeService {
     private readonly hashing: HashingService,
   ) {}
 
-  async getMe(payload: JwtPayload) {
-    const user = await this.prisma.user.findUnique({
+  async getMe(payload: JwtPayload): Promise<{ user: CurrentUserEntity }> {
+    const user = (await this.prisma.user.findUnique({
       where: {
         id: payload.id,
       },
       select: MeMapper.defaultFields,
-    });
+    })) as CurrentUserEntity;
 
     return { user };
   }
@@ -29,7 +30,7 @@ export class MeService {
   }: {
     user: JwtPayload;
     updateMeDto: UpdateMeDto;
-  }) {
+  }): Promise<{ user: CurrentUserEntity }> {
     const { bio, name, password } = updateMeDto;
     let hashedPassword: string | undefined;
     if (password) {
