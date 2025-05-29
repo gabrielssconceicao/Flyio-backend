@@ -9,6 +9,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './entities/user.entity';
 import { FindOneUserEntity } from './entities/find-one-user.entity';
+import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { SearchUserEntity } from './entities/search-user.entity';
 
 type CheckUserParams = {
   username?: string;
@@ -51,8 +53,24 @@ export class UserService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(query: QueryParamDto): Promise<SearchUserEntity> {
+    const { search = '', limit = 20, offset = 0 } = query;
+    // get by name or username - check for upper and lower cases
+    const users = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          { username: { contains: search, mode: 'insensitive' } },
+          { name: { contains: search, mode: 'insensitive' } },
+        ],
+      },
+      take: limit,
+      skip: offset,
+      select: UserMapper.searchUserFields,
+    });
+
+    const count = await this.prisma.user.count();
+
+    return { count, users };
   }
 
   async findOne(username: string): Promise<{ user: FindOneUserEntity }> {

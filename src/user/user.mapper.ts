@@ -16,4 +16,11 @@ export class UserMapper {
     createdAt: true,
     isActive: true,
   };
+
+  static readonly searchUserFields = {
+    id: true,
+    username: true,
+    name: true,
+    profileImg: true,
+  };
 }

@@ -6,11 +6,14 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
 import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
+import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
 
 @Controller('user')
 export class UserController {
@@ -23,9 +26,10 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @SearchUsersSwaggerDoc()
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query: QueryParamDto) {
+    return this.userService.findAll(query);
   }
 
   @GetUserSwaggerDoc()
