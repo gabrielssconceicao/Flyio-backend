@@ -22,3 +22,20 @@ exports[`UserService FindOne should find a user 1`] = `
   },
 }
 `;
+
+exports[`UserService Search should find users by name or username 1`] = `
+{
+  "count": undefined,
+  "users": {
+    "count": 1,
+    "users": [
+      {
+        "id": "1",
+        "name": "John Doe",
+        "profileImg": null,
+        "username": "johndoe",
+      },
+    ],
+  },
+}
+`;

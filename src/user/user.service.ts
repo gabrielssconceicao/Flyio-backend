@@ -53,7 +53,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: QueryParamDto): Promise<SearchUserEntity> {
+  async search(query: QueryParamDto): Promise<SearchUserEntity> {
     const { search = '', limit = 20, offset = 0 } = query;
     // get by name or username - check for upper and lower cases
     const users = await this.prisma.user.findMany({

@@ -9,6 +9,7 @@ import { createUserDtoMock } from '../mocks/create-user-dto.mock';
 import { userEntityMock } from '../mocks/user-entity.mock';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { userMock } from '../mocks/user.mock';
+import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 
 describe('UserService', () => {
   let service: UserService;
@@ -104,6 +105,28 @@ describe('UserService', () => {
       await expect(service.findOne('username')).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('Search', () => {
+    it('should find users by name or username', async () => {
+      jest
+        .spyOn(prisma.user, 'findMany')
+        .mockResolvedValue(searchUsersResponseMock());
+      const result = await service.search({ search: 'johndoe', limit: 25 });
+      expect(prisma.user.count).toHaveBeenCalled();
+      expect(prisma.user.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { username: { contains: 'johndoe', mode: 'insensitive' } },
+            { name: { contains: 'johndoe', mode: 'insensitive' } },
+          ],
+        },
+        take: 25,
+        skip: 0,
+        select: UserMapper.searchUserFields,
+      });
+      expect(result).toMatchSnapshot();
     });
   });
 });

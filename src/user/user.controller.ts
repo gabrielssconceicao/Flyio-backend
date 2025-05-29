@@ -28,8 +28,8 @@ export class UserController {
 
   @SearchUsersSwaggerDoc()
   @Get()
-  findAll(@Query() query: QueryParamDto) {
-    return this.userService.findAll(query);
+  search(@Query() query: QueryParamDto) {
+    return this.userService.search(query);
   }
 
   @GetUserSwaggerDoc()

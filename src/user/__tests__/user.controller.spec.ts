@@ -6,6 +6,7 @@ import { HashingModule } from '@/hash/hashing.module';
 import { userEntityMock } from '../mocks/user-entity.mock';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { userMock } from '../mocks/user.mock';
+import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -20,6 +21,7 @@ describe('UserController', () => {
           useValue: {
             create: jest.fn(),
             findOne: jest.fn(),
+            search: jest.fn(),
           },
         },
       ],
@@ -62,6 +64,18 @@ describe('UserController', () => {
       await expect(controller.findOne('username')).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('Search', () => {
+    it('should find users by name or username', async () => {
+      const query = { search: 'johndoe', limit: 25 };
+      jest
+        .spyOn(service, 'search')
+        .mockResolvedValue(searchUsersResponseMock());
+      const result = await controller.search(query);
+      expect(service.search).toHaveBeenCalledWith(query);
+      expect(result).toMatchSnapshot();
     });
   });
 });
