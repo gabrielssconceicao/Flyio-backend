@@ -1,9 +1,16 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './entities/user.entity';
+import { FindOneUserEntity } from './entities/find-one-user.entity';
+import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { SearchUserEntity } from './entities/search-user.entity';
 
 type CheckUserParams = {
   username?: string;
@@ -16,6 +23,7 @@ export class UserService {
     private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
   ) {}
+
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const { email, name, username, bio, password } = createUserDto;
 
@@ -39,18 +47,43 @@ export class UserService {
         bio,
         password: hashedPassword,
       },
-      select: UserMapper.createUser,
+      select: UserMapper.createUserFields,
     });
 
     return user;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async search(query: QueryParamDto): Promise<SearchUserEntity> {
+    const { search = '', limit = 20, offset = 0 } = query;
+    // get by name or username - check for upper and lower cases
+    const users = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          { username: { contains: search, mode: 'insensitive' } },
+          { name: { contains: search, mode: 'insensitive' } },
+        ],
+      },
+      take: limit,
+      skip: offset,
+      select: UserMapper.searchUserFields,
+    });
+
+    const count = await this.prisma.user.count();
+
+    return { count, users };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(username: string): Promise<{ user: FindOneUserEntity }> {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: UserMapper.findUserFields,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return { user };
   }
 
   private async isUserOrEmailTaken(params: CheckUserParams): Promise<boolean> {

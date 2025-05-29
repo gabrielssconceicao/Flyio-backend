@@ -55,6 +55,7 @@ export class CreateUserDto {
     description: 'User bio',
     example: "John Doe's bio",
     maxLength: 200,
+    nullable: true,
   })
   bio?: string;
 }

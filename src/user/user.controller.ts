@@ -6,29 +6,36 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUserSwaggerDoc } from './swagger/create-user-swagger';
+import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
+import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
+import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @GetUserSwaggerDoc()
+  @CreateUserSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
+  @SearchUsersSwaggerDoc()
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  search(@Query() query: QueryParamDto) {
+    return this.userService.search(query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @GetUserSwaggerDoc()
+  @HttpCode(HttpStatus.OK)
+  @Get(':username')
+  findOne(@Param('username') username: string) {
+    return this.userService.findOne(username);
   }
 }

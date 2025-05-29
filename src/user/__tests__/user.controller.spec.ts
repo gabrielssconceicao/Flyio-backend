@@ -4,7 +4,9 @@ import { UserService } from '../user.service';
 import { createUserDtoMock } from '../mocks/create-user-dto.mock';
 import { HashingModule } from '@/hash/hashing.module';
 import { userEntityMock } from '../mocks/user-entity.mock';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { userMock } from '../mocks/user.mock';
+import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -18,6 +20,8 @@ describe('UserController', () => {
           provide: UserService,
           useValue: {
             create: jest.fn(),
+            findOne: jest.fn(),
+            search: jest.fn(),
           },
         },
       ],
@@ -32,7 +36,7 @@ describe('UserController', () => {
     expect(service).toBeDefined();
   });
 
-  describe('<create />', () => {
+  describe('Create', () => {
     it('should create a user', async () => {
       jest.spyOn(service, 'create').mockResolvedValue(userEntityMock());
       const result = await controller.create(createUserDtoMock());
@@ -45,6 +49,33 @@ describe('UserController', () => {
       await expect(controller.create(createUserDtoMock())).rejects.toThrow(
         ConflictException,
       );
+    });
+  });
+
+  describe('FindOne', () => {
+    it('should find a user', async () => {
+      jest.spyOn(service, 'findOne').mockResolvedValue({ user: userMock() });
+      const result = await controller.findOne('username');
+      expect(result).toMatchSnapshot();
+    });
+
+    it('should throw a not found exception if user not found', async () => {
+      jest.spyOn(service, 'findOne').mockRejectedValue(new NotFoundException());
+      await expect(controller.findOne('username')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('Search', () => {
+    it('should find users by name or username', async () => {
+      const query = { search: 'johndoe', limit: 25 };
+      jest
+        .spyOn(service, 'search')
+        .mockResolvedValue(searchUsersResponseMock());
+      const result = await controller.search(query);
+      expect(service.search).toHaveBeenCalledWith(query);
+      expect(result).toMatchSnapshot();
     });
   });
 });

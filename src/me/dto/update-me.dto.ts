@@ -7,6 +7,7 @@ export class UpdateMeDto {
     example: 'John Doe',
     minLength: 3,
     maxLength: 50,
+    nullable: true,
   })
   @MinLength(3, { message: 'Name must be at least 3 characters long' })
   @MaxLength(50, { message: 'Name must be at most 50 characters long' })
@@ -19,6 +20,7 @@ export class UpdateMeDto {
     example: 'password',
     minLength: 6,
     maxLength: 50,
+    nullable: true,
   })
   @IsOptional()
   @IsString()
@@ -30,6 +32,7 @@ export class UpdateMeDto {
     description: 'User bio',
     example: 'I am a bio',
     maxLength: 200,
+    nullable: true,
   })
   @IsOptional()
   @IsString()
