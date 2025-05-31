@@ -25,4 +25,23 @@ model User {
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
+  // Lista de pessoas que este usuário está seguindo
+  // Ex: user.following -> quem este user segue
+  following  Follow[] @relation("Follower")
+
+  // Lista de pessoas que estão seguindo este usuário
+  // Ex: user.followers -> quem segue este user
+  followers Follow[] @relation("Followed")
+}
+
+model Follow {
+  id         String @id @default(uuid())
+  followerId String
+  followedId String
+  follower   User   @relation("Follower", fields: [followerId], references: [id])
+  followed   User   @relation("Followed", fields: [followedId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followedId])
 }
