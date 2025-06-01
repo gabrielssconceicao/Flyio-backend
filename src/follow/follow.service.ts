@@ -20,23 +20,15 @@ export class FollowService {
       throw new BadRequestException('You cannot follow yourself');
     }
 
-    const following = await this.prisma.user.findUnique({
-      where: {
-        id: followingUserId,
-      },
-    });
+    const following = await this.userExists(followingUserId);
 
     if (!following) {
       throw new NotFoundException('User not found');
     }
 
-    const isFollowing = await this.prisma.follow.findUnique({
-      where: {
-        userId_followingUserId: {
-          userId: payload.id,
-          followingUserId,
-        },
-      },
+    const isFollowing = await this.isFollowing({
+      followingUserId,
+      followedBy: payload.id,
     });
 
     if (isFollowing) {
@@ -55,23 +47,15 @@ export class FollowService {
       throw new BadRequestException('You cannot unfollow yourself');
     }
 
-    const following = await this.prisma.user.findUnique({
-      where: {
-        id: followingUserId,
-      },
-    });
+    const user = await this.userExists(followingUserId);
 
-    if (!following) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const isFollowing = await this.prisma.follow.findUnique({
-      where: {
-        userId_followingUserId: {
-          userId: payload.id,
-          followingUserId,
-        },
-      },
+    const isFollowing = await this.isFollowing({
+      followingUserId,
+      followedBy: payload.id,
     });
 
     if (!isFollowing) {
@@ -86,5 +70,33 @@ export class FollowService {
         },
       },
     });
+  }
+
+  private async userExists(userId: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    return !!user;
+  }
+  private async isFollowing({
+    followingUserId,
+    followedBy,
+  }: {
+    followingUserId: string;
+    followedBy: string;
+  }): Promise<boolean> {
+    const isFollowing = await this.prisma.follow.findUnique({
+      where: {
+        userId_followingUserId: {
+          userId: followedBy,
+          followingUserId,
+        },
+      },
+    });
+
+    return !!isFollowing;
   }
 }
