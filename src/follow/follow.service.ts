@@ -1,4 +1,90 @@
-import { Injectable } from '@nestjs/common';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
+import { PrismaService } from '@/prisma/prisma.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
+export type Follow = {
+  payload: JwtPayload;
+  followingUserId: string;
+};
 
 @Injectable()
-export class FollowService {}
+export class FollowService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async follow({ followingUserId, payload }: Follow) {
+    if (followingUserId === payload.id) {
+      throw new BadRequestException('You cannot follow yourself');
+    }
+
+    const following = await this.prisma.user.findUnique({
+      where: {
+        id: followingUserId,
+      },
+    });
+
+    if (!following) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isFollowing = await this.prisma.follow.findUnique({
+      where: {
+        userId_followingUserId: {
+          userId: payload.id,
+          followingUserId,
+        },
+      },
+    });
+
+    if (isFollowing) {
+      throw new BadRequestException('You are already following this user');
+    }
+
+    await this.prisma.follow.create({
+      data: {
+        userId: payload.id,
+        followingUserId,
+      },
+    });
+  }
+  async unfollow({ followingUserId, payload }: Follow) {
+    if (followingUserId === payload.id) {
+      throw new BadRequestException('You cannot unfollow yourself');
+    }
+
+    const following = await this.prisma.user.findUnique({
+      where: {
+        id: followingUserId,
+      },
+    });
+
+    if (!following) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isFollowing = await this.prisma.follow.findUnique({
+      where: {
+        userId_followingUserId: {
+          userId: payload.id,
+          followingUserId,
+        },
+      },
+    });
+
+    if (!isFollowing) {
+      throw new BadRequestException('You already unfollow this user');
+    }
+
+    await this.prisma.follow.delete({
+      where: {
+        userId_followingUserId: {
+          userId: payload.id,
+          followingUserId,
+        },
+      },
+    });
+  }
+}
