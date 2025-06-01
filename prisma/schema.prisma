@@ -27,21 +27,21 @@ model User {
   updatedAt  DateTime @default(now()) @updatedAt
   // Lista de pessoas que este usuário está seguindo
   // Ex: user.following -> quem este user segue
-  following  Follow[] @relation("Follower")
+  following  Follow[] @relation("FollowingRelation")
 
   // Lista de pessoas que estão seguindo este usuário
   // Ex: user.followers -> quem segue este user
-  followers Follow[] @relation("Followed")
+  followers Follow[] @relation("FollowersRelation")
 }
 
 model Follow {
-  id         String @id @default(uuid())
-  followerId String
-  followedId String
-  follower   User   @relation("Follower", fields: [followerId], references: [id])
-  followed   User   @relation("Followed", fields: [followedId], references: [id])
+  userId          String
+  followingUserId String
+  // Relação com o usuário que está seguindo
+  follower        User   @relation("FollowingRelation", fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
+  // Relação com o usuário que está sendo seguido
+  followed User @relation("FollowersRelation", fields: [followingUserId], references: [id])
 
-  @@unique([followerId, followedId])
+  @@id([userId, followingUserId])
 }
