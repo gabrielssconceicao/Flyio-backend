@@ -1,4 +1,3 @@
-import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   BadRequestException,
@@ -7,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 export type Follow = {
-  payload: JwtPayload;
+  payload: { id: string };
   followingUserId: string;
 };
 
