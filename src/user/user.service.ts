@@ -100,7 +100,7 @@ export class UserService {
   }: {
     username: string;
     query: PaginationDto;
-  }) {
+  }): Promise<SearchUserEntity> {
     const { limit = 20, offset = 0 } = query;
 
     const user = await this.prisma.user.findUnique({
@@ -120,7 +120,7 @@ export class UserService {
       },
       select: {
         followed: {
-          select: UserMapper.followUserFields,
+          select: UserMapper.searchUserFields,
         },
       },
       take: limit,
@@ -138,7 +138,7 @@ export class UserService {
 
     return {
       count,
-      following: following.map((follow) => follow.followed),
+      users: following.map((follow) => follow.followed),
     };
   }
 
@@ -148,7 +148,7 @@ export class UserService {
   }: {
     username: string;
     query: PaginationDto;
-  }) {
+  }): Promise<SearchUserEntity> {
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: {
@@ -166,7 +166,7 @@ export class UserService {
       },
       select: {
         follower: {
-          select: UserMapper.followUserFields,
+          select: UserMapper.searchUserFields,
         },
       },
       take: query.limit,
@@ -184,7 +184,7 @@ export class UserService {
 
     return {
       count,
-      followed: followed.map((follow) => follow.follower),
+      users: followed.map((follow) => follow.follower),
     };
   }
 

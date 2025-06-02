@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 class User {
-  @ApiProperty({ type: String, example: 1, description: 'User ID' })
-  id: string;
   @ApiProperty({
     type: String,
     example: 'johndoe',
