@@ -11,6 +11,7 @@ import { UserEntity } from './entities/user.entity';
 import { FindOneUserEntity } from './entities/find-one-user.entity';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 type CheckUserParams = {
   username?: string;
@@ -90,6 +91,49 @@ export class UserService {
         followers: _count.followers,
         following: _count.following,
       },
+    };
+  }
+
+  async getFollowings({
+    username,
+    query,
+  }: {
+    username: string;
+    query: PaginationDto;
+  }) {
+    const { limit = 20, offset = 0 } = query;
+
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const following = await this.prisma.follow.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        followed: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profileImg: true,
+          },
+        },
+      },
+      take: limit,
+      skip: offset,
+    });
+
+    return {
+      following: following.map((follow) => follow.followed),
     };
   }
 

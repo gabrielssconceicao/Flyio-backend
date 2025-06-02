@@ -14,6 +14,7 @@ import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
 import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @Controller('user')
 export class UserController {
@@ -37,5 +38,14 @@ export class UserController {
   @Get(':username')
   findOne(@Param('username') username: string) {
     return this.userService.findOne(username);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get(':username/following')
+  getFollowings(
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+  ) {
+    return this.userService.getFollowings({ username, query });
   }
 }

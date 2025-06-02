@@ -43,5 +43,7 @@ model Follow {
   // Relação com o usuário que está sendo seguido
   followed User @relation("FollowersRelation", fields: [followingUserId], references: [id])
 
+  createdAt DateTime @default(now())
+
   @@id([userId, followingUserId])
 }
