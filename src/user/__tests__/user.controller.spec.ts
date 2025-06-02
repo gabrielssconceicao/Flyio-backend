@@ -11,6 +11,7 @@ import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 describe('UserController', () => {
   let controller: UserController;
   let service: UserService;
+  const paginationDtoMock = { offset: 0, limit: 25 };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [HashingModule],
@@ -22,6 +23,8 @@ describe('UserController', () => {
             create: jest.fn(),
             findOne: jest.fn(),
             search: jest.fn(),
+            getFollowings: jest.fn(),
+            getFollowers: jest.fn(),
           },
         },
       ],
@@ -69,13 +72,65 @@ describe('UserController', () => {
 
   describe('Search', () => {
     it('should find users by name or username', async () => {
-      const query = { search: 'johndoe', limit: 25 };
+      const query = { search: 'johndoe', ...paginationDtoMock };
       jest
         .spyOn(service, 'search')
         .mockResolvedValue(searchUsersResponseMock());
       const result = await controller.search(query);
       expect(service.search).toHaveBeenCalledWith(query);
       expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('Following', () => {
+    it('should get following users by a user', async () => {
+      jest
+        .spyOn(service, 'getFollowings')
+        .mockResolvedValue(searchUsersResponseMock());
+      const result = await controller.getFollowings(
+        'username',
+        paginationDtoMock,
+      );
+      expect(service.getFollowings).toHaveBeenCalledWith({
+        username: 'username',
+        query: paginationDtoMock,
+      });
+      expect(result).toMatchSnapshot();
+    });
+
+    it('should throw a not found exception if user not found', async () => {
+      jest
+        .spyOn(service, 'getFollowings')
+        .mockRejectedValue(new NotFoundException());
+      await expect(
+        controller.getFollowings('username', paginationDtoMock),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('Followers', () => {
+    it('should get followers users by a user', async () => {
+      jest
+        .spyOn(service, 'getFollowers')
+        .mockResolvedValue(searchUsersResponseMock());
+      const result = await controller.getFollowers(
+        'username',
+        paginationDtoMock,
+      );
+      expect(service.getFollowers).toHaveBeenCalledWith({
+        username: 'username',
+        query: paginationDtoMock,
+      });
+      expect(result).toMatchSnapshot();
+    });
+
+    it('should throw a not found exception if user not found', async () => {
+      jest
+        .spyOn(service, 'getFollowers')
+        .mockRejectedValue(new NotFoundException());
+      await expect(
+        controller.getFollowers('username', paginationDtoMock),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -11,6 +11,7 @@ import { UserEntity } from './entities/user.entity';
 import { FindOneUserEntity } from './entities/find-one-user.entity';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 type CheckUserParams = {
   username?: string;
@@ -55,7 +56,6 @@ export class UserService {
 
   async search(query: QueryParamDto): Promise<SearchUserEntity> {
     const { search = '', limit = 20, offset = 0 } = query;
-    // get by name or username - check for upper and lower cases
     const users = await this.prisma.user.findMany({
       where: {
         OR: [
@@ -83,7 +83,109 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    return { user };
+    const { _count, ...rest } = user;
+
+    return {
+      user: {
+        ...rest,
+        followers: _count.followers,
+        following: _count.following,
+      },
+    };
+  }
+
+  async getFollowings({
+    username,
+    query,
+  }: {
+    username: string;
+    query: PaginationDto;
+  }): Promise<SearchUserEntity> {
+    const { limit = 20, offset = 0 } = query;
+
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const following = await this.prisma.follow.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        followed: {
+          select: UserMapper.searchUserFields,
+        },
+      },
+      take: limit,
+      skip: offset,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const count = await this.prisma.follow.count({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    return {
+      count,
+      users: following.map((follow) => follow.followed),
+    };
+  }
+
+  async getFollowers({
+    username,
+    query,
+  }: {
+    username: string;
+    query: PaginationDto;
+  }): Promise<SearchUserEntity> {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const followers = await this.prisma.follow.findMany({
+      where: {
+        followingUserId: user.id,
+      },
+      select: {
+        follower: {
+          select: UserMapper.searchUserFields,
+        },
+      },
+      take: query.limit,
+      skip: query.offset,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const count = await this.prisma.follow.count({
+      where: {
+        followingUserId: user.id,
+      },
+    });
+
+    return {
+      count,
+      users: followers.map((follow) => follow.follower),
+    };
   }
 
   private async isUserOrEmailTaken(params: CheckUserParams): Promise<boolean> {

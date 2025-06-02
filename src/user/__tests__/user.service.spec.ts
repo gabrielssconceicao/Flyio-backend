@@ -15,6 +15,7 @@ describe('UserService', () => {
   let service: UserService;
   let hashingService: HashingService;
   let prisma: ReturnType<typeof prismaServiceMock>;
+  const paginationDtoMock = { offset: 0, limit: 25 };
   beforeEach(async () => {
     prisma = prismaServiceMock();
     const module: TestingModule = await Test.createTestingModule({
@@ -86,7 +87,10 @@ describe('UserService', () => {
 
   describe('FindOne', () => {
     it('should find a user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(userMock());
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+        ...userMock(),
+        _count: { followers: 0, following: 0 },
+      } as any);
 
       const result = await service.findOne('jonhdoe');
 
@@ -112,21 +116,105 @@ describe('UserService', () => {
     it('should find users by name or username', async () => {
       jest
         .spyOn(prisma.user, 'findMany')
-        .mockResolvedValue(searchUsersResponseMock());
-      const result = await service.search({ search: 'johndoe', limit: 25 });
+        .mockResolvedValue(searchUsersResponseMock().users);
+
+      jest
+        .spyOn(prisma.user, 'count')
+        .mockResolvedValue(searchUsersResponseMock().count);
+      const result = await service.search({
+        search: 'johndoe',
+        ...paginationDtoMock,
+      });
       expect(prisma.user.count).toHaveBeenCalled();
-      expect(prisma.user.findMany).toHaveBeenCalledWith({
-        where: {
-          OR: [
-            { username: { contains: 'johndoe', mode: 'insensitive' } },
-            { name: { contains: 'johndoe', mode: 'insensitive' } },
-          ],
-        },
-        take: 25,
-        skip: 0,
-        select: UserMapper.searchUserFields,
+      expect(prisma.user.findMany).toHaveBeenCalled();
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('GetFollowings', () => {
+    it('should get a user followings', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+        id: 'id-1',
+      });
+
+      jest.spyOn(prisma.follow, 'findMany').mockResolvedValue(
+        searchUsersResponseMock().users.map((user) => {
+          return { followed: user };
+        }),
+      );
+      jest
+        .spyOn(prisma.follow, 'count')
+        .mockResolvedValue(searchUsersResponseMock().count);
+
+      const result = await service.getFollowings({
+        username: 'username',
+        query: paginationDtoMock,
+      });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { username: 'username' },
+        select: { id: true },
+      });
+      expect(prisma.follow.findMany).toHaveBeenCalled();
+      expect(prisma.follow.count).toHaveBeenCalledWith({
+        where: { userId: 'id-1' },
       });
       expect(result).toMatchSnapshot();
+      expect(result.count).toEqual(searchUsersResponseMock().count);
+      expect(result.users).toEqual(searchUsersResponseMock().users);
+    });
+    it('should throw a not found exception if user not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(
+        service.getFollowings({
+          username: 'username',
+          query: paginationDtoMock,
+        }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('GetFollowers', () => {
+    it('should get a user followers', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+        id: 'id-1',
+      });
+
+      jest.spyOn(prisma.follow, 'findMany').mockResolvedValue(
+        searchUsersResponseMock().users.map((user) => {
+          return { follower: user };
+        }),
+      );
+      jest
+        .spyOn(prisma.follow, 'count')
+        .mockResolvedValue(searchUsersResponseMock().count);
+
+      const result = await service.getFollowers({
+        username: 'username',
+        query: paginationDtoMock,
+      });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { username: 'username' },
+        select: { id: true },
+      });
+      expect(prisma.follow.findMany).toHaveBeenCalled();
+      expect(prisma.follow.count).toHaveBeenCalledWith({
+        where: { followingUserId: 'id-1' },
+      });
+      expect(result).toMatchSnapshot();
+      expect(result.count).toEqual(searchUsersResponseMock().count);
+      expect(result.users).toEqual(searchUsersResponseMock().users);
+    });
+
+    it('should throw a not found exception if user not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(
+        service.getFollowers({
+          username: 'username',
+          query: paginationDtoMock,
+        }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

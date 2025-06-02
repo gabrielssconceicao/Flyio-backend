@@ -4,5 +4,7 @@ export const currentUserMock = () => {
   return {
     ...userEntityMock(),
     createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    followers: 0,
+    following: 0,
   };
 };

@@ -15,10 +15,15 @@ export class UserMapper {
     ...this.defaultFields,
     createdAt: true,
     isActive: true,
+    _count: {
+      select: {
+        followers: true,
+        following: true,
+      },
+    },
   };
 
   static readonly searchUserFields = {
-    id: true,
     username: true,
     name: true,
     profileImg: true,

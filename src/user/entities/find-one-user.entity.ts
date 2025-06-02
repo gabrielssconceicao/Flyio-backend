@@ -15,4 +15,18 @@ export class FindOneUserEntity extends OmitType(UserEntity, ['id']) {
     description: 'User active status',
   })
   isActive: boolean;
+
+  @ApiProperty({
+    type: Number,
+    example: 1,
+    description: 'User followers count',
+  })
+  followers: number;
+
+  @ApiProperty({
+    type: Number,
+    example: 0,
+    description: 'User following count',
+  })
+  following: number;
 }

@@ -5,7 +5,7 @@ import { MeMapper } from './me.mapper';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { HashingService } from '@/hash/hashing.service';
 import { CurrentUserEntity } from './entities/current-user.entity';
-
+type Count = { _count: { followers: number; following: number } };
 @Injectable()
 export class MeService {
   constructor(
@@ -18,10 +18,13 @@ export class MeService {
       where: {
         id: payload.id,
       },
-      select: MeMapper.defaultFields,
-    })) as CurrentUserEntity;
+      select: { ...MeMapper.defaultFields, ...MeMapper.followCountFields },
+    })) as CurrentUserEntity & Count;
 
-    return { user };
+    const { _count, ...userWithoutCount } = user;
+    return {
+      user: { ...userWithoutCount, ...MeMapper.separateCount({ _count }) },
+    };
   }
 
   async updateMe({
@@ -37,15 +40,19 @@ export class MeService {
       hashedPassword = await this.hashing.hash(password);
     }
 
-    const updatedUser = await this.prisma.user.update({
+    const updatedUser = (await this.prisma.user.update({
       where: {
         id: payload.id,
       },
       data: { bio, name, password: hashedPassword },
-      select: MeMapper.defaultFields,
-    });
+      select: { ...MeMapper.defaultFields, ...MeMapper.followCountFields },
+    })) as CurrentUserEntity & Count;
 
-    return { user: updatedUser };
+    const { _count, ...userWithoutCount } = updatedUser;
+
+    return {
+      user: { ...userWithoutCount, ...MeMapper.separateCount({ _count }) },
+    };
   }
 
   async desactivateMe(payload: JwtPayload) {
