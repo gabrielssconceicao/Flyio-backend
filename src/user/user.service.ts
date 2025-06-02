@@ -142,7 +142,7 @@ export class UserService {
     };
   }
 
-  async getFollowed({
+  async getFollowers({
     username,
     query,
   }: {
@@ -160,7 +160,7 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    const followed = await this.prisma.follow.findMany({
+    const followers = await this.prisma.follow.findMany({
       where: {
         followingUserId: user.id,
       },
@@ -184,7 +184,7 @@ export class UserService {
 
     return {
       count,
-      users: followed.map((follow) => follow.follower),
+      users: followers.map((follow) => follow.follower),
     };
   }
 

@@ -58,6 +58,6 @@ export class UserController {
     @Param('username') username: string,
     @Query() query: PaginationDto,
   ) {
-    return this.userService.getFollowed({ username, query });
+    return this.userService.getFollowers({ username, query });
   }
 }
