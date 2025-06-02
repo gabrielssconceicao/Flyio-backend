@@ -34,5 +34,17 @@ export const FollowUsersSwaggerDoc = (string: 'followings' | 'followed') => {
       description: 'Users found successfully',
       type: SearchUserEntity,
     })(target, propertyKey, descriptor);
+
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: 'User not found',
+      schema: {
+        example: {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+          error: 'Not Found',
+        },
+      },
+    })(target, propertyKey, descriptor);
   };
 };
