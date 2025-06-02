@@ -41,11 +41,20 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get(':username/following')
+  @Get(':username/followings')
   getFollowings(
     @Param('username') username: string,
     @Query() query: PaginationDto,
   ) {
     return this.userService.getFollowings({ username, query });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get(':username/followers')
+  getFollowers(
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+  ) {
+    return this.userService.getFollowed({ username, query });
   }
 }

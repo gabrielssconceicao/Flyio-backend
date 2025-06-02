@@ -29,4 +29,11 @@ export class UserMapper {
     name: true,
     profileImg: true,
   };
+
+  static readonly followUserFields = {
+    id: true,
+    username: true,
+    name: true,
+    profileImg: true,
+  };
 }

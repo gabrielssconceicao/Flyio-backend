@@ -120,20 +120,71 @@ export class UserService {
       },
       select: {
         followed: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImg: true,
-          },
+          select: UserMapper.followUserFields,
         },
       },
       take: limit,
       skip: offset,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const count = await this.prisma.follow.count({
+      where: {
+        userId: user.id,
+      },
     });
 
     return {
+      count,
       following: following.map((follow) => follow.followed),
+    };
+  }
+
+  async getFollowed({
+    username,
+    query,
+  }: {
+    username: string;
+    query: PaginationDto;
+  }) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const followed = await this.prisma.follow.findMany({
+      where: {
+        followingUserId: user.id,
+      },
+      select: {
+        follower: {
+          select: UserMapper.followUserFields,
+        },
+      },
+      take: query.limit,
+      skip: query.offset,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const count = await this.prisma.follow.count({
+      where: {
+        followingUserId: user.id,
+      },
+    });
+
+    return {
+      count,
+      followed: followed.map((follow) => follow.follower),
     };
   }
 
