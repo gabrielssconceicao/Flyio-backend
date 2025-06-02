@@ -13,7 +13,9 @@ describe('MeService', () => {
   let prisma: ReturnType<typeof prismaServiceMock>;
   let hashing: HashingService;
   let payload: JwtPayload;
+  let _count: { _count: { followers: number; following: number } };
   beforeEach(async () => {
+    _count = { _count: { followers: 0, following: 0 } };
     prisma = prismaServiceMock();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -50,7 +52,7 @@ describe('MeService', () => {
     it('should get current user', async () => {
       jest
         .spyOn(prisma.user, 'findUnique')
-        .mockResolvedValue(currentUserMock() as any);
+        .mockResolvedValue({ ...currentUserMock(), ..._count } as any);
 
       const result = await service.getMe(payload);
 
@@ -58,7 +60,7 @@ describe('MeService', () => {
         where: {
           id: payload.id,
         },
-        select: MeMapper.defaultFields,
+        select: { ...MeMapper.defaultFields, ...MeMapper.followCountFields },
       });
       expect(result).toBeDefined();
       expect(result).toMatchSnapshot();
@@ -73,7 +75,7 @@ describe('MeService', () => {
       };
       jest
         .spyOn(prisma.user, 'update')
-        .mockResolvedValue({ ...currentUserMock(), ...updateMeDto });
+        .mockResolvedValue({ ...currentUserMock(), ...updateMeDto, ..._count });
 
       const result = await service.updateMe({ payload, updateMeDto });
 
@@ -86,7 +88,7 @@ describe('MeService', () => {
           bio: updateMeDto.bio,
           password: undefined,
         },
-        select: MeMapper.defaultFields,
+        select: { ...MeMapper.defaultFields, ...MeMapper.followCountFields },
       });
       expect(hashing.hash).not.toHaveBeenCalled();
       expect(result).toEqual({
@@ -101,6 +103,7 @@ describe('MeService', () => {
       jest.spyOn(hashing, 'hash').mockResolvedValue('hashedPassword');
       jest.spyOn(prisma.user, 'update').mockResolvedValue({
         ...currentUserMock(),
+        ..._count,
       });
       const result = await service.updateMe({
         payload,
@@ -119,7 +122,7 @@ describe('MeService', () => {
           bio: undefined,
           password: 'hashedPassword',
         },
-        select: MeMapper.defaultFields,
+        select: { ...MeMapper.defaultFields, ...MeMapper.followCountFields },
       });
       expect(result).toBeDefined();
 

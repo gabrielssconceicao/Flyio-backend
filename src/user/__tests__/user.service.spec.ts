@@ -86,7 +86,10 @@ describe('UserService', () => {
 
   describe('FindOne', () => {
     it('should find a user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(userMock());
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
+        ...userMock(),
+        _count: { followers: 0, following: 0 },
+      } as any);
 
       const result = await service.findOne('jonhdoe');
 

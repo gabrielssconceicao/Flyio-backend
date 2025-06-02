@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MeController } from '../me.controller';
 import { MeService } from '../me.service';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { userEntityMock } from '@/user/mocks/user-entity.mock';
 import { UpdateMeDto } from '../dto/update-me.dto';
 import { currentUserMock } from '../mocks/current-user.mock';
 
@@ -37,10 +36,7 @@ describe('MeController', () => {
   describe('GetMe', () => {
     it('should get current user', async () => {
       jest.spyOn(service, 'getMe').mockResolvedValue({
-        user: {
-          ...userEntityMock(),
-          createdAt: new Date('2000-01-01T00:00:00.000Z'),
-        },
+        user: currentUserMock(),
       });
       const result = await controller.getMe(payload);
       expect(service.getMe).toHaveBeenCalledWith(payload);

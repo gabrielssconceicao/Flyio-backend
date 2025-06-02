@@ -55,7 +55,6 @@ export class UserService {
 
   async search(query: QueryParamDto): Promise<SearchUserEntity> {
     const { search = '', limit = 20, offset = 0 } = query;
-    // get by name or username - check for upper and lower cases
     const users = await this.prisma.user.findMany({
       where: {
         OR: [
@@ -83,7 +82,15 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    return { user };
+    const { _count, ...rest } = user;
+
+    return {
+      user: {
+        ...rest,
+        followers: _count.followers,
+        following: _count.following,
+      },
+    };
   }
 
   private async isUserOrEmailTaken(params: CheckUserParams): Promise<boolean> {
