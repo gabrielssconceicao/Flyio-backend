@@ -4,5 +4,6 @@ import { ImageStoreService } from './image-store.service';
 @Module({
   controllers: [],
   providers: [ImageStoreService],
+  exports: [ImageStoreService],
 })
 export class ImageStoreModule {}

@@ -7,14 +7,19 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
+import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validartion.pipe';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
 import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
-import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
-import { PaginationDto } from '@/common/dto/pagination.dto';
 import { FollowUsersSwaggerDoc } from './swagger/get-follow-swagger';
 
 @Controller('user')
@@ -23,9 +28,17 @@ export class UserController {
 
   @CreateUserSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileInterceptor('profileImage', {
+      storage: multer.memoryStorage(),
+    }),
+  )
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFile(ProfileImageValidatorPipe) file: Express.Multer.File,
+  ) {
+    return this.userService.create({ createUserDto, file });
   }
 
   @SearchUsersSwaggerDoc()
