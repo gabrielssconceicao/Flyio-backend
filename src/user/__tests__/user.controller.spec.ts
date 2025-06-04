@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { HashingModule } from '@/hash/hashing.module';
+import { fileMock } from '@/image-store/mock/file.mock';
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
 import { createUserDtoMock } from '../mocks/create-user-dto.mock';
-import { HashingModule } from '@/hash/hashing.module';
 import { userEntityMock } from '../mocks/user-entity.mock';
-import { ConflictException, NotFoundException } from '@nestjs/common';
 import { userMock } from '../mocks/user.mock';
 import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 
@@ -42,16 +43,27 @@ describe('UserController', () => {
   describe('Create', () => {
     it('should create a user', async () => {
       jest.spyOn(service, 'create').mockResolvedValue(userEntityMock());
-      const result = await controller.create(createUserDtoMock());
+      const result = await controller.create(createUserDtoMock(), {
+        bannerImg: [fileMock()],
+        profileImg: [fileMock()],
+      });
+      expect(service.create).toHaveBeenCalledWith({
+        createUserDto: createUserDtoMock(),
+        profileImage: fileMock(),
+        bannerImage: fileMock(),
+      });
       expect(result).toBeDefined();
       expect(result).toMatchSnapshot();
     });
 
     it('should throw a conflict exception', async () => {
       jest.spyOn(service, 'create').mockRejectedValue(new ConflictException());
-      await expect(controller.create(createUserDtoMock())).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(
+        controller.create(createUserDtoMock(), {
+          bannerImg: [fileMock()],
+          profileImg: [fileMock()],
+        }),
+      ).rejects.toThrow(ConflictException);
     });
   });
 

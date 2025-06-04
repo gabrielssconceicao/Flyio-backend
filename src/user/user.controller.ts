@@ -29,12 +29,6 @@ export class UserController {
   @CreateUserSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
-    // FileInterceptor('profileImg', {
-    //   storage: multer.memoryStorage(),
-    // }),
-    // FileInterceptor('bannerImg', {
-    //   storage: multer.memoryStorage(),
-    // }),
     FileFieldsInterceptor(
       [
         { name: 'profileImg', maxCount: 1 },
