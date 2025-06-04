@@ -1,6 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Readable } from 'stream';
-import { PROFILE_IMAGE_FOLDER } from './image-store.constants';
+import {
+  BANNER_IMAGE_FOLDER,
+  PROFILE_IMAGE_FOLDER,
+  UserImageFolder,
+} from './image-store.constants';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { env } from '@/env';
 
@@ -60,11 +64,14 @@ export class ImageStoreService {
     return `file_${uniqueSuffix}_${fileNameWithoutExtension}`;
   }
 
-  async uploadProfileImage(file: Express.Multer.File): Promise<string> {
+  async uploadProfileImage(
+    file: Express.Multer.File,
+    folder: UserImageFolder,
+  ): Promise<string> {
     const { buffer, originalname } = file;
     return this.uploadToCloudinary(buffer, {
       resource_type: 'image',
-      folder: PROFILE_IMAGE_FOLDER,
+      folder: folder === 'profile' ? PROFILE_IMAGE_FOLDER : BANNER_IMAGE_FOLDER,
       public_id: this.renameFile(originalname),
     });
   }

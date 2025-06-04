@@ -8,9 +8,9 @@ import {
   HttpStatus,
   Query,
   UseInterceptors,
-  UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
@@ -29,16 +29,56 @@ export class UserController {
   @CreateUserSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
-    FileInterceptor('profileImage', {
-      storage: multer.memoryStorage(),
-    }),
+    // FileInterceptor('profileImg', {
+    //   storage: multer.memoryStorage(),
+    // }),
+    // FileInterceptor('bannerImg', {
+    //   storage: multer.memoryStorage(),
+    // }),
+    FileFieldsInterceptor(
+      [
+        { name: 'profileImg', maxCount: 1 },
+        { name: 'bannerImg', maxCount: 1 },
+      ],
+      {
+        storage: multer.memoryStorage(),
+      },
+    ),
   )
   @Post()
   create(
     @Body() createUserDto: CreateUserDto,
-    @UploadedFile(ProfileImageValidatorPipe) file: Express.Multer.File,
+    @UploadedFiles()
+    files: {
+      profileImg?: Express.Multer.File[];
+      bannerImg?: Express.Multer.File[];
+    },
   ) {
-    return this.userService.create({ createUserDto, file });
+    const profileImage = files.profileImg?.[0];
+    const bannerImage = files.bannerImg?.[0];
+
+    const validatedProfile = new ProfileImageValidatorPipe().transform(
+      profileImage,
+      {
+        type: 'body',
+        data: '',
+        metatype: undefined,
+      },
+    );
+
+    const validatedBanner = new ProfileImageValidatorPipe().transform(
+      bannerImage,
+      {
+        type: 'body',
+        data: '',
+        metatype: undefined,
+      },
+    );
+    return this.userService.create({
+      createUserDto,
+      profileImage: validatedProfile,
+      bannerImage: validatedBanner,
+    });
   }
 
   @SearchUsersSwaggerDoc()

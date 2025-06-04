@@ -28,5 +28,27 @@ export const CreateUserSwaggerDoc = () => {
         },
       },
     })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: HttpStatus.PAYLOAD_TOO_LARGE,
+      description: 'File is too large/small',
+      schema: {
+        example: {
+          statusCode: HttpStatus.PAYLOAD_TOO_LARGE,
+          message: 'Payload too large',
+          error: 'Payload too large',
+        },
+      },
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+      description: 'Unsupported media type',
+      schema: {
+        example: {
+          statusCode: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+          message: 'Unsupported media type',
+          error: 'Unsupported Media Type',
+        },
+      },
+    })(target, propertyKey, descriptor);
   };
 };

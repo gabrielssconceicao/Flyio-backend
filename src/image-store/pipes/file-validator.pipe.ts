@@ -1,8 +1,9 @@
 import {
   ArgumentMetadata,
-  BadRequestException,
   Injectable,
+  PayloadTooLargeException,
   PipeTransform,
+  UnsupportedMediaTypeException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -12,22 +13,20 @@ export abstract class FileValidatorPipe implements PipeTransform {
     private readonly maxSize = 15 * 1024 * 1024,
     private readonly allowedMimeTypes: string[] = [],
   ) {}
-  private throwBadRequest(msg: string): void {
-    throw new BadRequestException(msg);
-  }
+
   protected validateFileSize(size: number): void {
     if (size < this.minSize)
-      this.throwBadRequest(
+      throw new PayloadTooLargeException(
         `File too small. Minimum size: ${this.minSize / 1024} KB`,
       );
     if (size > this.maxSize)
-      this.throwBadRequest(
+      throw new PayloadTooLargeException(
         `File too large. Maximum size: ${this.maxSize / (1024 * 1024)} MB`,
       );
   }
   protected validateMimeType(mimetype: string): void {
     if (!this.allowedMimeTypes.includes(mimetype)) {
-      this.throwBadRequest(
+      throw new UnsupportedMediaTypeException(
         `Invalid file type. Allowed types: ${this.allowedMimeTypes.join(', ')}`,
       );
     }
@@ -40,7 +39,7 @@ export abstract class FileValidatorPipe implements PipeTransform {
   }
 
   abstract transform(
-    value: Express.Multer.File | Express.Multer.File[],
+    value: Express.Multer.File | Express.Multer.File[] | undefined,
     metadata: ArgumentMetadata,
   );
 }

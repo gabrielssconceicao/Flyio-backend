@@ -21,7 +21,8 @@ type CheckUserParams = {
 
 type CreateUserParams = {
   createUserDto: CreateUserDto;
-  file: Express.Multer.File | null;
+  profileImage: Express.Multer.File | null;
+  bannerImage: Express.Multer.File | null;
 };
 
 @Injectable()
@@ -32,7 +33,11 @@ export class UserService {
     private readonly imageStore: ImageStoreService,
   ) {}
 
-  async create({ createUserDto, file }: CreateUserParams): Promise<UserEntity> {
+  async create({
+    createUserDto,
+    bannerImage,
+    profileImage,
+  }: CreateUserParams): Promise<UserEntity> {
     const { email, name, username, bio, password } = createUserDto;
 
     const isTaken = await this.isUserOrEmailTaken({
@@ -49,8 +54,17 @@ export class UserService {
 
     let avatar: string | null = null;
 
-    if (file) {
-      avatar = await this.imageStore.uploadProfileImage(file);
+    if (profileImage) {
+      avatar = await this.imageStore.uploadProfileImage(
+        profileImage,
+        'profile',
+      );
+    }
+
+    let banner: string | null = null;
+
+    if (bannerImage) {
+      banner = await this.imageStore.uploadProfileImage(bannerImage, 'banner');
     }
 
     const user = await this.prisma.user.create({
@@ -61,6 +75,7 @@ export class UserService {
         bio,
         password: hashedPassword,
         profileImg: avatar,
+        bannerImg: banner,
       },
       select: UserMapper.createUserFields,
     });
