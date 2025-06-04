@@ -3,6 +3,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CurrentUserEntity extends UserEntity {
   @ApiProperty({
+    description: 'User banner image URL',
+    type: String,
+    example: 'https://example.com/banner.jpg',
+  })
+  bannerImg: string;
+
+  @ApiProperty({
     description: 'User creation date',
     type: Date,
     example: '2000-01-01T00:00:00.000Z',

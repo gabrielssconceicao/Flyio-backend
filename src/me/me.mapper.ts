@@ -5,6 +5,7 @@ export class MeMapper {
     username: true,
     bio: true,
     profileImg: true,
+    bannerImg: true,
     createdAt: true,
   };
 
