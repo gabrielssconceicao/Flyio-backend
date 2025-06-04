@@ -59,12 +59,16 @@ export class MeService {
       },
     });
 
-    let banner: string | null = null;
-    let avatar: string | null = null;
+    let banner: string | undefined = undefined;
+    let avatar: string | undefined = undefined;
 
     if (profileImage) {
-      if (user?.bannerImg) {
-        // atualizar
+      if (user?.profileImg) {
+        avatar = await this.imageStore.updateProfileImage({
+          file: profileImage,
+          folder: 'profile',
+          filename: user.profileImg,
+        });
       } else {
         avatar = await this.imageStore.uploadProfileImage(
           profileImage,
@@ -74,8 +78,12 @@ export class MeService {
     }
 
     if (bannerImage) {
-      if (user?.profileImg) {
-        // atualizar
+      if (user?.bannerImg) {
+        banner = await this.imageStore.updateProfileImage({
+          file: bannerImage,
+          folder: 'banner',
+          filename: user.bannerImg,
+        });
       } else {
         banner = await this.imageStore.uploadProfileImage(
           bannerImage,
