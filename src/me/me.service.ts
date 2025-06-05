@@ -9,12 +9,16 @@ import { ImageStoreService } from '@/image-store/image-store.service';
 
 type Count = { _count: { followers: number; following: number } };
 
-type UpdateMeParams = {
+type UpdateProfileImageParams = {
   profileImage: Express.Multer.File | null;
   bannerImage: Express.Multer.File | null;
+};
+type UpdateMeParams = {
   payload: JwtPayload;
   updateMeDto: UpdateMeDto;
 };
+
+type UpdateProfileImageAndMeParams = UpdateMeParams & UpdateProfileImageParams;
 @Injectable()
 export class MeService {
   constructor(
@@ -42,7 +46,7 @@ export class MeService {
     updateMeDto,
     bannerImage,
     profileImage,
-  }: UpdateMeParams): Promise<{ user: CurrentUserEntity }> {
+  }: UpdateProfileImageAndMeParams): Promise<{ user: CurrentUserEntity }> {
     const { bio, name, password } = updateMeDto;
     let hashedPassword: string | undefined;
     if (password) {
@@ -59,38 +63,14 @@ export class MeService {
       },
     });
 
-    let banner: string | undefined = undefined;
-    let avatar: string | undefined = undefined;
-
-    if (profileImage) {
-      if (user?.profileImg) {
-        avatar = await this.imageStore.updateProfileImage({
-          file: profileImage,
-          folder: 'profile',
-          filename: user.profileImg,
-        });
-      } else {
-        avatar = await this.imageStore.uploadProfileImage(
-          profileImage,
-          'profile',
-        );
-      }
-    }
-
-    if (bannerImage) {
-      if (user?.bannerImg) {
-        banner = await this.imageStore.updateProfileImage({
-          file: bannerImage,
-          folder: 'banner',
-          filename: user.bannerImg,
-        });
-      } else {
-        banner = await this.imageStore.uploadProfileImage(
-          bannerImage,
-          'banner',
-        );
-      }
-    }
+    const { avatar, banner } = await this.updateImages({
+      bannerImage,
+      profileImage,
+      user: {
+        bannerImg: user?.bannerImg,
+        profileImg: user?.profileImg,
+      },
+    });
 
     const updatedUser = (await this.prisma.user.update({
       where: {
@@ -124,5 +104,55 @@ export class MeService {
     });
 
     return;
+  }
+
+  private async updateImages({
+    bannerImage,
+    profileImage,
+    user,
+  }: UpdateProfileImageParams & {
+    user: {
+      bannerImg: string | null | undefined;
+      profileImg: string | null | undefined;
+    };
+  }) {
+    // separate into separate functions
+    let banner: string | undefined = undefined;
+    let avatar: string | undefined = undefined;
+
+    if (profileImage) {
+      if (user?.profileImg) {
+        avatar = await this.imageStore.updateProfileImage({
+          file: profileImage,
+          folder: 'profile',
+          filename: user.profileImg,
+        });
+      } else {
+        avatar = await this.imageStore.uploadProfileImage({
+          file: profileImage,
+          folder: 'profile',
+        });
+      }
+    }
+
+    if (bannerImage) {
+      if (user?.bannerImg) {
+        banner = await this.imageStore.updateProfileImage({
+          file: bannerImage,
+          folder: 'banner',
+          filename: user.bannerImg,
+        });
+      } else {
+        banner = await this.imageStore.uploadProfileImage({
+          file: bannerImage,
+          folder: 'banner',
+        });
+      }
+    }
+
+    return {
+      banner,
+      avatar,
+    };
   }
 }

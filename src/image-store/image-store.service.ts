@@ -65,15 +65,17 @@ export class ImageStoreService {
   }
 
   private extractIdFromImageUrl(imageUrl: string): string {
-    // https://res.cloudinary.com/dhmzak0jl/image/upload/v1749070761/flyio/profile-images/file_1749070760172-363242473_gavczfha8aaxjxj.jpg
     const parts = imageUrl.split('/');
     return parts[parts.length - 1].split('.')[0];
   }
 
-  async uploadProfileImage(
-    file: Express.Multer.File,
-    folder: UserImageFolder,
-  ): Promise<string> {
+  async uploadProfileImage({
+    file,
+    folder,
+  }: {
+    file: Express.Multer.File;
+    folder: UserImageFolder;
+  }): Promise<string> {
     const { buffer, originalname } = file;
     return this.uploadToCloudinary(buffer, {
       resource_type: 'image',

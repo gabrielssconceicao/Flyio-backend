@@ -55,16 +55,19 @@ export class UserService {
     let avatar: string | null = null;
 
     if (profileImage) {
-      avatar = await this.imageStore.uploadProfileImage(
-        profileImage,
-        'profile',
-      );
+      avatar = await this.imageStore.uploadProfileImage({
+        file: profileImage,
+        folder: 'profile',
+      });
     }
 
     let banner: string | null = null;
 
     if (bannerImage) {
-      banner = await this.imageStore.uploadProfileImage(bannerImage, 'banner');
+      banner = await this.imageStore.uploadProfileImage({
+        file: bannerImage,
+        folder: 'banner',
+      });
     }
 
     const user = await this.prisma.user.create({
