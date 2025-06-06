@@ -3,6 +3,7 @@
 exports[`MeController GetMe should get current user 1`] = `
 {
   "user": {
+    "bannerImg": null,
     "bio": "bio",
     "createdAt": 2000-01-01T00:00:00.000Z,
     "followers": 0,
@@ -18,13 +19,14 @@ exports[`MeController GetMe should get current user 1`] = `
 exports[`MeController UpdateMe should update current user 1`] = `
 {
   "user": {
+    "bannerImg": null,
     "bio": "updated bio",
     "createdAt": 2000-01-01T00:00:00.000Z,
     "followers": 0,
     "following": 0,
     "id": "1",
     "name": "Updated name",
-    "profileImg": null,
+    "profileImg": "https://example.com/profile-picture.jpg",
     "username": "johndoe",
   },
 }

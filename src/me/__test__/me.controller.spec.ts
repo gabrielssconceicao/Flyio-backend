@@ -4,6 +4,7 @@ import { MeService } from '../me.service';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { UpdateMeDto } from '../dto/update-me.dto';
 import { currentUserMock } from '../mocks/current-user.mock';
+import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
 
 describe('MeController', () => {
   let controller: MeController;
@@ -56,12 +57,18 @@ describe('MeController', () => {
           ...currentUserMock(),
           bio: updateMeDto.bio as string,
           name: updateMeDto.name as string,
+          profileImg: profilePictureMock,
         },
       });
-      const result = await controller.updateMe(payload, updateMeDto);
+      const result = await controller.updateMe(payload, updateMeDto, {
+        profileImg: [fileMock()],
+        bannerImg: [],
+      });
       expect(service.updateMe).toHaveBeenCalledWith({
         payload,
         updateMeDto,
+        bannerImage: null,
+        profileImage: fileMock(),
       });
       expect(result).toMatchSnapshot();
     });

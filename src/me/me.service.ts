@@ -53,25 +53,18 @@ export class MeService {
       hashedPassword = await this.hashing.hash(password);
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: payload.id,
-      },
-      select: {
-        bannerImg: true,
-        profileImg: true,
-      },
-    });
+    let avatar: string | undefined = undefined;
+    let banner: string | undefined = undefined;
+    if (bannerImage || profileImage) {
+      const data = await this.updateImages({
+        bannerImage,
+        profileImage,
+        userId: payload.id,
+      });
 
-    const { avatar, banner } = await this.updateImages({
-      bannerImage,
-      profileImage,
-      user: {
-        bannerImg: user?.bannerImg,
-        profileImg: user?.profileImg,
-      },
-    });
-
+      banner = data.banner;
+      avatar = data.avatar;
+    }
     const updatedUser = (await this.prisma.user.update({
       where: {
         id: payload.id,
@@ -109,16 +102,22 @@ export class MeService {
   private async updateImages({
     bannerImage,
     profileImage,
-    user,
+    userId,
   }: UpdateProfileImageParams & {
-    user: {
-      bannerImg: string | null | undefined;
-      profileImg: string | null | undefined;
-    };
+    userId: string;
   }) {
-    // separate into separate functions
     let banner: string | undefined = undefined;
     let avatar: string | undefined = undefined;
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        bannerImg: true,
+        profileImg: true,
+      },
+    });
 
     if (profileImage) {
       if (user?.profileImg) {

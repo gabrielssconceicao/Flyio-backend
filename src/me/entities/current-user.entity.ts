@@ -7,7 +7,7 @@ export class CurrentUserEntity extends UserEntity {
     type: String,
     example: 'https://example.com/banner.jpg',
   })
-  bannerImg: string;
+  bannerImg: string | null;
 
   @ApiProperty({
     description: 'User creation date',
