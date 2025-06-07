@@ -22,20 +22,12 @@ import { UpdateMeDto } from './dto/update-me.dto';
 import { MeService } from './me.service';
 import { CurrentUserEntity } from './entities/current-user.entity';
 import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validation.pipe';
+import { UpdateMeSwaggerDoc } from './swagger/update-me-swagger';
+import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
-@ApiResponse({
-  status: HttpStatus.UNAUTHORIZED,
-  description: 'Invalid token',
-  schema: {
-    example: {
-      statusCode: HttpStatus.UNAUTHORIZED,
-      message: 'Invalid token',
-      error: 'Unauthorized',
-    },
-  },
-})
+@ProtectedRouteSwaggerDoc()
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}
@@ -51,11 +43,7 @@ export class MeController {
     return this.meService.getMe(payload);
   }
 
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'User updated successfully',
-    type: CurrentUserEntity,
-  })
+  @UpdateMeSwaggerDoc()
   @UseInterceptors(
     FileFieldsInterceptor(
       [

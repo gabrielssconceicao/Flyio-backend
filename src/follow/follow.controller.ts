@@ -12,9 +12,11 @@ import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { FollowService } from './follow.service';
 import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
+@ProtectedRouteSwaggerDoc()
 @Controller()
 export class FollowController {
   constructor(private readonly followService: FollowService) {}

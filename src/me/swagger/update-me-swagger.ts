@@ -5,19 +5,18 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { UserEntity } from '../entities/user.entity';
+import { CurrentUserEntity } from '../entities/current-user.entity';
 
-export const CreateUserSwaggerDoc = () => {
+export const UpdateMeSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-    ApiOperation({ summary: 'Creates a new user' })(
+    ApiOperation({ summary: 'Updates a user' })(
       target,
       propertyKey,
       descriptor,
     );
-
     ApiConsumes('multipart/form-data')(target, propertyKey, descriptor);
     ApiBody({
-      description: 'Create a user',
+      description: 'Update user',
       schema: {
         type: 'object',
         properties: {
@@ -25,16 +24,6 @@ export const CreateUserSwaggerDoc = () => {
             type: 'string',
             description: 'Name of the user',
             example: 'John Doe',
-          },
-          username: {
-            type: 'string',
-            description: 'Username of the user',
-            example: 'johndoe',
-          },
-          email: {
-            type: 'string',
-            description: 'Email of the user',
-            example: 'jonh@example.com',
           },
           password: {
             type: 'string',
@@ -57,27 +46,15 @@ export const CreateUserSwaggerDoc = () => {
             description: 'Banner image file (PNG or JPEG)',
           },
         },
-        required: ['name', 'username', 'email', 'password'],
       },
-    })(target, propertyKey, descriptor);
-    ApiResponse({
-      status: HttpStatus.CREATED,
-      description: 'User created successfully',
-      type: UserEntity,
     })(target, propertyKey, descriptor);
 
     ApiResponse({
-      status: HttpStatus.CONFLICT,
-      description: 'User with this email or username already exists',
-      schema: {
-        example: {
-          statusCode: HttpStatus.CONFLICT,
-          message:
-            'This email or username is already associated with an existing account',
-          error: 'Conflict',
-        },
-      },
+      status: HttpStatus.OK,
+      description: 'User updated successfully',
+      type: CurrentUserEntity,
     })(target, propertyKey, descriptor);
+
     ApiResponse({
       status: HttpStatus.PAYLOAD_TOO_LARGE,
       description: 'File is too large/small',
