@@ -28,11 +28,27 @@ export class ImageStoreService {
         .end(buffer);
     })
       .then((result: string) => {
-        console.log('Then', result);
         return result;
       })
       .catch(() => {
         throw new BadRequestException('Error uploading image');
+      });
+  }
+
+  private deleteFromCloudinary(publicId: string): Promise<{ result: string }> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.destroy(publicId, (error, result) => {
+        if (error) {
+          reject(error);
+        }
+        return resolve(result);
+      });
+    })
+      .then((result: { result: string }) => {
+        return result;
+      })
+      .catch(() => {
+        throw new BadRequestException('Error deleting image');
       });
   }
 
@@ -48,7 +64,17 @@ export class ImageStoreService {
 
   private extractIdFromImageUrl(imageUrl: string): string {
     const parts = imageUrl.split('/');
-    return parts[parts.length - 1].split('.')[0];
+    const fileId = parts[parts.length - 1].split('.')[0];
+    return fileId;
+  }
+
+  private getImageStoreFolder(key: ImageFolder) {
+    switch (key) {
+      case 'BANNER':
+        return ImageStoreFolders.BANNER;
+      case 'PROFILE':
+        return ImageStoreFolders.PROFILE;
+    }
   }
 
   async uploadProfileImage({
@@ -80,17 +106,21 @@ export class ImageStoreService {
     return this.uploadToCloudinary(buffer, {
       resource_type: 'image',
       folder: this.getImageStoreFolder(folder),
-      public_id: `${fileId}`,
+      public_id: fileId,
       overwrite: true,
     });
   }
 
-  private getImageStoreFolder(key: ImageFolder) {
-    switch (key) {
-      case 'BANNER':
-        return ImageStoreFolders.BANNER;
-      case 'PROFILE':
-        return ImageStoreFolders.PROFILE;
-    }
+  async deleteProfileImage({
+    fileUrl,
+    folder,
+  }: {
+    fileUrl: string;
+    folder: ImageFolder;
+  }): Promise<{ result: string }> {
+    const fileId = this.extractIdFromImageUrl(fileUrl);
+    return this.deleteFromCloudinary(
+      `${this.getImageStoreFolder(folder)}/${fileId}`,
+    );
   }
 }

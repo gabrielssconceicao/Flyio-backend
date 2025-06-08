@@ -103,4 +103,26 @@ export class MeController {
   desactivateMe(@CurrentUser() payload: JwtPayload) {
     return this.meService.desactivateMe(payload);
   }
+
+  @ApiOperation({ summary: 'Delete profile image' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Profile image deleted successfully',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('profile-image')
+  deleteProfileImage(@CurrentUser() payload: JwtPayload) {
+    return this.meService.deleteProfileImage({ payload });
+  }
+
+  @ApiOperation({ summary: 'Delete banner image' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Banner image deleted successfully',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('banner-image')
+  deleteBannerImage(@CurrentUser() payload: JwtPayload) {
+    return this.meService.deleteBannerImage({ payload });
+  }
 }

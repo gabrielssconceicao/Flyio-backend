@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import { HashingService } from '@/hash/hashing.service';
@@ -97,6 +97,66 @@ export class MeService {
     });
 
     return;
+  }
+
+  async deleteProfileImage({
+    payload,
+  }: {
+    payload: JwtPayload;
+  }): Promise<void> {
+    const user = (await this.prisma.user.findUnique({
+      where: {
+        id: payload.id,
+      },
+      select: {
+        profileImg: true,
+      },
+    })) as { profileImg: string };
+    const { result } = await this.imageStore.deleteProfileImage({
+      fileUrl: user?.profileImg,
+      folder: 'PROFILE',
+    });
+
+    if (result !== 'ok') {
+      throw new BadRequestException('Error deleting profile image');
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        profileImg: null,
+      },
+    });
+  }
+
+  async deleteBannerImage({ payload }: { payload: JwtPayload }): Promise<void> {
+    const user = (await this.prisma.user.findUnique({
+      where: {
+        id: payload.id,
+      },
+      select: {
+        bannerImg: true,
+      },
+    })) as { bannerImg: string };
+    const { result } = await this.imageStore.deleteProfileImage({
+      fileUrl: user?.bannerImg,
+      folder: 'BANNER',
+    });
+
+    if (result !== 'ok') {
+      throw new BadRequestException('Error deleting banner image');
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        bannerImg: null,
+      },
+    });
   }
 
   private async updateImages({
