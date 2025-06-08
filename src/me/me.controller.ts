@@ -109,6 +109,10 @@ export class MeController {
     status: HttpStatus.NO_CONTENT,
     description: 'Profile image deleted successfully',
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error deleting profile image',
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('profile-image')
   deleteProfileImage(@CurrentUser() payload: JwtPayload) {
@@ -119,6 +123,10 @@ export class MeController {
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Banner image deleted successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error deleting profile image',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('banner-image')
