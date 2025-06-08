@@ -4,6 +4,8 @@ import { MeService } from '../me.service';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { UpdateMeDto } from '../dto/update-me.dto';
 import { currentUserMock } from '../mocks/current-user.mock';
+import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
+import { BadRequestException } from '@nestjs/common';
 
 describe('MeController', () => {
   let controller: MeController;
@@ -19,6 +21,8 @@ describe('MeController', () => {
             getMe: jest.fn(),
             updateMe: jest.fn(),
             desactivateMe: jest.fn(),
+            deleteProfileImage: jest.fn(),
+            deleteBannerImage: jest.fn(),
           },
         },
       ],
@@ -56,12 +60,18 @@ describe('MeController', () => {
           ...currentUserMock(),
           bio: updateMeDto.bio as string,
           name: updateMeDto.name as string,
+          profileImg: profilePictureMock,
         },
       });
-      const result = await controller.updateMe(payload, updateMeDto);
+      const result = await controller.updateMe(payload, updateMeDto, {
+        profileImg: [fileMock()],
+        bannerImg: [],
+      });
       expect(service.updateMe).toHaveBeenCalledWith({
         payload,
         updateMeDto,
+        bannerImage: null,
+        profileImage: fileMock(),
       });
       expect(result).toMatchSnapshot();
     });
@@ -71,6 +81,40 @@ describe('MeController', () => {
     it('should desactivate current user', async () => {
       await controller.desactivateMe(payload);
       expect(service.desactivateMe).toHaveBeenCalledWith(payload);
+    });
+  });
+
+  describe('DeleteProfileImage', () => {
+    it('should delete profile image', async () => {
+      jest.spyOn(service, 'deleteProfileImage').mockResolvedValue();
+      await controller.deleteProfileImage(payload);
+      expect(service.deleteProfileImage).toHaveBeenCalledWith({ payload });
+    });
+
+    it('should thow an BadRequestException', async () => {
+      jest
+        .spyOn(service, 'deleteProfileImage')
+        .mockRejectedValue(new BadRequestException());
+      await expect(controller.deleteProfileImage(payload)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+  });
+
+  describe('DeleteBannerImage', () => {
+    it('should delete banner image', async () => {
+      jest.spyOn(service, 'deleteBannerImage').mockResolvedValue();
+      await controller.deleteBannerImage(payload);
+      expect(service.deleteBannerImage).toHaveBeenCalledWith({ payload });
+    });
+
+    it('should thow an BadRequestException', async () => {
+      jest
+        .spyOn(service, 'deleteBannerImage')
+        .mockRejectedValue(new BadRequestException());
+      await expect(controller.deleteBannerImage(payload)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });

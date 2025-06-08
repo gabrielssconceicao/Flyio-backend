@@ -7,14 +7,19 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
+import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validation.pipe';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
 import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
-import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
-import { PaginationDto } from '@/common/dto/pagination.dto';
 import { FollowUsersSwaggerDoc } from './swagger/get-follow-swagger';
 
 @Controller('user')
@@ -23,9 +28,51 @@ export class UserController {
 
   @CreateUserSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'profileImg', maxCount: 1 },
+        { name: 'bannerImg', maxCount: 1 },
+      ],
+      {
+        storage: multer.memoryStorage(),
+      },
+    ),
+  )
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFiles()
+    files: {
+      profileImg?: Express.Multer.File[];
+      bannerImg?: Express.Multer.File[];
+    },
+  ) {
+    const profileImage = files.profileImg?.[0];
+    const bannerImage = files.bannerImg?.[0];
+
+    const validatedProfile = new ProfileImageValidatorPipe().transform(
+      profileImage,
+      {
+        type: 'body',
+        data: '',
+        metatype: undefined,
+      },
+    );
+
+    const validatedBanner = new ProfileImageValidatorPipe().transform(
+      bannerImage,
+      {
+        type: 'body',
+        data: '',
+        metatype: undefined,
+      },
+    );
+    return this.userService.create({
+      createUserDto,
+      profileImage: validatedProfile,
+      bannerImage: validatedBanner,
+    });
   }
 
   @SearchUsersSwaggerDoc()

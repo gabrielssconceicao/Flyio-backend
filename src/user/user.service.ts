@@ -12,10 +12,17 @@ import { FindOneUserEntity } from './entities/find-one-user.entity';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { ImageStoreService } from '@/image-store/image-store.service';
 
 type CheckUserParams = {
   username?: string;
   email?: string;
+};
+
+type CreateUserParams = {
+  createUserDto: CreateUserDto;
+  profileImage: Express.Multer.File | null;
+  bannerImage: Express.Multer.File | null;
 };
 
 @Injectable()
@@ -23,9 +30,14 @@ export class UserService {
   constructor(
     private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
+    private readonly imageStore: ImageStoreService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async create({
+    createUserDto,
+    bannerImage,
+    profileImage,
+  }: CreateUserParams): Promise<UserEntity> {
     const { email, name, username, bio, password } = createUserDto;
 
     const isTaken = await this.isUserOrEmailTaken({
@@ -40,6 +52,24 @@ export class UserService {
     }
     const hashedPassword = await this.hashing.hash(password);
 
+    let avatar: string | null = null;
+
+    if (profileImage) {
+      avatar = await this.imageStore.uploadProfileImage({
+        file: profileImage,
+        folder: 'PROFILE',
+      });
+    }
+
+    let banner: string | null = null;
+
+    if (bannerImage) {
+      banner = await this.imageStore.uploadProfileImage({
+        file: bannerImage,
+        folder: 'BANNER',
+      });
+    }
+
     const user = await this.prisma.user.create({
       data: {
         email,
@@ -47,6 +77,8 @@ export class UserService {
         username,
         bio,
         password: hashedPassword,
+        profileImg: avatar,
+        bannerImg: banner,
       },
       select: UserMapper.createUserFields,
     });

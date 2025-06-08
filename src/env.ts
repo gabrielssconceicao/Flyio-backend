@@ -17,6 +17,10 @@ const envSchema = z.object({
   JWT_REFRESH_TOKEN_EXPIRES_IN: z.string(),
   JWT_TOKEN_AUDIENCE: z.string().url(),
   JWT_TOKEN_ISSUER: z.string().url(),
+
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
 });
 const _env = envSchema.safeParse(process.env);
 if (!_env.success) {

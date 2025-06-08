@@ -22,15 +22,12 @@ model User {
   password   String
   bio        String?
   profileImg String?
+  bannerImg  String?
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
-  // Lista de pessoas que este usuário está seguindo
-  // Ex: user.following -> quem este user segue
-  following  Follow[] @relation("FollowingRelation")
 
-  // Lista de pessoas que estão seguindo este usuário
-  // Ex: user.followers -> quem segue este user
+  following Follow[] @relation("FollowingRelation")
   followers Follow[] @relation("FollowersRelation")
 }
 
