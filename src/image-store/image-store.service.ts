@@ -1,11 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Readable } from 'stream';
-import {
-  BANNER_IMAGE_FOLDER,
-  PROFILE_IMAGE_FOLDER,
-  UserImageFolder,
-} from './image-store.constants';
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { ImageStoreFolders, ImageFolder } from './image-store.constants';
+import { v2 as cloudinary } from 'cloudinary';
 import { env } from '@/env';
 
 @Injectable()
@@ -23,35 +18,22 @@ export class ImageStoreService {
     uploadConfig: any,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
-      try {
-        // Create a Readable stream from the buffer
-        const bufferStream = Readable.from(buffer);
-
-        // Upload config to Cloudinary
-
-        const uploadStream = cloudinary.uploader.upload_stream(
-          uploadConfig,
-          (error, result: UploadApiResponse) => {
-            if (error) {
-              reject(
-                new BadRequestException(
-                  'Error uploading/updating profile picture.',
-                ),
-              );
-            } else {
-              // Retornar a URL segura da imagem após o upload
-              resolve(result.secure_url);
-            }
-          },
-        );
-
-        // Passar o stream para o upload
-        bufferStream.pipe(uploadStream);
-      } catch (error) {
-        console.error(error);
-        reject(new BadRequestException('Error uploading profile picture.'));
-      }
-    });
+      cloudinary.uploader
+        .upload_stream(uploadConfig, (error, uploadResult) => {
+          if (error) {
+            reject(error);
+          }
+          return resolve(uploadResult && uploadResult.secure_url);
+        })
+        .end(buffer);
+    })
+      .then((result: string) => {
+        console.log('Then', result);
+        return result;
+      })
+      .catch(() => {
+        throw new BadRequestException('Error uploading image');
+      });
   }
 
   private renameFile(fileName: string): string {
@@ -74,12 +56,12 @@ export class ImageStoreService {
     folder,
   }: {
     file: Express.Multer.File;
-    folder: UserImageFolder;
+    folder: ImageFolder;
   }): Promise<string> {
     const { buffer, originalname } = file;
     return this.uploadToCloudinary(buffer, {
       resource_type: 'image',
-      folder: folder === 'profile' ? PROFILE_IMAGE_FOLDER : BANNER_IMAGE_FOLDER,
+      folder: this.getImageStoreFolder(folder),
       public_id: this.renameFile(originalname),
     });
   }
@@ -90,16 +72,25 @@ export class ImageStoreService {
     file,
   }: {
     filename: string;
-    folder: UserImageFolder;
+    folder: ImageFolder;
     file: Express.Multer.File;
   }): Promise<string> {
     const { buffer } = file;
     const fileId = this.extractIdFromImageUrl(filename);
     return this.uploadToCloudinary(buffer, {
       resource_type: 'image',
-      folder: folder === 'profile' ? PROFILE_IMAGE_FOLDER : BANNER_IMAGE_FOLDER,
-      public_id: fileId,
+      folder: this.getImageStoreFolder(folder),
+      public_id: `${fileId}`,
       overwrite: true,
     });
+  }
+
+  private getImageStoreFolder(key: ImageFolder) {
+    switch (key) {
+      case 'BANNER':
+        return ImageStoreFolders.BANNER;
+      case 'PROFILE':
+        return ImageStoreFolders.PROFILE;
+    }
   }
 }

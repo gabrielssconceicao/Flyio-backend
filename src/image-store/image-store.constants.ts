@@ -1,4 +1,5 @@
-export const PROFILE_IMAGE_FOLDER = 'flyio/profile-images';
-export const BANNER_IMAGE_FOLDER = 'flyio/banner-images';
-
-export type UserImageFolder = 'profile' | 'banner';
+export enum ImageStoreFolders {
+  PROFILE = 'flyio/profile-images',
+  BANNER = 'flyio/banner-images',
+}
+export type ImageFolder = keyof typeof ImageStoreFolders;

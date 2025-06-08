@@ -124,7 +124,7 @@ describe('UserService', () => {
         },
         select: UserMapper.createUserFields,
       });
-      expect(imageStore.uploadProfileImage).toHaveBeenCalled();
+      expect(imageStore.uploadProfileImage).toHaveBeenCalledTimes(2);
       expect(result).toBeDefined();
       expect(result).toMatchSnapshot();
     });

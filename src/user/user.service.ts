@@ -57,7 +57,7 @@ export class UserService {
     if (profileImage) {
       avatar = await this.imageStore.uploadProfileImage({
         file: profileImage,
-        folder: 'profile',
+        folder: 'PROFILE',
       });
     }
 
@@ -66,7 +66,7 @@ export class UserService {
     if (bannerImage) {
       banner = await this.imageStore.uploadProfileImage({
         file: bannerImage,
-        folder: 'banner',
+        folder: 'BANNER',
       });
     }
 

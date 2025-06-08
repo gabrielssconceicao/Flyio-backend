@@ -118,18 +118,17 @@ export class MeService {
         profileImg: true,
       },
     });
-
     if (profileImage) {
       if (user?.profileImg) {
         avatar = await this.imageStore.updateProfileImage({
           file: profileImage,
-          folder: 'profile',
+          folder: 'PROFILE',
           filename: user.profileImg,
         });
       } else {
         avatar = await this.imageStore.uploadProfileImage({
           file: profileImage,
-          folder: 'profile',
+          folder: 'PROFILE',
         });
       }
     }
@@ -138,13 +137,13 @@ export class MeService {
       if (user?.bannerImg) {
         banner = await this.imageStore.updateProfileImage({
           file: bannerImage,
-          folder: 'banner',
+          folder: 'BANNER',
           filename: user.bannerImg,
         });
       } else {
         banner = await this.imageStore.uploadProfileImage({
           file: bannerImage,
-          folder: 'banner',
+          folder: 'BANNER',
         });
       }
     }

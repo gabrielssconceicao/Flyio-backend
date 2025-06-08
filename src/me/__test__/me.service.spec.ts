@@ -159,12 +159,12 @@ describe('MeService', () => {
 
       expect(imageStore.uploadProfileImage).toHaveBeenCalledWith({
         file: fileMock(),
-        folder: 'profile',
+        folder: 'PROFILE',
       });
 
       expect(imageStore.updateProfileImage).toHaveBeenCalledWith({
         file: fileMock(),
-        folder: 'banner',
+        folder: 'BANNER',
         filename: profilePictureMock,
       });
 
