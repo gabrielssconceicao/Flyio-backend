@@ -15,11 +15,13 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { ApiCookieAuth } from '@nestjs/swagger';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @ApiCookieAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FilesInterceptor('images', 4, {
@@ -34,6 +36,7 @@ export class PostController {
     return this.postService.create({ createPostDto, payload });
   }
 
+  @ApiCookieAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Delete(':postId')
   delete(@Param('postId') postId: string, @CurrentUser() payload: JwtPayload) {

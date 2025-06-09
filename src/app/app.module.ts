@@ -10,6 +10,7 @@ import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
 import { MeModule } from '@/me/me.module';
 import { FollowModule } from '@/follow/follow.module';
 import { PostModule } from '@/post/post.module';
+import { LikesModule } from '@/likes/likes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { PostModule } from '@/post/post.module';
     MeModule,
     FollowModule,
     PostModule,
+    LikesModule,
   ],
   controllers: [AppController],
   providers: [
