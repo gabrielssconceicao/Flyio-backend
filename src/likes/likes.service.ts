@@ -29,6 +29,7 @@ export class LikesService {
         postId,
       },
     });
+    return;
   }
 
   async deslikePost({ payload, postId }: Like) {
