@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
+  Param,
   Post,
   UseGuards,
   UseInterceptors,
@@ -13,11 +16,11 @@ import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 
-@UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FilesInterceptor('images', 4, {
       storage: multer.memoryStorage(),
@@ -29,5 +32,16 @@ export class PostController {
     @CurrentUser() payload: JwtPayload,
   ) {
     return this.postService.create({ createPostDto, payload });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':postId')
+  delete(@Param('postId') postId: string, @CurrentUser() payload: JwtPayload) {
+    return this.postService.delete({ postId, payload });
+  }
+
+  @Get(':postId')
+  findOne(@Param('postId') postId: string) {
+    return this.postService.findOne({ postId });
   }
 }
