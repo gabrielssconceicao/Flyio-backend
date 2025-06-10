@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { PostMapper } from './post.mapper';
 
 type CreatePost = {
   createPostDto: CreatePostDto;
@@ -29,18 +30,7 @@ export class PostService {
         text: createPostDto.content,
         authorId: payload.id,
       },
-      select: {
-        id: true,
-        text: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImg: true,
-          },
-        },
-      },
+      select: PostMapper.defautFields,
     });
 
     return { post };
@@ -73,30 +63,8 @@ export class PostService {
         id: postId,
       },
       select: {
-        id: true,
-        text: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImg: true,
-          },
-        },
-        likes: {
-          where: {
-            userId: payload?.id,
-          },
-
-          select: {
-            userId: true,
-          },
-        },
-        _count: {
-          select: {
-            likes: true,
-          },
-        },
+        ...PostMapper.defautFields,
+        ...PostMapper.likeFields(payload.id),
       },
     });
 
@@ -107,7 +75,7 @@ export class PostService {
     const { _count, likes, ...restPost } = post;
     return {
       ...restPost,
-      ...this.separate({ _count, likes }),
+      ...PostMapper.separate({ _count, likes }),
     };
   }
 
@@ -122,26 +90,8 @@ export class PostService {
         },
       },
       select: {
-        id: true,
-        text: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImg: true,
-          },
-        },
-        likes: {
-          where: {
-            userId: payload.id,
-          },
-        },
-        _count: {
-          select: {
-            likes: true,
-          },
-        },
+        ...PostMapper.defautFields,
+        ...PostMapper.likeFields(payload.id),
       },
       take: limit,
       skip: offset,
@@ -152,22 +102,8 @@ export class PostService {
     return {
       count,
       posts: posts.map(({ _count, likes, ...post }) => {
-        return { ...post, ...this.separate({ _count, likes }) };
+        return { ...post, ...PostMapper.separate({ _count, likes }) };
       }),
-    };
-  }
-
-  private separate({
-    _count,
-    likes,
-  }: {
-    likes: { userId: string }[];
-    _count: { likes: number };
-    userId?: string;
-  }) {
-    return {
-      likes: _count.likes,
-      isLiked: !!likes.length,
     };
   }
 }
