@@ -3,7 +3,7 @@ import {
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { fileMock } from '../mock/file.mock';
-import { ProfileImageValidatorPipe } from '../pipes/profile-image-validation.pipe';
+import { ProfileImageValidatorPipe } from '../pipes/profile-image-validatior.pipe';
 describe('ProfileImageValidatorPipe', () => {
   let pipe: ProfileImageValidatorPipe;
   let file: Express.Multer.File;
