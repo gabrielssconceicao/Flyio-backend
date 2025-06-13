@@ -10,6 +10,13 @@ export class PostMapper {
         profileImg: true,
       },
     },
+    images: {
+      select: {
+        id: true,
+        url: true,
+      },
+    },
+    createdAt: true,
   };
 
   static likeFields(id: string) {

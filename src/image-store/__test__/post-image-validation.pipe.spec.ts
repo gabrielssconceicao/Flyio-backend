@@ -3,7 +3,7 @@ import {
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { fileMock } from '../mock/file.mock';
-import { PostImageValidatorPipe } from '../pipes/post-image-validatior.pipe';
+import { PostImageValidatorPipe } from '../pipes/post-image-validatitor.pipe';
 
 describe('PostImageValidatorPipe', () => {
   let pipe: PostImageValidatorPipe;

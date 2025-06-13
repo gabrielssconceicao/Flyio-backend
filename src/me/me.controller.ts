@@ -21,7 +21,7 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { MeService } from './me.service';
 import { CurrentUserEntity } from './entities/current-user.entity';
-import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatior.pipe';
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
 import { UpdateMeSwaggerDoc } from './swagger/update-me-swagger';
 import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
 

@@ -4,10 +4,12 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { PostMapper } from './post.mapper';
+import { PostEntity } from './entities/post.entity';
 
 type CreatePost = {
   createPostDto: CreatePostDto;
   payload: JwtPayload;
+  images: Express.Multer.File[];
 };
 
 type DeletePost = {
@@ -24,16 +26,31 @@ type FindAll = {
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create({ createPostDto, payload }: CreatePost) {
+  async create({
+    createPostDto,
+    payload,
+    images,
+  }: CreatePost): Promise<PostEntity> {
+    const imagesUrl: string[] = [];
+
+    if (images.length) {
+      //create post image
+    }
+
     const post = await this.prisma.post.create({
       data: {
         text: createPostDto.content,
         authorId: payload.id,
+        images: {
+          createMany: {
+            data: imagesUrl.map((url) => ({ url })),
+          },
+        },
       },
       select: PostMapper.defautFields,
     });
 
-    return { post };
+    return post;
   }
 
   async delete({ payload, postId }: DeletePost): Promise<void> {

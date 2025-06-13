@@ -17,7 +17,7 @@ import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
-import { PostImageValidatorPipe } from '@/image-store/pipes/post-image-validatior.pipe';
+import { PostImageValidatorPipe } from '@/image-store/pipes/post-image-validatitor.pipe';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostSwaggerDoc } from './swagger/create-post-swagger';
@@ -40,7 +40,7 @@ export class PostController {
     @Body() createPostDto: CreatePostDto,
     @CurrentUser() payload: JwtPayload,
   ) {
-    return this.postService.create({ createPostDto, payload });
+    return this.postService.create({ createPostDto, payload, images });
   }
 
   @Delete(':postId')

@@ -34,7 +34,7 @@ export class PostEntity {
     example: '2022-01-01T00:00:00.000Z',
     description: 'Post creation date',
   })
-  createdAt: string;
+  createdAt: Date;
 
   @ApiProperty({ type: Author, description: 'Post author' })
   author: Author;

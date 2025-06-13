@@ -14,7 +14,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatior.pipe';
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
