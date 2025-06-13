@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,8 +17,10 @@ import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { PostImageValidatorPipe } from '@/image-store/pipes/post-image-validatior.pipe';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostSwaggerDoc } from './swagger/create-post-swagger';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
@@ -25,6 +28,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @CreatePostSwaggerDoc()
   @UseInterceptors(
     FilesInterceptor('images', 4, {
       storage: multer.memoryStorage(),
@@ -32,6 +36,7 @@ export class PostController {
   )
   @Post()
   create(
+    @UploadedFiles(PostImageValidatorPipe) images: Express.Multer.File[],
     @Body() createPostDto: CreatePostDto,
     @CurrentUser() payload: JwtPayload,
   ) {
