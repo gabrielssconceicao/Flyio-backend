@@ -1,9 +1,11 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
+import { ImageStoreService } from '@/image-store/image-store.service';
+import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { PostMapper } from './post.mapper';
+import { CreatePostDto } from './dto/create-post.dto';
 import { PostEntity } from './entities/post.entity';
 
 type CreatePost = {
@@ -24,17 +26,23 @@ type FindAll = {
 
 @Injectable()
 export class PostService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly imageStore: ImageStoreService,
+  ) {}
 
   async create({
     createPostDto,
     payload,
     images,
   }: CreatePost): Promise<PostEntity> {
-    const imagesUrl: string[] = [];
+    let imagesUrl: string[] = [];
 
     if (images.length) {
-      //create post image
+      imagesUrl = await this.imageStore.uploadPostImages({
+        files: images,
+        folder: ImageStoreTypeFolder.POST,
+      });
     }
 
     const post = await this.prisma.post.create({

@@ -19,6 +19,19 @@ class Author {
   profileImg: string | null;
 }
 
+class Image {
+  @ApiProperty({
+    example: 'id-10',
+    description: 'Image id',
+  })
+  id: string;
+  @ApiProperty({
+    example: 'https://example.com/image.jpg',
+    description: 'Image URL',
+  })
+  url: string;
+}
+
 export class PostEntity {
   @ApiProperty({
     example: 'id-1',
@@ -38,4 +51,7 @@ export class PostEntity {
 
   @ApiProperty({ type: Author, description: 'Post author' })
   author: Author;
+
+  @ApiProperty({ type: [Image], description: 'Post images' })
+  images: Image[];
 }
