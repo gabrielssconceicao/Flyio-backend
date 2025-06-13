@@ -90,7 +90,7 @@ describe('UserService', () => {
         },
         select: UserMapper.createUserFields,
       });
-      expect(imageStore.uploadProfileImage).not.toHaveBeenCalled();
+      expect(imageStore.uploadUserImage).not.toHaveBeenCalled();
       expect(result).toBeDefined();
       expect(result).toMatchSnapshot();
     });
@@ -100,7 +100,7 @@ describe('UserService', () => {
       jest.spyOn(hashingService, 'hash').mockResolvedValue(hashedPassword);
       jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(null);
       jest
-        .spyOn(imageStore, 'uploadProfileImage')
+        .spyOn(imageStore, 'uploadUserImage')
         .mockResolvedValueOnce(profilePictureMock)
         .mockResolvedValueOnce(profilePictureMock);
       jest.spyOn(prisma.user, 'create').mockResolvedValue({
@@ -124,7 +124,7 @@ describe('UserService', () => {
         },
         select: UserMapper.createUserFields,
       });
-      expect(imageStore.uploadProfileImage).toHaveBeenCalledTimes(2);
+      expect(imageStore.uploadUserImage).toHaveBeenCalledTimes(2);
       expect(result).toBeDefined();
       expect(result).toMatchSnapshot();
     });

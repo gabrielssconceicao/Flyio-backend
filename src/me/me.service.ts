@@ -2,10 +2,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import { HashingService } from '@/hash/hashing.service';
+import { ImageStoreService } from '@/image-store/image-store.service';
+import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { MeMapper } from './me.mapper';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { CurrentUserEntity } from './entities/current-user.entity';
-import { ImageStoreService } from '@/image-store/image-store.service';
 
 type Count = { _count: { followers: number; following: number } };
 
@@ -112,9 +113,9 @@ export class MeService {
         profileImg: true,
       },
     })) as { profileImg: string };
-    const { result } = await this.imageStore.deleteProfileImage({
+    const { result } = await this.imageStore.deleteUserImage({
       fileUrl: user?.profileImg,
-      folder: 'PROFILE',
+      folder: ImageStoreTypeFolder.PROFILE,
     });
 
     if (result !== 'ok') {
@@ -140,9 +141,9 @@ export class MeService {
         bannerImg: true,
       },
     })) as { bannerImg: string };
-    const { result } = await this.imageStore.deleteProfileImage({
+    const { result } = await this.imageStore.deleteUserImage({
       fileUrl: user?.bannerImg,
-      folder: 'BANNER',
+      folder: ImageStoreTypeFolder.BANNER,
     });
 
     if (result !== 'ok') {
@@ -180,30 +181,30 @@ export class MeService {
     });
     if (profileImage) {
       if (user?.profileImg) {
-        avatar = await this.imageStore.updateProfileImage({
+        avatar = await this.imageStore.updateUserImage({
           file: profileImage,
-          folder: 'PROFILE',
+          folder: ImageStoreTypeFolder.PROFILE,
           filename: user.profileImg,
         });
       } else {
-        avatar = await this.imageStore.uploadProfileImage({
+        avatar = await this.imageStore.uploadUserImage({
           file: profileImage,
-          folder: 'PROFILE',
+          folder: ImageStoreTypeFolder.PROFILE,
         });
       }
     }
 
     if (bannerImage) {
       if (user?.bannerImg) {
-        banner = await this.imageStore.updateProfileImage({
+        banner = await this.imageStore.updateUserImage({
           file: bannerImage,
-          folder: 'BANNER',
+          folder: ImageStoreTypeFolder.BANNER,
           filename: user.bannerImg,
         });
       } else {
-        banner = await this.imageStore.uploadProfileImage({
+        banner = await this.imageStore.uploadUserImage({
           file: bannerImage,
-          folder: 'BANNER',
+          folder: ImageStoreTypeFolder.BANNER,
         });
       }
     }

@@ -13,6 +13,7 @@ import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { ImageStoreService } from '@/image-store/image-store.service';
+import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 
 type CheckUserParams = {
   username?: string;
@@ -55,18 +56,18 @@ export class UserService {
     let avatar: string | null = null;
 
     if (profileImage) {
-      avatar = await this.imageStore.uploadProfileImage({
+      avatar = await this.imageStore.uploadUserImage({
         file: profileImage,
-        folder: 'PROFILE',
+        folder: ImageStoreTypeFolder.PROFILE,
       });
     }
 
     let banner: string | null = null;
 
     if (bannerImage) {
-      banner = await this.imageStore.uploadProfileImage({
+      banner = await this.imageStore.uploadUserImage({
         file: bannerImage,
-        folder: 'BANNER',
+        folder: ImageStoreTypeFolder.BANNER,
       });
     }
 

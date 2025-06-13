@@ -13,7 +13,7 @@ export class ImageStoreService {
     });
   }
 
-  private uploadToCloudinary(
+  private async uploadToCloudinary(
     buffer: Buffer,
     uploadConfig: any,
   ): Promise<string> {
@@ -35,7 +35,9 @@ export class ImageStoreService {
       });
   }
 
-  private deleteFromCloudinary(publicId: string): Promise<{ result: string }> {
+  private async deleteFromCloudinary(
+    publicId: string,
+  ): Promise<{ result: string }> {
     return new Promise((resolve, reject) => {
       cloudinary.uploader.destroy(publicId, (error, result) => {
         if (error) {
@@ -77,7 +79,7 @@ export class ImageStoreService {
     }
   }
 
-  async uploadProfileImage({
+  async uploadUserImage({
     file,
     folder,
   }: {
@@ -92,7 +94,7 @@ export class ImageStoreService {
     });
   }
 
-  async updateProfileImage({
+  async updateUserImage({
     filename,
     folder,
     file,
@@ -111,7 +113,7 @@ export class ImageStoreService {
     });
   }
 
-  async deleteProfileImage({
+  async deleteUserImage({
     fileUrl,
     folder,
   }: {

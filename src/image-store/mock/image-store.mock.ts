@@ -1,7 +1,7 @@
 export const imageStoreServiceMock = () => {
   return {
-    uploadProfileImage: jest.fn(),
-    updateProfileImage: jest.fn(),
-    deleteProfileImage: jest.fn(),
+    uploadUserImage: jest.fn(),
+    updateUserImage: jest.fn(),
+    deleteUserImage: jest.fn(),
   };
 };
