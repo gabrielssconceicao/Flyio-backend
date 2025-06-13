@@ -113,7 +113,7 @@ export class MeService {
         profileImg: true,
       },
     })) as { profileImg: string };
-    const { result } = await this.imageStore.deleteUserImage({
+    const { result } = await this.imageStore.deleteImage({
       fileUrl: user?.profileImg,
       folder: ImageStoreTypeFolder.PROFILE,
     });
@@ -141,7 +141,7 @@ export class MeService {
         bannerImg: true,
       },
     })) as { bannerImg: string };
-    const { result } = await this.imageStore.deleteUserImage({
+    const { result } = await this.imageStore.deleteImage({
       fileUrl: user?.bannerImg,
       folder: ImageStoreTypeFolder.BANNER,
     });

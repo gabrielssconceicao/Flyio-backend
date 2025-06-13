@@ -203,11 +203,9 @@ describe('MeService', () => {
       jest
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ profileImg: profilePictureMock });
-      jest
-        .spyOn(imageStore, 'deleteUserImage')
-        .mockResolvedValue({ result: 'ok' });
+      jest.spyOn(imageStore, 'deleteImage').mockResolvedValue({ result: 'ok' });
       await service.deleteProfileImage({ payload });
-      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.PROFILE,
       });
@@ -231,12 +229,12 @@ describe('MeService', () => {
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ profileImg: profilePictureMock });
       jest
-        .spyOn(imageStore, 'deleteUserImage')
+        .spyOn(imageStore, 'deleteImage')
         .mockResolvedValue({ result: 'not_found' });
       await expect(service.deleteProfileImage({ payload })).rejects.toThrow(
         BadRequestException,
       );
-      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.PROFILE,
       });
@@ -254,11 +252,9 @@ describe('MeService', () => {
       jest
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ bannerImg: profilePictureMock });
-      jest
-        .spyOn(imageStore, 'deleteUserImage')
-        .mockResolvedValue({ result: 'ok' });
+      jest.spyOn(imageStore, 'deleteImage').mockResolvedValue({ result: 'ok' });
       await service.deleteBannerImage({ payload });
-      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.BANNER,
       });
@@ -282,12 +278,12 @@ describe('MeService', () => {
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ bannerImg: profilePictureMock });
       jest
-        .spyOn(imageStore, 'deleteUserImage')
+        .spyOn(imageStore, 'deleteImage')
         .mockResolvedValue({ result: 'not_found' });
       await expect(service.deleteBannerImage({ payload })).rejects.toThrow(
         BadRequestException,
       );
-      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.BANNER,
       });

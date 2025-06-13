@@ -14,7 +14,7 @@ type UpdateUserImage = UploadUserImage & {
   filename: string;
 };
 
-type DeleteUserImage = {
+type DeleteImage = {
   fileUrl: string;
   folder: ImageStoreTypeFolder;
 };
@@ -126,10 +126,10 @@ export class ImageStoreService {
     });
   }
 
-  async deleteUserImage({
+  async deleteImage({
     fileUrl,
     folder,
-  }: DeleteUserImage): Promise<{ result: string }> {
+  }: DeleteImage): Promise<{ result: string }> {
     const fileId = this.extractIdFromImageUrl(fileUrl);
     return this.deleteFromCloudinary(
       `${this.getImageStoreFolder(folder)}/${fileId}`,
@@ -155,7 +155,7 @@ export class ImageStoreService {
     } catch {
       await Promise.all(
         uploadedFiles.map((file) =>
-          this.deleteUserImage({ fileUrl: file, folder }),
+          this.deleteImage({ fileUrl: file, folder }),
         ),
       );
     }
