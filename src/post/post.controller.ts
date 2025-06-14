@@ -25,6 +25,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostSwaggerDoc } from './swagger/create-post-swagger';
 import { DeletePostSwaggerDoc } from './swagger/delete-post-swagger';
+import { GetOnePostSwaggerDoc } from './swagger/get-one-post-swagger';
 
 @ProtectedRouteSwaggerDoc()
 @ApiCookieAuth('access_token')
@@ -56,6 +57,8 @@ export class PostController {
     return this.postService.delete({ postId, payload });
   }
 
+  @GetOnePostSwaggerDoc()
+  @HttpCode(HttpStatus.OK)
   @Get(':postId')
   findOne(@Param('postId') postId: string, @CurrentUser() payload: JwtPayload) {
     return this.postService.findOne({ postId, payload });

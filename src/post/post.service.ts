@@ -14,9 +14,9 @@ type CreatePost = {
   images: Express.Multer.File[];
 };
 
-type DeletePost = {
-  payload: JwtPayload;
+type PostId = {
   postId: string;
+  payload: JwtPayload;
 };
 
 type FindAll = {
@@ -58,10 +58,10 @@ export class PostService {
       select: PostMapper.defautFields,
     });
 
-    return post;
+    return { ...post, likes: 0, isLiked: false };
   }
 
-  async delete({ payload, postId }: DeletePost): Promise<void> {
+  async delete({ payload, postId }: PostId): Promise<void> {
     const postExists = await this.prisma.post.findUnique({
       where: {
         id: postId,
@@ -96,13 +96,7 @@ export class PostService {
     return;
   }
 
-  async findOne({
-    postId,
-    payload,
-  }: {
-    postId: string;
-    payload: JwtPayload;
-  }): Promise<PostEntity> {
+  async findOne({ postId, payload }: PostId): Promise<PostEntity> {
     const post = await this.prisma.post.findUnique({
       where: {
         id: postId,

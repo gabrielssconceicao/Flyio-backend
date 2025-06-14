@@ -54,4 +54,16 @@ export class PostEntity {
 
   @ApiProperty({ type: [Image], description: 'Post images' })
   images: Image[];
+
+  @ApiProperty({
+    example: 2,
+    description: 'Number of likes',
+  })
+  likes: number;
+
+  @ApiProperty({
+    example: false,
+    description: 'Whether the current user has liked the post',
+  })
+  isLiked: boolean;
 }
