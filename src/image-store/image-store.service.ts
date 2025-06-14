@@ -19,9 +19,13 @@ type DeleteImage = {
   folder: ImageStoreTypeFolder;
 };
 
-type UploadPostImages = {
+type PostImages = {
   files: Express.Multer.File[];
   folder: ImageStoreTypeFolder;
+};
+
+type DeletePostImages = {
+  files: string[];
 };
 
 @Injectable()
@@ -136,10 +140,7 @@ export class ImageStoreService {
     );
   }
 
-  async uploadPostImages({
-    files,
-    folder,
-  }: UploadPostImages): Promise<string[]> {
+  async uploadPostImages({ files, folder }: PostImages): Promise<string[]> {
     const uploadedFiles: string[] = [];
     try {
       const promises = files.map(async (file) => {
@@ -160,5 +161,12 @@ export class ImageStoreService {
       );
     }
     return uploadedFiles;
+  }
+
+  deletePostImages({ files }: DeletePostImages) {
+    const promises = files.map((file) =>
+      this.deleteImage({ fileUrl: file, folder: ImageStoreTypeFolder.POST }),
+    );
+    return Promise.all(promises);
   }
 }

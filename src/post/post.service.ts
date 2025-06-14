@@ -62,15 +62,29 @@ export class PostService {
   }
 
   async delete({ payload, postId }: DeletePost): Promise<void> {
-    const postExists = !!(await this.prisma.post.findUnique({
+    const postExists = await this.prisma.post.findUnique({
       where: {
         id: postId,
         authorId: payload.id,
       },
-    }));
+      select: {
+        images: {
+          select: {
+            url: true,
+          },
+        },
+      },
+    });
 
     if (!postExists) {
       throw new NotFoundException('Post not found');
+    }
+
+    // delete post images
+    if (postExists.images.length) {
+      await this.imageStore.deletePostImages({
+        files: postExists.images.map((image) => image.url),
+      });
     }
 
     await this.prisma.post.delete({
@@ -82,7 +96,13 @@ export class PostService {
     return;
   }
 
-  async findOne({ postId, payload }: { postId: string; payload: JwtPayload }) {
+  async findOne({
+    postId,
+    payload,
+  }: {
+    postId: string;
+    payload: JwtPayload;
+  }): Promise<PostEntity> {
     const post = await this.prisma.post.findUnique({
       where: {
         id: postId,
