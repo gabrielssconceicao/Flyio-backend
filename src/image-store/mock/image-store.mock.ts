@@ -3,5 +3,7 @@ export const imageStoreServiceMock = () => {
     uploadUserImage: jest.fn(),
     updateUserImage: jest.fn(),
     deleteImage: jest.fn(),
+    uploadPostImages: jest.fn(),
+    deletePostImages: jest.fn(),
   };
 };

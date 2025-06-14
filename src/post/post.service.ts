@@ -81,7 +81,6 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
-    // delete post images
     if (postExists.images.length) {
       await this.imageStore.deletePostImages({
         files: postExists.images.map((image) => image.url),
