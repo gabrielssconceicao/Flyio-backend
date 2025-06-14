@@ -13,6 +13,7 @@ import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { ImageStoreService } from '@/image-store/image-store.service';
+import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 
 type CheckUserParams = {
   username?: string;
@@ -55,18 +56,18 @@ export class UserService {
     let avatar: string | null = null;
 
     if (profileImage) {
-      avatar = await this.imageStore.uploadProfileImage({
+      avatar = await this.imageStore.uploadUserImage({
         file: profileImage,
-        folder: 'PROFILE',
+        folder: ImageStoreTypeFolder.PROFILE,
       });
     }
 
     let banner: string | null = null;
 
     if (bannerImage) {
-      banner = await this.imageStore.uploadProfileImage({
+      banner = await this.imageStore.uploadUserImage({
         file: bannerImage,
-        folder: 'BANNER',
+        folder: ImageStoreTypeFolder.BANNER,
       });
     }
 
@@ -102,7 +103,7 @@ export class UserService {
 
     const count = await this.prisma.user.count();
 
-    return { count, users };
+    return { count, items: users };
   }
 
   async findOne(username: string): Promise<{ user: FindOneUserEntity }> {
@@ -170,7 +171,7 @@ export class UserService {
 
     return {
       count,
-      users: following.map((follow) => follow.followed),
+      items: following.map((follow) => follow.followed),
     };
   }
 
@@ -216,7 +217,7 @@ export class UserService {
 
     return {
       count,
-      users: followers.map((follow) => follow.follower),
+      items: followers.map((follow) => follow.follower),
     };
   }
 

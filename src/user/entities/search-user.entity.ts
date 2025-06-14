@@ -1,3 +1,4 @@
+import { createFindManyDto } from '@/common/dto/find-many.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 class User {
@@ -17,9 +18,4 @@ class User {
   })
   profileImg: string | null;
 }
-export class SearchUserEntity {
-  @ApiProperty({ type: Number, example: 1, description: 'User total count' })
-  count: number;
-  @ApiProperty({ type: [User], description: 'List of users' })
-  users: User[];
-}
+export class SearchUserEntity extends createFindManyDto(User) {}
