@@ -26,6 +26,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostSwaggerDoc } from './swagger/create-post-swagger';
 import { DeletePostSwaggerDoc } from './swagger/delete-post-swagger';
 import { GetOnePostSwaggerDoc } from './swagger/get-one-post-swagger';
+import { FindManyPostSwaggerDoc } from './swagger/find-many-post-swagger';
 
 @ProtectedRouteSwaggerDoc()
 @ApiCookieAuth('access_token')
@@ -64,8 +65,10 @@ export class PostController {
     return this.postService.findOne({ postId, payload });
   }
 
+  @FindManyPostSwaggerDoc()
+  @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@CurrentUser() payload: JwtPayload, @Query() query: QueryParamDto) {
-    return this.postService.findAll({ payload, query });
+  findMany(@CurrentUser() payload: JwtPayload, @Query() query: QueryParamDto) {
+    return this.postService.findMany({ payload, query });
   }
 }

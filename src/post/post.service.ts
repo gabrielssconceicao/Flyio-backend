@@ -7,6 +7,7 @@ import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { PostMapper } from './post.mapper';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostEntity } from './entities/post.entity';
+import { FindManyPostEntity } from './entities/find-many.entity';
 
 type CreatePost = {
   createPostDto: CreatePostDto;
@@ -19,7 +20,7 @@ type PostId = {
   payload: JwtPayload;
 };
 
-type FindAll = {
+type FindMany = {
   payload: JwtPayload;
   query: QueryParamDto;
 };
@@ -118,7 +119,7 @@ export class PostService {
     };
   }
 
-  async findAll({ payload, query }: FindAll) {
+  async findMany({ payload, query }: FindMany): Promise<FindManyPostEntity> {
     const { search = '', limit = 50, offset = 0 } = query;
 
     const posts = await this.prisma.post.findMany({
@@ -140,7 +141,7 @@ export class PostService {
 
     return {
       count,
-      posts: posts.map(({ _count, likes, ...post }) => {
+      items: posts.map(({ _count, likes, ...post }) => {
         return { ...post, ...PostMapper.separate({ _count, likes }) };
       }),
     };

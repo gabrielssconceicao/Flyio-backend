@@ -176,7 +176,7 @@ describe('UserService', () => {
     it('should find users by name or username', async () => {
       jest
         .spyOn(prisma.user, 'findMany')
-        .mockResolvedValue(searchUsersResponseMock().users);
+        .mockResolvedValue(searchUsersResponseMock().items);
 
       jest
         .spyOn(prisma.user, 'count')
@@ -198,7 +198,7 @@ describe('UserService', () => {
       });
 
       jest.spyOn(prisma.follow, 'findMany').mockResolvedValue(
-        searchUsersResponseMock().users.map((user) => {
+        searchUsersResponseMock().items.map((user) => {
           return { followed: user };
         }),
       );
@@ -220,7 +220,7 @@ describe('UserService', () => {
       });
       expect(result).toMatchSnapshot();
       expect(result.count).toEqual(searchUsersResponseMock().count);
-      expect(result.users).toEqual(searchUsersResponseMock().users);
+      expect(result.items).toEqual(searchUsersResponseMock().items);
     });
     it('should throw a not found exception if user not found', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
@@ -241,7 +241,7 @@ describe('UserService', () => {
       });
 
       jest.spyOn(prisma.follow, 'findMany').mockResolvedValue(
-        searchUsersResponseMock().users.map((user) => {
+        searchUsersResponseMock().items.map((user) => {
           return { follower: user };
         }),
       );
@@ -263,7 +263,7 @@ describe('UserService', () => {
       });
       expect(result).toMatchSnapshot();
       expect(result.count).toEqual(searchUsersResponseMock().count);
-      expect(result.users).toEqual(searchUsersResponseMock().users);
+      expect(result.items).toEqual(searchUsersResponseMock().items);
     });
 
     it('should throw a not found exception if user not found', async () => {

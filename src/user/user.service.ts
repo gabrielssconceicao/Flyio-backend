@@ -103,7 +103,7 @@ export class UserService {
 
     const count = await this.prisma.user.count();
 
-    return { count, users };
+    return { count, items: users };
   }
 
   async findOne(username: string): Promise<{ user: FindOneUserEntity }> {
@@ -171,7 +171,7 @@ export class UserService {
 
     return {
       count,
-      users: following.map((follow) => follow.followed),
+      items: following.map((follow) => follow.followed),
     };
   }
 
@@ -217,7 +217,7 @@ export class UserService {
 
     return {
       count,
-      users: followers.map((follow) => follow.follower),
+      items: followers.map((follow) => follow.follower),
     };
   }
 
