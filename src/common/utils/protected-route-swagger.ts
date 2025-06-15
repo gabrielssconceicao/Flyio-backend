@@ -9,6 +9,8 @@ export const ProtectedRouteSwaggerDoc = () => {
       schema: {
         example: {
           statusCode: HttpStatus.UNAUTHORIZED,
+          type: 'TokenExpired/InvalidToken',
+
           message: 'Invalid token',
           error: 'Unauthorized',
         },

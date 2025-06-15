@@ -1,4 +1,3 @@
-// auth/jwt-auth.guard.ts
 import { AuthGuard } from '@nestjs/passport';
 import {
   ExecutionContext,
@@ -11,10 +10,20 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err: any, user: any, info: any, ctx: ExecutionContext) {
     if (err || !user) {
       if (info?.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('Access token expired');
+        throw new UnauthorizedException({
+          message: 'Access token expired',
+          type: 'TokenExpired',
+          error: 'Unauthorized',
+          statusCode: 401,
+        });
       }
 
-      throw new UnauthorizedException('Invalid or missing token');
+      throw new UnauthorizedException({
+        message: 'Invalid or missing token',
+        type: 'InvalidToken',
+        error: 'Unauthorized',
+        statusCode: 401,
+      });
     }
 
     return user;
