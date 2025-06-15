@@ -65,7 +65,7 @@ export class PostEntity {
     example: 1,
     description: 'Number of comments',
   })
-  comments: number;
+  replies: number;
 
   @ApiProperty({
     example: false,

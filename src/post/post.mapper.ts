@@ -2,6 +2,7 @@ export class PostMapper {
   static defautFields = {
     id: true,
     text: true,
+    parentId: true,
     author: {
       select: {
         id: true,
@@ -30,24 +31,42 @@ export class PostMapper {
           userId: true,
         },
       },
-      _count: {
+    };
+  }
+
+  static commentField(id: string) {
+    return {
+      replies: {
         select: {
-          likes: true,
+          ...this.defautFields,
+          ...this.likeFields(id),
+          ...this.commentField,
+          ...this.countField,
         },
       },
     };
   }
+
+  static countField = {
+    _count: {
+      select: {
+        likes: true,
+        replies: true,
+      },
+    },
+  };
 
   static separate({
     _count,
     likes,
   }: {
     likes: { userId: string }[];
-    _count: { likes: number };
+    _count: { likes: number; replies: number };
     userId?: string;
   }) {
     return {
       likes: _count.likes,
+      replies: _count.replies,
       isLiked: !!likes.length,
     };
   }

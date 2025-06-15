@@ -59,7 +59,7 @@ export class PostService {
       select: PostMapper.defautFields,
     });
 
-    return { ...post, likes: 0, isLiked: false, comments: 0 };
+    return { ...post, likes: 0, isLiked: false, replies: 0 };
   }
 
   async delete({ payload, postId }: PostId): Promise<void> {
@@ -96,7 +96,7 @@ export class PostService {
     return;
   }
 
-  async findOne({ postId, payload }: PostId): Promise<PostEntity> {
+  async findOne({ postId, payload }: PostId): Promise<any> {
     const post = await this.prisma.post.findUnique({
       where: {
         id: postId,
@@ -104,6 +104,27 @@ export class PostService {
       select: {
         ...PostMapper.defautFields,
         ...PostMapper.likeFields(payload.id),
+        ...PostMapper.commentField(payload.id),
+        ...PostMapper.countField,
+
+        // parentId: true,
+        // likes: {
+        //   select: {
+        //     userId: true,
+        //   },
+        // },
+        // replies: true,
+        // author: {
+        //   select: {
+        //     username: true,
+        //   },
+        // },
+        // _count: {
+        //   select: {
+        //     likes: true,
+        //     replies: true,
+        //   },
+        // },
       },
     });
 
@@ -111,14 +132,22 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
-    const { _count, likes, ...restPost } = post;
+    //check if is a comment
+
+    const { _count, likes, replies, ...restPost } = post;
     return {
       ...restPost,
       ...PostMapper.separate({ _count, likes }),
+      replies: replies.map(({ _count, likes, ...reply }) => {
+        return {
+          ...reply,
+          ...PostMapper.separate({ _count, likes }),
+        };
+      }),
     };
   }
 
-  async findMany({ payload, query }: FindMany): Promise<FindManyPostEntity> {
+  async findMany({ payload, query }: FindMany): Promise<any> {
     const { search = '', limit = 50, offset = 0 } = query;
 
     const posts = await this.prisma.post.findMany({
@@ -131,6 +160,7 @@ export class PostService {
       select: {
         ...PostMapper.defautFields,
         ...PostMapper.likeFields(payload.id),
+        ...PostMapper.countField,
       },
       take: limit,
       skip: offset,
