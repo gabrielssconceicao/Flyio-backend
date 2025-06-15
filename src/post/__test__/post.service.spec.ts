@@ -14,7 +14,7 @@ describe('PostService', () => {
   let imageStore: ReturnType<typeof imageStoreServiceMock>;
   let primsa: ReturnType<typeof prismaServiceMock>;
   let payload: JwtPayload;
-  const _countAndLikes = { _count: { likes: 0 }, likes: [] };
+  const _countLikesAndReplies = { _count: { likes: 0, replies: 0 }, likes: [] };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -101,9 +101,12 @@ describe('PostService', () => {
 
   describe('FindOne', () => {
     it('should return a post', async () => {
-      jest
-        .spyOn(primsa.post, 'findUnique')
-        .mockResolvedValue({ ...postMock(), ..._countAndLikes });
+      jest.spyOn(primsa.post, 'findUnique').mockResolvedValue({
+        ...postMock(),
+        ..._countLikesAndReplies,
+        replies: [],
+        parent: null,
+      });
 
       const result = await service.findOne({
         postId: postMock().id,
@@ -111,7 +114,6 @@ describe('PostService', () => {
       });
 
       expect(primsa.post.findUnique).toHaveBeenCalled();
-      expect(result).toEqual(postMock());
       expect(result).toMatchSnapshot();
     });
 
@@ -131,7 +133,7 @@ describe('PostService', () => {
       jest.spyOn(primsa.post, 'findMany').mockResolvedValue(
         findManyPostMock().items.map((post) => ({
           ...post,
-          ..._countAndLikes,
+          ..._countLikesAndReplies,
         })),
       );
       jest

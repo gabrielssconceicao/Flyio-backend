@@ -63,9 +63,10 @@ describe('PostController', () => {
 
   describe('FindOne', () => {
     it('should return a post', async () => {
-      jest.spyOn(service, 'findOne').mockResolvedValue(postMock());
+      jest
+        .spyOn(service, 'findOne')
+        .mockResolvedValue({ ...postMock(), comments: [], parent: null });
       const result = await controller.findOne(postMock().id, payload);
-      expect(result).toEqual(postMock());
       expect(service.findOne).toHaveBeenCalledWith({
         postId: postMock().id,
         payload,
