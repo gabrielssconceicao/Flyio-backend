@@ -70,4 +70,13 @@ export class PostMapper {
       isLiked: !!likes.length,
     };
   }
+
+  static separeteParent(parent: any) {
+    if (!parent) return null;
+    const { _count, likes, ...rest } = parent;
+    return {
+      ...rest,
+      ...this.separate({ _count, likes }),
+    };
+  }
 }

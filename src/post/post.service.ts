@@ -106,25 +106,13 @@ export class PostService {
         ...PostMapper.likeFields(payload.id),
         ...PostMapper.commentField(payload.id),
         ...PostMapper.countField,
-
-        // parentId: true,
-        // likes: {
-        //   select: {
-        //     userId: true,
-        //   },
-        // },
-        // replies: true,
-        // author: {
-        //   select: {
-        //     username: true,
-        //   },
-        // },
-        // _count: {
-        //   select: {
-        //     likes: true,
-        //     replies: true,
-        //   },
-        // },
+        parent: {
+          select: {
+            ...PostMapper.defautFields,
+            ...PostMapper.likeFields(payload.id),
+            ...PostMapper.countField,
+          },
+        },
       },
     });
 
@@ -134,7 +122,7 @@ export class PostService {
 
     //check if is a comment
 
-    const { _count, likes, replies, ...restPost } = post;
+    const { _count, likes, replies, parent, ...restPost } = post;
     return {
       ...restPost,
       ...PostMapper.separate({ _count, likes }),
@@ -144,10 +132,11 @@ export class PostService {
           ...PostMapper.separate({ _count, likes }),
         };
       }),
+      parent: PostMapper.separeteParent(parent),
     };
   }
 
-  async findMany({ payload, query }: FindMany): Promise<any> {
+  async findMany({ payload, query }: FindMany): Promise<FindManyPostEntity> {
     const { search = '', limit = 50, offset = 0 } = query;
 
     const posts = await this.prisma.post.findMany({
@@ -156,6 +145,7 @@ export class PostService {
           contains: search,
           mode: 'insensitive',
         },
+        parentId: null,
       },
       select: {
         ...PostMapper.defautFields,
@@ -166,7 +156,11 @@ export class PostService {
       skip: offset,
     });
 
-    const count = await this.prisma.post.count();
+    const count = await this.prisma.post.count({
+      where: {
+        parentId: null,
+      },
+    });
 
     return {
       count,
