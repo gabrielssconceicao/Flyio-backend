@@ -59,7 +59,7 @@ export class PostService {
       select: PostMapper.defautFields,
     });
 
-    return { ...post, likes: 0, isLiked: false };
+    return { ...post, likes: 0, isLiked: false, comments: 0 };
   }
 
   async delete({ payload, postId }: PostId): Promise<void> {
