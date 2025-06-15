@@ -72,4 +72,11 @@ export class PostEntity {
     description: 'Whether the current user has liked the post',
   })
   isLiked: boolean;
+
+  @ApiProperty({
+    example: 'id-8',
+    description: 'Parent post ID',
+    nullable: true,
+  })
+  parentId: string | null;
 }

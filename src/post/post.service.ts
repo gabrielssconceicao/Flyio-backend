@@ -8,6 +8,7 @@ import { PostMapper } from './post.mapper';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostEntity } from './entities/post.entity';
 import { FindManyPostEntity } from './entities/find-many.entity';
+import { FindOnePostEntity } from './entities/find-one-post.entity';
 
 type CreatePost = {
   createPostDto: CreatePostDto;
@@ -59,7 +60,7 @@ export class PostService {
       select: PostMapper.defautFields,
     });
 
-    return { ...post, likes: 0, isLiked: false, replies: 0 };
+    return { ...post, likes: 0, isLiked: false, replies: 0, parentId: null };
   }
 
   async delete({ payload, postId }: PostId): Promise<void> {
@@ -96,7 +97,7 @@ export class PostService {
     return;
   }
 
-  async findOne({ postId, payload }: PostId): Promise<any> {
+  async findOne({ postId, payload }: PostId): Promise<FindOnePostEntity> {
     const post = await this.prisma.post.findUnique({
       where: {
         id: postId,
@@ -120,13 +121,11 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
-    //check if is a comment
-
     const { _count, likes, replies, parent, ...restPost } = post;
     return {
       ...restPost,
       ...PostMapper.separate({ _count, likes }),
-      replies: replies.map(({ _count, likes, ...reply }) => {
+      comments: replies.map(({ _count, likes, ...reply }) => {
         return {
           ...reply,
           ...PostMapper.separate({ _count, likes }),

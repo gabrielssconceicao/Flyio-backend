@@ -1,6 +1,6 @@
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { PostEntity } from '../entities/post.entity';
+import { FindOnePostEntity } from '../entities/find-one-post.entity';
 
 export const GetOnePostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -12,7 +12,7 @@ export const GetOnePostSwaggerDoc = () => {
     ApiResponse({
       status: HttpStatus.OK,
       description: 'Post deleted successfully',
-      type: PostEntity,
+      type: FindOnePostEntity,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
