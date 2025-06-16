@@ -15,6 +15,7 @@ import { userMock } from '../mocks/user.mock';
 import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 import { getLikesMock } from '../mocks/get-likes.mock';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
+import { findManyPostMock } from '@/post/mock';
 
 describe('UserService', () => {
   let service: UserService;
@@ -22,6 +23,7 @@ describe('UserService', () => {
   let imageStore: ImageStoreService;
   let prisma: ReturnType<typeof prismaServiceMock>;
   const paginationDtoMock = { offset: 0, limit: 25 };
+  const payload = { id: 'id-1' } as JwtPayload;
   beforeEach(async () => {
     prisma = prismaServiceMock();
 
@@ -297,13 +299,38 @@ describe('UserService', () => {
       const result = await service.getLikedPosts({
         username: 'username',
         query: paginationDtoMock,
-        payload: { id: 'id-1' } as JwtPayload,
+        payload,
       });
       expect(prisma.likePost.findMany).toHaveBeenCalled();
       expect(prisma.likePost.count).toHaveBeenCalled();
       expect(result).toMatchSnapshot();
       expect(result.count).toEqual(getLikesMock().count);
       expect(result.items).toEqual(getLikesMock().items);
+    });
+  });
+
+  describe('GetPosts', () => {
+    it('should return an array of post', async () => {
+      jest.spyOn(prisma.post, 'findMany').mockResolvedValue(
+        findManyPostMock().items.map((post) => ({
+          ...post,
+          ...{ _count: { replies: 0, likes: 0 } },
+        })),
+      );
+      jest
+        .spyOn(prisma.post, 'count')
+        .mockResolvedValue(findManyPostMock().count);
+
+      const result = await service.getPosts({
+        username: 'username',
+        query: paginationDtoMock,
+        payload,
+      });
+
+      expect(prisma.post.findMany).toHaveBeenCalled();
+      expect(prisma.post.count).toHaveBeenCalled();
+      expect(result).toEqual(findManyPostMock());
+      expect(result).toMatchSnapshot();
     });
   });
 });

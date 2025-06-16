@@ -26,6 +26,7 @@ import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { CurrentUser } from '@/common/params/current-user.params';
 import { GetUserLikedPostSwaggerDoc } from './swagger/get-user-liked-post-swagger';
+import { FindManyPostSwaggerDoc } from '@/post/swagger/find-many-post-swagger';
 
 @Controller('user')
 export class UserController {
@@ -123,5 +124,16 @@ export class UserController {
     @Query() query: PaginationDto,
   ) {
     return this.userService.getLikedPosts({ username, query, payload });
+  }
+
+  @FindManyPostSwaggerDoc()
+  @UseGuards(JwtAuthGuard)
+  @Get(':username/posts')
+  getPosts(
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+    @CurrentUser() payload: JwtPayload,
+  ) {
+    return this.userService.getPosts({ username, query, payload });
   }
 }
