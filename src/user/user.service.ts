@@ -295,6 +295,7 @@ export class UserService {
         },
       },
     });
+    console.log(posts);
 
     return {
       count,

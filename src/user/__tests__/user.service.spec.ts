@@ -13,6 +13,8 @@ import { createUserDtoMock } from '../mocks/create-user-dto.mock';
 import { userEntityMock } from '../mocks/user-entity.mock';
 import { userMock } from '../mocks/user.mock';
 import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
+import { getLikesMock } from '../mocks/get-likes.mock';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 
 describe('UserService', () => {
   let service: UserService;
@@ -275,6 +277,33 @@ describe('UserService', () => {
           query: paginationDtoMock,
         }),
       ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('GetLikedPosts', () => {
+    it('should get a user liked posts', async () => {
+      jest.spyOn(prisma.likePost, 'findMany').mockResolvedValue(
+        getLikesMock().items.map((item) => ({
+          post: {
+            ...item,
+            _count: { replies: 0, likes: 0 },
+            likes: [],
+          },
+        })),
+      );
+      jest
+        .spyOn(prisma.likePost, 'count')
+        .mockResolvedValue(getLikesMock().count);
+      const result = await service.getLikedPosts({
+        username: 'username',
+        query: paginationDtoMock,
+        payload: { id: 'id-1' } as JwtPayload,
+      });
+      expect(prisma.likePost.findMany).toHaveBeenCalled();
+      expect(prisma.likePost.count).toHaveBeenCalled();
+      expect(result).toMatchSnapshot();
+      expect(result.count).toEqual(getLikesMock().count);
+      expect(result.items).toEqual(getLikesMock().items);
     });
   });
 });
