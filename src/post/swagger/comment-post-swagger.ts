@@ -2,20 +2,26 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { PostEntity } from '../entities/post.entity';
+import { CommentPostEntity } from '../entities/comment-post.entity';
 
-export const CreatePostSwaggerDoc = () => {
+export const CommentPostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-    ApiOperation({ summary: 'Creates a new poster' })(
+    ApiOperation({ summary: 'Comments a poster' })(
       target,
       propertyKey,
       descriptor,
     );
 
     ApiConsumes('multipart/form-data')(target, propertyKey, descriptor);
+    ApiParam({
+      name: 'postId',
+      type: String,
+      required: true,
+    })(target, propertyKey, descriptor);
     ApiBody({
       description: 'Poster body creation',
       schema: {
@@ -41,7 +47,7 @@ export const CreatePostSwaggerDoc = () => {
     ApiResponse({
       status: HttpStatus.CREATED,
       description: 'Post created successfully',
-      type: PostEntity,
+      type: CommentPostEntity,
     })(target, propertyKey, descriptor);
 
     ApiResponse({

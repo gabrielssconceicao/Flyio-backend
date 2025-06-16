@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
@@ -21,6 +22,11 @@ import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
 import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
 import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
 import { FollowUsersSwaggerDoc } from './swagger/get-follow-swagger';
+import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
+import { CurrentUser } from '@/common/params/current-user.params';
+import { GetUserLikedPostSwaggerDoc } from './swagger/get-user-liked-post-swagger';
+import { FindManyPostSwaggerDoc } from '@/post/swagger/find-many-post-swagger';
 
 @Controller('user')
 export class UserController {
@@ -106,5 +112,40 @@ export class UserController {
     @Query() query: PaginationDto,
   ) {
     return this.userService.getFollowers({ username, query });
+  }
+
+  @GetUserLikedPostSwaggerDoc()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(':username/liked-posts')
+  getLikedPosts(
+    @CurrentUser() payload: JwtPayload,
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+  ) {
+    return this.userService.getLikedPosts({ username, query, payload });
+  }
+
+  @FindManyPostSwaggerDoc()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(':username/posts')
+  getPosts(
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+    @CurrentUser() payload: JwtPayload,
+  ) {
+    return this.userService.getPosts({ username, query, payload });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(':username/comments')
+  getComments(
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+    @CurrentUser() payload: JwtPayload,
+  ) {
+    return this.userService.getComments({ username, query, payload });
   }
 }

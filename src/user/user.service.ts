@@ -14,6 +14,11 @@ import { SearchUserEntity } from './entities/search-user.entity';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { ImageStoreService } from '@/image-store/image-store.service';
 import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
+import { PostMapper } from '@/post/post.mapper';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
+import { GetLikedPostEntity } from './entities/get-liked-post-entity';
+import { FindManyPostEntity } from '@/post/entities/find-many.entity';
+import { GetUserCommentsEntity } from './entities/get-user-comments.entity';
 
 type CheckUserParams = {
   username?: string;
@@ -243,5 +248,163 @@ export class UserService {
     });
 
     return !!existingUser;
+  }
+
+  async getLikedPosts({
+    query,
+    username,
+    payload,
+  }: {
+    username: string;
+    query: PaginationDto;
+    payload: JwtPayload;
+  }): Promise<GetLikedPostEntity> {
+    const { limit = 50, offset = 0 } = query;
+    const posts = await this.prisma.likePost.findMany({
+      where: {
+        user: {
+          username,
+        },
+      },
+      select: {
+        post: {
+          select: {
+            ...PostMapper.defautFields,
+            ...PostMapper.likeFields(payload.id),
+            ...PostMapper.countField,
+            parent: {
+              select: {
+                author: {
+                  select: {
+                    username: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: limit,
+      skip: offset,
+    });
+    const count = await this.prisma.likePost.count({
+      where: {
+        user: {
+          username,
+        },
+      },
+    });
+    return {
+      count,
+      items: posts.map(({ post: { _count, likes, ...post } }) => ({
+        ...post,
+        ...PostMapper.separate({ _count, likes }),
+      })),
+    };
+  }
+
+  async getPosts({
+    query,
+    username,
+    payload,
+  }: {
+    username: string;
+    query: PaginationDto;
+    payload: JwtPayload;
+  }): Promise<FindManyPostEntity> {
+    const { limit = 50, offset = 0 } = query;
+    const posts = await this.prisma.post.findMany({
+      where: {
+        author: {
+          username,
+        },
+      },
+      select: {
+        ...PostMapper.defautFields,
+        ...PostMapper.likeFields(payload.id),
+        ...PostMapper.countField,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: limit,
+      skip: offset,
+    });
+
+    const count = await this.prisma.post.count({
+      where: {
+        author: {
+          username,
+        },
+      },
+    });
+    return {
+      count,
+      items: posts.map(({ _count, likes, ...post }) => ({
+        ...post,
+        ...PostMapper.separate({ _count, likes }),
+      })),
+    };
+  }
+
+  async getComments({
+    username,
+    query,
+    payload,
+  }: {
+    username: string;
+    query: PaginationDto;
+    payload: JwtPayload;
+  }): Promise<GetUserCommentsEntity> {
+    const { limit = 50, offset = 0 } = query;
+    const posts = await this.prisma.post.findMany({
+      where: {
+        author: {
+          username,
+        },
+        parentId: {
+          not: null,
+        },
+      },
+      select: {
+        ...PostMapper.defautFields,
+        ...PostMapper.likeFields(payload.id),
+        ...PostMapper.countField,
+        parent: {
+          select: {
+            author: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: limit,
+      skip: offset,
+    });
+    const count = await this.prisma.post.count({
+      where: {
+        author: {
+          username,
+        },
+        parentId: {
+          not: null, // Somente comentários (posts que são respostas)
+        },
+      },
+    });
+    return {
+      count,
+      items: posts.map(({ _count, likes, ...post }) => ({
+        ...post,
+        ...PostMapper.separate({ _count, likes }),
+      })),
+    };
   }
 }

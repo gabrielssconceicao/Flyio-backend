@@ -17,6 +17,8 @@ export const postMock = (): PostEntity => {
       },
     ],
     likes: 0,
+    replies: 0,
     isLiked: false,
+    parentId: null,
   };
 };

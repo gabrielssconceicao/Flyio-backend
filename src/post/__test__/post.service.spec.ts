@@ -14,7 +14,7 @@ describe('PostService', () => {
   let imageStore: ReturnType<typeof imageStoreServiceMock>;
   let primsa: ReturnType<typeof prismaServiceMock>;
   let payload: JwtPayload;
-  const _countAndLikes = { _count: { likes: 0 }, likes: [] };
+  const _countLikesAndReplies = { _count: { likes: 0, replies: 0 }, likes: [] };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -101,9 +101,12 @@ describe('PostService', () => {
 
   describe('FindOne', () => {
     it('should return a post', async () => {
-      jest
-        .spyOn(primsa.post, 'findUnique')
-        .mockResolvedValue({ ...postMock(), ..._countAndLikes });
+      jest.spyOn(primsa.post, 'findUnique').mockResolvedValue({
+        ...postMock(),
+        ..._countLikesAndReplies,
+        replies: [],
+        parent: null,
+      });
 
       const result = await service.findOne({
         postId: postMock().id,
@@ -111,7 +114,6 @@ describe('PostService', () => {
       });
 
       expect(primsa.post.findUnique).toHaveBeenCalled();
-      expect(result).toEqual(postMock());
       expect(result).toMatchSnapshot();
     });
 
@@ -131,7 +133,7 @@ describe('PostService', () => {
       jest.spyOn(primsa.post, 'findMany').mockResolvedValue(
         findManyPostMock().items.map((post) => ({
           ...post,
-          ..._countAndLikes,
+          ..._countLikesAndReplies,
         })),
       );
       jest
@@ -146,6 +148,58 @@ describe('PostService', () => {
       expect(primsa.post.findMany).toHaveBeenCalled();
       expect(primsa.post.count).toHaveBeenCalled();
       expect(result).toEqual(findManyPostMock());
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('Commennt', () => {
+    it('should comment a post without images', async () => {
+      jest.spyOn(primsa.post, 'create').mockResolvedValue({
+        ...postMock(),
+        images: [],
+        parent: { author: { username: 'johndoe' } },
+      });
+
+      const result = await service.comment({
+        postId: postMock().id,
+        createPostDto: { content: 'This is a post' },
+        payload,
+        images: [],
+      });
+
+      expect(imageStore.uploadPostImages).not.toHaveBeenCalled();
+      expect(primsa.post.create).toHaveBeenCalled();
+
+      expect(result).toEqual({
+        ...postMock(),
+        images: [],
+        parent: { author: { username: 'johndoe' } },
+      });
+      expect(result).toMatchSnapshot();
+    });
+    it('should create a post with images', async () => {
+      jest.spyOn(primsa.post, 'create').mockResolvedValue({
+        ...postMock(),
+        parent: { author: { username: 'johndoe' } },
+      });
+      jest
+        .spyOn(imageStore, 'uploadPostImages')
+        .mockResolvedValue([profilePictureMock]);
+
+      const result = await service.comment({
+        postId: postMock().id,
+        createPostDto: { content: 'This is a post' },
+        payload,
+        images: [fileMock()],
+      });
+
+      expect(imageStore.uploadPostImages).toHaveBeenCalled();
+      expect(primsa.post.create).toHaveBeenCalled();
+
+      expect(result).toEqual({
+        ...postMock(),
+        parent: { author: { username: 'johndoe' } },
+      });
       expect(result).toMatchSnapshot();
     });
   });

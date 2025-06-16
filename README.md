@@ -5,3 +5,5 @@ This project involves the development of a social network using the NestJS frame
 
 [ ] try nodemailer to reactivate acconts?
 [ ] separate services
+[ ] add route to get liked posts
+[ ] add route to get my commented posts

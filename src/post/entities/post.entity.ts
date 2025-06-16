@@ -62,8 +62,21 @@ export class PostEntity {
   likes: number;
 
   @ApiProperty({
+    example: 1,
+    description: 'Number of comments',
+  })
+  replies: number;
+
+  @ApiProperty({
     example: false,
     description: 'Whether the current user has liked the post',
   })
   isLiked: boolean;
+
+  @ApiProperty({
+    example: 'id-8',
+    description: 'Parent post ID',
+    nullable: true,
+  })
+  parentId: string | null;
 }

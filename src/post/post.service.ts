@@ -8,11 +8,17 @@ import { PostMapper } from './post.mapper';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostEntity } from './entities/post.entity';
 import { FindManyPostEntity } from './entities/find-many.entity';
+import { FindOnePostEntity } from './entities/find-one-post.entity';
+import { CommentPostEntity } from './entities/comment-post.entity';
 
 type CreatePost = {
   createPostDto: CreatePostDto;
   payload: JwtPayload;
   images: Express.Multer.File[];
+};
+
+type CommentPost = CreatePost & {
+  postId: string;
 };
 
 type PostId = {
@@ -59,7 +65,7 @@ export class PostService {
       select: PostMapper.defautFields,
     });
 
-    return { ...post, likes: 0, isLiked: false };
+    return { ...post, likes: 0, isLiked: false, replies: 0, parentId: null };
   }
 
   async delete({ payload, postId }: PostId): Promise<void> {
@@ -96,7 +102,7 @@ export class PostService {
     return;
   }
 
-  async findOne({ postId, payload }: PostId): Promise<PostEntity> {
+  async findOne({ postId, payload }: PostId): Promise<FindOnePostEntity> {
     const post = await this.prisma.post.findUnique({
       where: {
         id: postId,
@@ -104,6 +110,16 @@ export class PostService {
       select: {
         ...PostMapper.defautFields,
         ...PostMapper.likeFields(payload.id),
+        ...PostMapper.commentFields(payload.id),
+
+        ...PostMapper.countField,
+        parent: {
+          select: {
+            ...PostMapper.defautFields,
+            ...PostMapper.likeFields(payload.id),
+            ...PostMapper.countField,
+          },
+        },
       },
     });
 
@@ -111,10 +127,17 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
 
-    const { _count, likes, ...restPost } = post;
+    const { _count, likes, replies, parent, ...restPost } = post;
     return {
       ...restPost,
       ...PostMapper.separate({ _count, likes }),
+      comments: replies.map(({ _count, likes, ...reply }) => {
+        return {
+          ...reply,
+          ...PostMapper.separate({ _count, likes }),
+        };
+      }),
+      parent: PostMapper.separeteParent(parent),
     };
   }
 
@@ -127,16 +150,22 @@ export class PostService {
           contains: search,
           mode: 'insensitive',
         },
+        parentId: null,
       },
       select: {
         ...PostMapper.defautFields,
         ...PostMapper.likeFields(payload.id),
+        ...PostMapper.countField,
       },
       take: limit,
       skip: offset,
     });
 
-    const count = await this.prisma.post.count();
+    const count = await this.prisma.post.count({
+      where: {
+        parentId: null,
+      },
+    });
 
     return {
       count,
@@ -144,5 +173,48 @@ export class PostService {
         return { ...post, ...PostMapper.separate({ _count, likes }) };
       }),
     };
+  }
+
+  async comment({
+    createPostDto,
+    images,
+    payload,
+    postId,
+  }: CommentPost): Promise<CommentPostEntity> {
+    let imagesUrl: string[] = [];
+
+    if (images.length) {
+      imagesUrl = await this.imageStore.uploadPostImages({
+        files: images,
+        folder: ImageStoreTypeFolder.POST,
+      });
+    }
+
+    const post = await this.prisma.post.create({
+      data: {
+        text: createPostDto.content,
+        authorId: payload.id,
+        parentId: postId,
+        images: {
+          createMany: {
+            data: imagesUrl.map((url) => ({ url })),
+          },
+        },
+      },
+      select: {
+        ...PostMapper.defautFields,
+        parent: {
+          select: {
+            author: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return { ...post, likes: 0, isLiked: false, replies: 0 };
   }
 }

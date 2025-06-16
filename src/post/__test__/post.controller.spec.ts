@@ -20,6 +20,7 @@ describe('PostController', () => {
             findMany: jest.fn(),
             findOne: jest.fn(),
             delete: jest.fn(),
+            comment: jest.fn(),
           },
         },
       ],
@@ -63,9 +64,10 @@ describe('PostController', () => {
 
   describe('FindOne', () => {
     it('should return a post', async () => {
-      jest.spyOn(service, 'findOne').mockResolvedValue(postMock());
+      jest
+        .spyOn(service, 'findOne')
+        .mockResolvedValue({ ...postMock(), comments: [], parent: null });
       const result = await controller.findOne(postMock().id, payload);
-      expect(result).toEqual(postMock());
       expect(service.findOne).toHaveBeenCalledWith({
         postId: postMock().id,
         payload,
@@ -82,6 +84,34 @@ describe('PostController', () => {
       expect(service.findMany).toHaveBeenCalledWith({
         payload,
         query: {},
+      });
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('Comment', () => {
+    it('should return a post', async () => {
+      jest.spyOn(service, 'comment').mockResolvedValue({
+        ...postMock(),
+        parent: { author: { username: 'johndoe' } },
+      });
+      const images = [fileMock()];
+      const createPostDto = { content: 'This is a post' };
+      const result = await controller.comment(
+        payload,
+        postMock().id,
+        images,
+        createPostDto,
+      );
+      expect(result).toEqual({
+        ...postMock(),
+        parent: { author: { username: 'johndoe' } },
+      });
+      expect(service.comment).toHaveBeenCalledWith({
+        postId: postMock().id,
+        createPostDto,
+        payload,
+        images,
       });
       expect(result).toMatchSnapshot();
     });
