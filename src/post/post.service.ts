@@ -16,6 +16,10 @@ type CreatePost = {
   images: Express.Multer.File[];
 };
 
+type CommentPost = CreatePost & {
+  postId: string;
+};
+
 type PostId = {
   postId: string;
   payload: JwtPayload;
@@ -105,7 +109,8 @@ export class PostService {
       select: {
         ...PostMapper.defautFields,
         ...PostMapper.likeFields(payload.id),
-        ...PostMapper.commentField(payload.id),
+        ...PostMapper.commentFields(payload.id),
+
         ...PostMapper.countField,
         parent: {
           select: {
@@ -167,5 +172,43 @@ export class PostService {
         return { ...post, ...PostMapper.separate({ _count, likes }) };
       }),
     };
+  }
+
+  async comment({ createPostDto, images, payload, postId }: CommentPost) {
+    let imagesUrl: string[] = [];
+
+    if (images.length) {
+      imagesUrl = await this.imageStore.uploadPostImages({
+        files: images,
+        folder: ImageStoreTypeFolder.POST,
+      });
+    }
+
+    const post = await this.prisma.post.create({
+      data: {
+        text: createPostDto.content,
+        authorId: payload.id,
+        parentId: postId,
+        images: {
+          createMany: {
+            data: imagesUrl.map((url) => ({ url })),
+          },
+        },
+      },
+      select: {
+        ...PostMapper.defautFields,
+        parent: {
+          select: {
+            author: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return { ...post, likes: 0, isLiked: false, replies: 0 };
   }
 }

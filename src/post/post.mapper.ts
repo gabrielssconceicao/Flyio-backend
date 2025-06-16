@@ -34,13 +34,13 @@ export class PostMapper {
     };
   }
 
-  static commentField(id: string) {
+  static commentFields(id: string) {
     return {
       replies: {
         select: {
           ...this.defautFields,
           ...this.likeFields(id),
-          ...this.commentField,
+          ...this.commentFields,
           ...this.countField,
         },
       },

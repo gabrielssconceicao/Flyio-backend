@@ -71,4 +71,20 @@ export class PostController {
   findMany(@CurrentUser() payload: JwtPayload, @Query() query: QueryParamDto) {
     return this.postService.findMany({ payload, query });
   }
+
+  @UseInterceptors(
+    FilesInterceptor('images', 4, {
+      storage: multer.memoryStorage(),
+    }),
+  )
+  @Post(':postId')
+  @HttpCode(HttpStatus.CREATED)
+  comment(
+    @CurrentUser() payload: JwtPayload,
+    @Param('postId') postId: string,
+    @UploadedFiles(PostImageValidatorPipe) images: Express.Multer.File[],
+    @Body() createPostDto: CreatePostDto,
+  ) {
+    return this.postService.comment({ createPostDto, payload, images, postId });
+  }
 }
