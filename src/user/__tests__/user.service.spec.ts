@@ -15,7 +15,7 @@ import { userMock } from '../mocks/user.mock';
 import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 import { getLikesMock } from '../mocks/get-likes.mock';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { findManyPostMock } from '@/post/mock';
+import { findManyPostMock, postMock } from '@/post/mock';
 
 describe('UserService', () => {
   let service: UserService;
@@ -330,6 +330,29 @@ describe('UserService', () => {
       expect(prisma.post.findMany).toHaveBeenCalled();
       expect(prisma.post.count).toHaveBeenCalled();
       expect(result).toEqual(findManyPostMock());
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('GetReplies', () => {
+    it('should get user replies', async () => {
+      jest.spyOn(prisma.post, 'findMany').mockResolvedValue([
+        {
+          ...postMock(),
+          likes: [],
+          _count: { replies: 0, likes: 0 },
+          parent: { author: { username: 'johndoe' } },
+        },
+      ]);
+      jest.spyOn(prisma.post, 'count').mockResolvedValue(1);
+
+      const result = await service.getComments({
+        username: 'username',
+        payload,
+        query: paginationDtoMock,
+      });
+
+      expect(prisma.post.findMany).toHaveBeenCalled();
       expect(result).toMatchSnapshot();
     });
   });

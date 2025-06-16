@@ -128,6 +128,7 @@ export class UserController {
 
   @FindManyPostSwaggerDoc()
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Get(':username/posts')
   getPosts(
     @Param('username') username: string,
@@ -135,5 +136,16 @@ export class UserController {
     @CurrentUser() payload: JwtPayload,
   ) {
     return this.userService.getPosts({ username, query, payload });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(':username/comments')
+  getComments(
+    @Param('username') username: string,
+    @Query() query: PaginationDto,
+    @CurrentUser() payload: JwtPayload,
+  ) {
+    return this.userService.getComments({ username, query, payload });
   }
 }
