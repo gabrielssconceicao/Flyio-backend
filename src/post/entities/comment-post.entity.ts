@@ -4,20 +4,19 @@ import { PostEntity } from './post.entity';
 class Username {
   @ApiProperty({
     type: String,
-    example: 'John Doe',
+    example: 'jdoe',
     description: 'Author name',
   })
   username: string;
 }
-class Author {
+export class Author {
   @ApiProperty({
     type: Username,
-    example: 'johndoe',
     description: 'Author username',
   })
   author: Username;
 }
 export class CommentPostEntity extends PostEntity {
-  @ApiProperty({ type: Author, description: 'Comment author' })
+  @ApiProperty({ type: Author, description: 'Comment author', nullable: true })
   parent: Author | null;
 }
