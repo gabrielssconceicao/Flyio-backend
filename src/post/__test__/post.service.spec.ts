@@ -151,4 +151,56 @@ describe('PostService', () => {
       expect(result).toMatchSnapshot();
     });
   });
+
+  describe('Commennt', () => {
+    it('should comment a post without images', async () => {
+      jest.spyOn(primsa.post, 'create').mockResolvedValue({
+        ...postMock(),
+        images: [],
+        parent: { author: { username: 'johndoe' } },
+      });
+
+      const result = await service.comment({
+        postId: postMock().id,
+        createPostDto: { content: 'This is a post' },
+        payload,
+        images: [],
+      });
+
+      expect(imageStore.uploadPostImages).not.toHaveBeenCalled();
+      expect(primsa.post.create).toHaveBeenCalled();
+
+      expect(result).toEqual({
+        ...postMock(),
+        images: [],
+        parent: { author: { username: 'johndoe' } },
+      });
+      expect(result).toMatchSnapshot();
+    });
+    it('should create a post with images', async () => {
+      jest.spyOn(primsa.post, 'create').mockResolvedValue({
+        ...postMock(),
+        parent: { author: { username: 'johndoe' } },
+      });
+      jest
+        .spyOn(imageStore, 'uploadPostImages')
+        .mockResolvedValue([profilePictureMock]);
+
+      const result = await service.comment({
+        postId: postMock().id,
+        createPostDto: { content: 'This is a post' },
+        payload,
+        images: [fileMock()],
+      });
+
+      expect(imageStore.uploadPostImages).toHaveBeenCalled();
+      expect(primsa.post.create).toHaveBeenCalled();
+
+      expect(result).toEqual({
+        ...postMock(),
+        parent: { author: { username: 'johndoe' } },
+      });
+      expect(result).toMatchSnapshot();
+    });
+  });
 });

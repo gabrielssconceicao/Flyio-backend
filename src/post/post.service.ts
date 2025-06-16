@@ -9,6 +9,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { PostEntity } from './entities/post.entity';
 import { FindManyPostEntity } from './entities/find-many.entity';
 import { FindOnePostEntity } from './entities/find-one-post.entity';
+import { CommentPostEntity } from './entities/comment-post.entity';
 
 type CreatePost = {
   createPostDto: CreatePostDto;
@@ -174,7 +175,12 @@ export class PostService {
     };
   }
 
-  async comment({ createPostDto, images, payload, postId }: CommentPost) {
+  async comment({
+    createPostDto,
+    images,
+    payload,
+    postId,
+  }: CommentPost): Promise<CommentPostEntity> {
     let imagesUrl: string[] = [];
 
     if (images.length) {

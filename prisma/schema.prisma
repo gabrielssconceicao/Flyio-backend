@@ -55,7 +55,7 @@ model Post {
   createdAt DateTime @default(now())
 
   author User  @relation(fields: [authorId], references: [id])
-  parent Post? @relation("PostToReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  parent Post? @relation("PostToReplies", fields: [parentId], references: [id])
 
   replies Post[]       @relation("PostToReplies")
   likes   LikePost[]

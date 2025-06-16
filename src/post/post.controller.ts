@@ -27,6 +27,7 @@ import { CreatePostSwaggerDoc } from './swagger/create-post-swagger';
 import { DeletePostSwaggerDoc } from './swagger/delete-post-swagger';
 import { GetOnePostSwaggerDoc } from './swagger/get-one-post-swagger';
 import { FindManyPostSwaggerDoc } from './swagger/find-many-post-swagger';
+import { CommentPostSwaggerDoc } from './swagger/comment-post-swagger';
 
 @ProtectedRouteSwaggerDoc()
 @ApiCookieAuth('access_token')
@@ -72,6 +73,7 @@ export class PostController {
     return this.postService.findMany({ payload, query });
   }
 
+  @CommentPostSwaggerDoc()
   @UseInterceptors(
     FilesInterceptor('images', 4, {
       storage: multer.memoryStorage(),
