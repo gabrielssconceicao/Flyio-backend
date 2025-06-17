@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ImageStoreService } from './image-store.service';
+import { PostImageStoreUseCase, UserImageStoreUseCase } from './use-cases';
 
 @Module({
   controllers: [],
-  providers: [ImageStoreService],
-  exports: [ImageStoreService],
+  providers: [PostImageStoreUseCase, UserImageStoreUseCase],
+  exports: [PostImageStoreUseCase, UserImageStoreUseCase],
 })
 export class ImageStoreModule {}

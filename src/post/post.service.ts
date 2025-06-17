@@ -2,7 +2,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
-import { ImageStoreService } from '@/image-store/image-store.service';
+import { PostImageStoreUseCase } from '@/image-store/use-cases';
 import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { PostMapper } from './post.mapper';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -35,7 +35,7 @@ type FindMany = {
 export class PostService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly imageStore: ImageStoreService,
+    private readonly imageStore: PostImageStoreUseCase,
   ) {}
 
   async create({

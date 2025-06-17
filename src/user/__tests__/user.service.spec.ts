@@ -3,8 +3,8 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ImageStoreService } from '@/image-store/image-store.service';
-import { imageStoreServiceMock } from '@/image-store/mock/image-store.mock';
+import { UserImageStoreUseCase } from '@/image-store/use-cases';
+import { userImageStoreUseCaseMock } from '@/image-store/mock';
 import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
 import { UserService } from '../user.service';
 import { UserMapper } from '../user.mapper';
@@ -20,7 +20,7 @@ import { findManyPostMock, postMock } from '@/post/mock';
 describe('UserService', () => {
   let service: UserService;
   let hashingService: HashingService;
-  let imageStore: ImageStoreService;
+  let imageStore: UserImageStoreUseCase;
   let prisma: ReturnType<typeof prismaServiceMock>;
   const paginationDtoMock = { offset: 0, limit: 25 };
   const payload = { id: 'id-1' } as JwtPayload;
@@ -41,15 +41,15 @@ describe('UserService', () => {
           useValue: prisma,
         },
         {
-          provide: ImageStoreService,
-          useValue: imageStoreServiceMock(),
+          provide: UserImageStoreUseCase,
+          useValue: userImageStoreUseCaseMock(),
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
     hashingService = module.get<HashingService>(HashingService);
-    imageStore = module.get<ImageStoreService>(ImageStoreService);
+    imageStore = module.get<UserImageStoreUseCase>(UserImageStoreUseCase);
   });
 
   it('should be defined', () => {

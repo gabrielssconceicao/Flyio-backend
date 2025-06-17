@@ -12,7 +12,7 @@ import { FindOneUserEntity } from './entities/find-one-user.entity';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { ImageStoreService } from '@/image-store/image-store.service';
+import { UserImageStoreUseCase } from '@/image-store/use-cases';
 import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { PostMapper } from '@/post/post.mapper';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
@@ -36,7 +36,7 @@ export class UserService {
   constructor(
     private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
-    private readonly imageStore: ImageStoreService,
+    private readonly imageStore: UserImageStoreUseCase,
   ) {}
 
   async create({

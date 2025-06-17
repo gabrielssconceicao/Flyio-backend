@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import { HashingService } from '@/hash/hashing.service';
-import { ImageStoreService } from '@/image-store/image-store.service';
+import { UserImageStoreUseCase } from '@/image-store/use-cases';
 import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { MeMapper } from './me.mapper';
 import { UpdateMeDto } from './dto/update-me.dto';
@@ -25,7 +25,7 @@ export class MeService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly hashing: HashingService,
-    private readonly imageStore: ImageStoreService,
+    private readonly imageStore: UserImageStoreUseCase,
   ) {}
 
   async getMe(payload: JwtPayload): Promise<{ user: CurrentUserEntity }> {
@@ -113,7 +113,7 @@ export class MeService {
         profileImg: true,
       },
     })) as { profileImg: string };
-    const { result } = await this.imageStore.deleteImage({
+    const { result } = await this.imageStore.deleteUserImage({
       fileUrl: user?.profileImg,
       folder: ImageStoreTypeFolder.PROFILE,
     });
@@ -141,7 +141,7 @@ export class MeService {
         bannerImg: true,
       },
     })) as { bannerImg: string };
-    const { result } = await this.imageStore.deleteImage({
+    const { result } = await this.imageStore.deleteUserImage({
       fileUrl: user?.bannerImg,
       folder: ImageStoreTypeFolder.BANNER,
     });

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { ImageStoreService } from '@/image-store/image-store.service';
-import { imageStoreServiceMock } from '@/image-store/mock/image-store.mock';
+import { PostImageStoreUseCase } from '@/image-store/use-cases';
+import { postImageStoreUseCaseMock } from '@/image-store/mock';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { PrismaService } from '@/prisma/prisma.service';
 import { findManyPostMock, postMock } from '../mock';
@@ -11,7 +11,7 @@ import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
 
 describe('PostService', () => {
   let service: PostService;
-  let imageStore: ReturnType<typeof imageStoreServiceMock>;
+  let imageStore: ReturnType<typeof postImageStoreUseCaseMock>;
   let primsa: ReturnType<typeof prismaServiceMock>;
   let payload: JwtPayload;
   const _countLikesAndReplies = { _count: { likes: 0, replies: 0 }, likes: [] };
@@ -26,14 +26,14 @@ describe('PostService', () => {
         },
 
         {
-          provide: ImageStoreService,
-          useValue: imageStoreServiceMock(),
+          provide: PostImageStoreUseCase,
+          useValue: postImageStoreUseCaseMock(),
         },
       ],
     }).compile();
 
     service = module.get<PostService>(PostService);
-    imageStore = module.get(ImageStoreService);
+    imageStore = module.get(PostImageStoreUseCase);
     primsa = module.get(PrismaService);
     payload = { id: 'id-1' } as JwtPayload;
   });

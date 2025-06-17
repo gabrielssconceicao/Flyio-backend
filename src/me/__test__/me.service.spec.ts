@@ -4,9 +4,12 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { HashingService } from '@/hash/hashing.service';
-import { ImageStoreService } from '@/image-store/image-store.service';
-import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
-import { imageStoreServiceMock } from '@/image-store/mock/image-store.mock';
+import { UserImageStoreUseCase } from '@/image-store/use-cases';
+import {
+  userImageStoreUseCaseMock,
+  fileMock,
+  profilePictureMock,
+} from '@/image-store/mock';
 import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { currentUserMock } from '../mocks/current-user.mock';
 import { MeService } from '../me.service';
@@ -18,7 +21,7 @@ describe('MeService', () => {
   let prisma: ReturnType<typeof prismaServiceMock>;
   let hashing: HashingService;
   let payload: JwtPayload;
-  let imageStore: ImageStoreService;
+  let imageStore: UserImageStoreUseCase;
   let _count: { _count: { followers: number; following: number } };
   beforeEach(async () => {
     _count = { _count: { followers: 0, following: 0 } };
@@ -37,15 +40,15 @@ describe('MeService', () => {
           },
         },
         {
-          provide: ImageStoreService,
-          useValue: imageStoreServiceMock(),
+          provide: UserImageStoreUseCase,
+          useValue: userImageStoreUseCaseMock(),
         },
       ],
     }).compile();
 
     service = module.get<MeService>(MeService);
     hashing = module.get<HashingService>(HashingService);
-    imageStore = module.get<ImageStoreService>(ImageStoreService);
+    imageStore = module.get<UserImageStoreUseCase>(UserImageStoreUseCase);
     payload = { id: 'id-1' } as JwtPayload;
   });
 
@@ -203,9 +206,11 @@ describe('MeService', () => {
       jest
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ profileImg: profilePictureMock });
-      jest.spyOn(imageStore, 'deleteImage').mockResolvedValue({ result: 'ok' });
+      jest
+        .spyOn(imageStore, 'deleteUserImage')
+        .mockResolvedValue({ result: 'ok' });
       await service.deleteProfileImage({ payload });
-      expect(imageStore.deleteImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.PROFILE,
       });
@@ -229,12 +234,12 @@ describe('MeService', () => {
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ profileImg: profilePictureMock });
       jest
-        .spyOn(imageStore, 'deleteImage')
+        .spyOn(imageStore, 'deleteUserImage')
         .mockResolvedValue({ result: 'not_found' });
       await expect(service.deleteProfileImage({ payload })).rejects.toThrow(
         BadRequestException,
       );
-      expect(imageStore.deleteImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.PROFILE,
       });
@@ -252,9 +257,11 @@ describe('MeService', () => {
       jest
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ bannerImg: profilePictureMock });
-      jest.spyOn(imageStore, 'deleteImage').mockResolvedValue({ result: 'ok' });
+      jest
+        .spyOn(imageStore, 'deleteUserImage')
+        .mockResolvedValue({ result: 'ok' });
       await service.deleteBannerImage({ payload });
-      expect(imageStore.deleteImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.BANNER,
       });
@@ -278,12 +285,12 @@ describe('MeService', () => {
         .spyOn(prisma.user, 'findUnique')
         .mockResolvedValue({ bannerImg: profilePictureMock });
       jest
-        .spyOn(imageStore, 'deleteImage')
+        .spyOn(imageStore, 'deleteUserImage')
         .mockResolvedValue({ result: 'not_found' });
       await expect(service.deleteBannerImage({ payload })).rejects.toThrow(
         BadRequestException,
       );
-      expect(imageStore.deleteImage).toHaveBeenCalledWith({
+      expect(imageStore.deleteUserImage).toHaveBeenCalledWith({
         fileUrl: profilePictureMock,
         folder: ImageStoreTypeFolder.BANNER,
       });
