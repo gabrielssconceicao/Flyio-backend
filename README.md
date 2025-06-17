@@ -9,9 +9,13 @@ This project involves the development of a social network using the NestJS frame
 [ ] refactor
   [x] auth
   [x] image-store
-  [ ] me
+  [x] me
   [ ] user
+      [ ] default
       [ ] follow
+      [ ] liked
+      [ ] posts
+      [ ] comments
   [ ] post
       [ ] comment
       [ ] likes

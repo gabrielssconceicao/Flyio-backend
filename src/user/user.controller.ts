@@ -13,20 +13,25 @@ import {
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
+
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
-import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
-import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
-import { FollowUsersSwaggerDoc } from './swagger/get-follow-swagger';
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { CurrentUser } from '@/common/params/current-user.params';
-import { GetUserLikedPostSwaggerDoc } from './swagger/get-user-liked-post-swagger';
+
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
 import { FindManyPostSwaggerDoc } from '@/post/swagger/find-many-post-swagger';
+
+import { UserService } from './user.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import {
+  CreateUserSwaggerDoc,
+  FollowUsersSwaggerDoc,
+  GetUserLikedPostSwaggerDoc,
+  GetUserSwaggerDoc,
+  SearchUsersSwaggerDoc,
+} from './swagger';
 
 @Controller('user')
 export class UserController {
