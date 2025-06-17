@@ -23,10 +23,12 @@ import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-val
 
 import { UpdateMeDto } from './dto/update-me.dto';
 import { MeService } from './me.service';
-import { UpdateMeSwaggerDoc } from './swagger/update-me-swagger';
-import { GetMeSwaggerDoc } from './swagger/get-me-swagger';
-import { DesactivateMeSwaggerDoc } from './swagger/desactivate-me-swagger';
-import { DeleteImageSwaggerDoc } from './swagger/delete-image-swagger';
+import {
+  UpdateMeSwaggerDoc,
+  DeleteImageSwaggerDoc,
+  DesactivateMeSwaggerDoc,
+  GetMeSwaggerDoc,
+} from './swagger';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
@@ -38,7 +40,7 @@ export class MeController {
   @GetMeSwaggerDoc()
   @Get()
   getMe(@CurrentUser() payload: JwtPayload) {
-    return this.meService.getMe(payload);
+    return this.meService.get(payload);
   }
 
   @UpdateMeSwaggerDoc()
@@ -83,7 +85,7 @@ export class MeController {
         metatype: undefined,
       },
     );
-    return this.meService.updateMe({
+    return this.meService.update({
       payload,
       updateMeDto,
       profileImage: validatedProfile,
@@ -95,7 +97,7 @@ export class MeController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete()
   desactivateMe(@CurrentUser() payload: JwtPayload) {
-    return this.meService.desactivateMe(payload);
+    return this.meService.desactivate(payload);
   }
 
   @DeleteImageSwaggerDoc('profile')

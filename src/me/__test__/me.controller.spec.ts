@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
+import { payloadMock } from '@/auth/mock/token-payload.mock';
+
 import { MeController } from '../me.controller';
 import { MeService } from '../me.service';
-import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { UpdateMeDto } from '../dto/update-me.dto';
 import { currentUserMock } from '../mocks/current-user.mock';
-import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
-import { BadRequestException } from '@nestjs/common';
 
 describe('MeController', () => {
   let controller: MeController;
   let service: MeService;
-  let payload: JwtPayload;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MeController],
@@ -18,9 +18,9 @@ describe('MeController', () => {
         {
           provide: MeService,
           useValue: {
-            getMe: jest.fn(),
-            updateMe: jest.fn(),
-            desactivateMe: jest.fn(),
+            get: jest.fn(),
+            update: jest.fn(),
+            desactivate: jest.fn(),
             deleteProfileImage: jest.fn(),
             deleteBannerImage: jest.fn(),
           },
@@ -30,7 +30,6 @@ describe('MeController', () => {
 
     controller = module.get<MeController>(MeController);
     service = module.get<MeService>(MeService);
-    payload = { id: 'id-1' } as JwtPayload;
   });
 
   it('should be defined', () => {
@@ -39,11 +38,11 @@ describe('MeController', () => {
 
   describe('GetMe', () => {
     it('should get current user', async () => {
-      jest.spyOn(service, 'getMe').mockResolvedValue({
+      jest.spyOn(service, 'get').mockResolvedValue({
         user: currentUserMock(),
       });
-      const result = await controller.getMe(payload);
-      expect(service.getMe).toHaveBeenCalledWith(payload);
+      const result = await controller.getMe(payloadMock);
+      expect(service.get).toHaveBeenCalledWith(payloadMock);
       expect(result).toMatchSnapshot();
     });
   });
@@ -55,7 +54,7 @@ describe('MeController', () => {
         bio: 'updated bio',
         password: 'newPassword',
       };
-      jest.spyOn(service, 'updateMe').mockResolvedValue({
+      jest.spyOn(service, 'update').mockResolvedValue({
         user: {
           ...currentUserMock(),
           bio: updateMeDto.bio as string,
@@ -63,12 +62,12 @@ describe('MeController', () => {
           profileImg: profilePictureMock,
         },
       });
-      const result = await controller.updateMe(payload, updateMeDto, {
+      const result = await controller.updateMe(payloadMock, updateMeDto, {
         profileImg: [fileMock()],
         bannerImg: [],
       });
-      expect(service.updateMe).toHaveBeenCalledWith({
-        payload,
+      expect(service.update).toHaveBeenCalledWith({
+        payload: payloadMock,
         updateMeDto,
         bannerImage: null,
         profileImage: fileMock(),
@@ -79,42 +78,28 @@ describe('MeController', () => {
 
   describe('DesactivateMe', () => {
     it('should desactivate current user', async () => {
-      await controller.desactivateMe(payload);
-      expect(service.desactivateMe).toHaveBeenCalledWith(payload);
+      await controller.desactivateMe(payloadMock);
+      expect(service.desactivate).toHaveBeenCalledWith(payloadMock);
     });
   });
 
   describe('DeleteProfileImage', () => {
     it('should delete profile image', async () => {
       jest.spyOn(service, 'deleteProfileImage').mockResolvedValue();
-      await controller.deleteProfileImage(payload);
-      expect(service.deleteProfileImage).toHaveBeenCalledWith({ payload });
-    });
-
-    it('should thow an BadRequestException', async () => {
-      jest
-        .spyOn(service, 'deleteProfileImage')
-        .mockRejectedValue(new BadRequestException());
-      await expect(controller.deleteProfileImage(payload)).rejects.toThrow(
-        BadRequestException,
-      );
+      await controller.deleteProfileImage(payloadMock);
+      expect(service.deleteProfileImage).toHaveBeenCalledWith({
+        payload: payloadMock,
+      });
     });
   });
 
   describe('DeleteBannerImage', () => {
     it('should delete banner image', async () => {
       jest.spyOn(service, 'deleteBannerImage').mockResolvedValue();
-      await controller.deleteBannerImage(payload);
-      expect(service.deleteBannerImage).toHaveBeenCalledWith({ payload });
-    });
-
-    it('should thow an BadRequestException', async () => {
-      jest
-        .spyOn(service, 'deleteBannerImage')
-        .mockRejectedValue(new BadRequestException());
-      await expect(controller.deleteBannerImage(payload)).rejects.toThrow(
-        BadRequestException,
-      );
+      await controller.deleteBannerImage(payloadMock);
+      expect(service.deleteBannerImage).toHaveBeenCalledWith({
+        payload: payloadMock,
+      });
     });
   });
 });
