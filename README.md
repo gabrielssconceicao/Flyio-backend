@@ -8,7 +8,7 @@ This project involves the development of a social network using the NestJS frame
 
 [ ] refactor
   [x] auth
-  [ ] image-store
+  [x] image-store
   [ ] me
   [ ] user
       [ ] follow
