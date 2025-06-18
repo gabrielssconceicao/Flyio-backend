@@ -11,12 +11,15 @@ This project involves the development of a social network using the NestJS frame
   [x] image-store
   [x] me
   [ ] user
-      [ ] default
-      [ ] follow
+      [x] default
+      [x] follow
       [ ] liked
       [ ] posts
       [ ] comments
+  [ ] follow
+      [ ] follow
+      [ ] unllow
   [ ] post
-      [ ] comment
-      [ ] likes
+  [ ] comment
+  [ ] likes
 
