@@ -6,7 +6,7 @@ import jwtConfig from './jwt.config';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { RefreshTokenUseCase, SignInUseCase } from './use-cases';
+import { AuthUseCasesProviders } from './use-cases';
 @Module({
   imports: [
     HashingModule,
@@ -14,7 +14,7 @@ import { RefreshTokenUseCase, SignInUseCase } from './use-cases';
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RefreshTokenUseCase, SignInUseCase],
+  providers: [AuthService, JwtStrategy, ...AuthUseCasesProviders],
   exports: [JwtModule],
 })
 export class AuthModule {}

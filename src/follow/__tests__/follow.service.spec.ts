@@ -1,27 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FollowService } from '../follow.service';
-import { prismaServiceMock } from '@/prisma/prisma.service.mock';
-import { PrismaService } from '@/prisma/prisma.service';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { FollowUseCase, UnfollowUseCase } from '../use-cases';
 describe('FollowService', () => {
   let service: FollowService;
-  let prisma: ReturnType<typeof prismaServiceMock>;
+  let follow: FollowUseCase;
+  let unfollow: UnfollowUseCase;
   let payload: JwtPayload;
+  let username: string;
   beforeEach(async () => {
-    prisma = prismaServiceMock();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FollowService,
         {
-          provide: PrismaService,
-          useValue: prisma,
+          provide: FollowUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: UnfollowUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     service = module.get<FollowService>(FollowService);
-    payload = { id: 'id-1' } as JwtPayload;
+
+    follow = module.get<FollowUseCase>(FollowUseCase);
+    unfollow = module.get<UnfollowUseCase>(UnfollowUseCase);
+    payload = { id: 'id-1', username: 'johndoe2' } as JwtPayload;
+    username = 'jonhdoe';
   });
 
   afterEach(() => {
@@ -30,88 +41,17 @@ describe('FollowService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(prisma).toBeDefined();
+    expect(follow).toBeDefined();
+    expect(unfollow).toBeDefined();
   });
 
-  describe('Follow', () => {
-    it('should follow a user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any);
-
-      jest.spyOn(prisma.follow, 'findUnique').mockResolvedValue(null);
-
-      await service.follow({ followingUserId: 'id-33', payload });
-
-      expect(prisma.user.findUnique).toHaveBeenCalled();
-      expect(prisma.follow.findUnique).toHaveBeenCalled();
-      expect(prisma.follow.create).toHaveBeenCalled();
-    });
-
-    it('should thow an BadRequestException if followingUserId is the same as followedBy', async () => {
-      await expect(
-        service.follow({ followingUserId: 'id-1', payload }),
-      ).rejects.toThrow(BadRequestException);
-    });
-
-    it('should thow an NotFoundException if followingUserId is not found', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-      await expect(
-        service.follow({ followingUserId: 'id-33', payload }),
-      ).rejects.toThrow(NotFoundException);
-      expect(prisma.user.findUnique).toHaveBeenCalled();
-    });
-
-    it('should thow an BadRequestException if you are already following this user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any);
-
-      jest.spyOn(prisma.follow, 'findUnique').mockResolvedValue({} as any);
-
-      await expect(
-        service.follow({ followingUserId: 'id-33', payload }),
-      ).rejects.toThrow(BadRequestException);
-
-      expect(prisma.user.findUnique).toHaveBeenCalled();
-      expect(prisma.follow.findUnique).toHaveBeenCalled();
-    });
+  it('should follow', async () => {
+    await service.follow({ username, payload });
+    expect(follow.execute).toHaveBeenCalledWith({ username, payload });
   });
 
-  describe('Unfollow', () => {
-    it('should unfollow a user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any);
-
-      jest.spyOn(prisma.follow, 'findUnique').mockResolvedValue({} as any);
-
-      await service.unfollow({ followingUserId: 'id-33', payload });
-
-      expect(prisma.user.findUnique).toHaveBeenCalled();
-      expect(prisma.follow.findUnique).toHaveBeenCalled();
-      expect(prisma.follow.delete).toHaveBeenCalled();
-    });
-
-    it('should thow an BadRequestException if followingUserId is the same as followedBy', async () => {
-      await expect(
-        service.unfollow({ followingUserId: 'id-1', payload }),
-      ).rejects.toThrow(BadRequestException);
-    });
-
-    it('should thow an NotFoundException if followingUserId is not found', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-      await expect(
-        service.unfollow({ followingUserId: 'id-33', payload }),
-      ).rejects.toThrow(NotFoundException);
-      expect(prisma.user.findUnique).toHaveBeenCalled();
-    });
-
-    it('should thow an BadRequestException if you already unfollow this user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any);
-
-      jest.spyOn(prisma.follow, 'findUnique').mockResolvedValue(null);
-
-      await expect(
-        service.unfollow({ followingUserId: 'id-33', payload }),
-      ).rejects.toThrow(BadRequestException);
-
-      expect(prisma.user.findUnique).toHaveBeenCalled();
-      expect(prisma.follow.findUnique).toHaveBeenCalled();
-    });
+  it('should unfollow', async () => {
+    await service.unfollow({ username, payload });
+    expect(unfollow.execute).toHaveBeenCalledWith({ username, payload });
   });
 });

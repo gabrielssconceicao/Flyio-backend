@@ -97,7 +97,6 @@ export class CreateUserUseCase extends UserUseCase {
         OR: conditions,
       },
     });
-    console.log({ existingUser });
     return !!existingUser;
   }
 }

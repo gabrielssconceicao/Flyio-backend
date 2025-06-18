@@ -26,21 +26,21 @@ export class FollowController {
 
   @FollowUserSwaggerDoc('follow')
   @HttpCode(HttpStatus.CREATED)
-  @Post('follow/:followingUserId')
+  @Post('follow/:username')
   follow(
     @CurrentUser() payload: JwtPayload,
-    @Param('followingUserId') followingUserId: string,
+    @Param('username') username: string,
   ) {
-    return this.followService.follow({ payload, followingUserId });
+    return this.followService.follow({ payload, username });
   }
 
   @FollowUserSwaggerDoc('unfollow')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('unfollow/:followingUserId')
+  @Delete('unfollow/:username')
   unfollow(
     @CurrentUser() payload: JwtPayload,
-    @Param('followingUserId') followingUserId: string,
+    @Param('username') username: string,
   ) {
-    return this.followService.unfollow({ payload, followingUserId });
+    return this.followService.unfollow({ payload, username });
   }
 }

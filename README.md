@@ -16,9 +16,9 @@ This project involves the development of a social network using the NestJS frame
       [ ] liked
       [ ] posts
       [ ] comments
-  [ ] follow
-      [ ] follow
-      [ ] unllow
+  [x] follow
+      [x] follow
+      [x] unllow
   [ ] post
   [ ] comment
   [ ] likes
