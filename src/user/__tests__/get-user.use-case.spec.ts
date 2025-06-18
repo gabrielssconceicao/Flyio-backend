@@ -5,8 +5,8 @@ import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import { UserMapper } from '../user.mapper';
-import { userMock } from '../mocks/user.mock';
-import { GetUserUseCase } from '../use-cases/get-user.use-case';
+import { userMock } from '../mocks';
+import { GetUserUseCase } from '../use-cases';
 
 describe('GetUserUseCase', () => {
   let useCase: GetUserUseCase;

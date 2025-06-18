@@ -1,22 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
-import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
+
+import { HashingService } from '@/hash/hashing.service';
 import { UserImageStoreUseCase } from '@/image-store/use-cases';
 import { userImageStoreUseCaseMock } from '@/image-store/mock';
-import { UserService } from '../user.service';
-import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
-import { getLikesMock } from '../mocks/get-likes.mock';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { findManyPostMock, postMock } from '@/post/mock';
-import { GetUserUseCase } from '../use-cases/get-user.use-case';
-import { CreateUserUseCase } from '../use-cases/create-user.use-case';
-import { userEntityMock } from '../mocks/user-entity.mock';
-import { userMock } from '../mocks/user.mock';
-import { createUserDtoMock } from '../mocks/create-user-dto.mock';
-import { SearchUserEntity } from '../entities/search-user.entity';
-import { SearchUserUseCase } from '../use-cases';
+
+import { UserService } from '../user.service';
+import {
+  createUserDtoMock,
+  getLikesMock,
+  searchUsersResponseMock,
+  userEntityMock,
+  userMock,
+} from '../mocks';
+
+import {
+  GetFollowersUseCase,
+  GetFollowingsUseCase,
+  SearchUserUseCase,
+  CreateUserUseCase,
+  GetUserUseCase,
+} from '../use-cases';
 
 describe('UserService', () => {
   let service: UserService;
@@ -28,6 +36,8 @@ describe('UserService', () => {
   let getUser: GetUserUseCase;
   let createUser: CreateUserUseCase;
   let searchUser: SearchUserUseCase;
+  let getFollowings: GetFollowingsUseCase;
+  let getFollowers: GetFollowersUseCase;
   beforeEach(async () => {
     prisma = prismaServiceMock();
 
@@ -61,7 +71,19 @@ describe('UserService', () => {
           },
         },
         {
-          provide: SearchUserEntity,
+          provide: SearchUserUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: GetFollowingsUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: GetFollowersUseCase,
           useValue: {
             execute: jest.fn(),
           },
@@ -75,6 +97,8 @@ describe('UserService', () => {
     getUser = module.get<GetUserUseCase>(GetUserUseCase);
     createUser = module.get<CreateUserUseCase>(CreateUserUseCase);
     searchUser = module.get<SearchUserUseCase>(SearchUserUseCase);
+    getFollowings = module.get<GetFollowingsUseCase>(GetFollowingsUseCase);
+    getFollowers = module.get<GetFollowersUseCase>(GetFollowersUseCase);
   });
 
   it('should be defined', () => {
@@ -128,91 +152,36 @@ describe('UserService', () => {
     expect(result).toMatchSnapshot();
   });
 
-  describe('GetFollowings', () => {
-    it('should get a user followings', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
-        id: 'id-1',
-      });
+  it('should get users that a user is following', async () => {
+    jest
+      .spyOn(prisma.user, 'findUnique')
+      .mockResolvedValue(searchUsersResponseMock());
 
-      jest.spyOn(prisma.follow, 'findMany').mockResolvedValue(
-        searchUsersResponseMock().items.map((user) => {
-          return { followed: user };
-        }),
-      );
-      jest
-        .spyOn(prisma.follow, 'count')
-        .mockResolvedValue(searchUsersResponseMock().count);
-
-      const result = await service.getFollowings({
-        username: 'username',
-        query: paginationDtoMock,
-      });
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { username: 'username' },
-        select: { id: true },
-      });
-      expect(prisma.follow.findMany).toHaveBeenCalled();
-      expect(prisma.follow.count).toHaveBeenCalledWith({
-        where: { userId: 'id-1' },
-      });
-      expect(result).toMatchSnapshot();
-      expect(result.count).toEqual(searchUsersResponseMock().count);
-      expect(result.items).toEqual(searchUsersResponseMock().items);
+    const result = await service.getFollowings({
+      username: 'username',
+      query: paginationDtoMock,
     });
-    it('should throw a not found exception if user not found', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-
-      await expect(
-        service.getFollowings({
-          username: 'username',
-          query: paginationDtoMock,
-        }),
-      ).rejects.toThrow(NotFoundException);
+    expect(getFollowings.execute).toHaveBeenCalledWith({
+      username: 'username',
+      query: paginationDtoMock,
     });
+    expect(result).toMatchSnapshot();
   });
 
-  describe('GetFollowers', () => {
-    it('should get a user followers', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
-        id: 'id-1',
-      });
+  it('should get users that follow a user', async () => {
+    jest
+      .spyOn(prisma.user, 'findUnique')
+      .mockResolvedValue(searchUsersResponseMock());
 
-      jest.spyOn(prisma.follow, 'findMany').mockResolvedValue(
-        searchUsersResponseMock().items.map((user) => {
-          return { follower: user };
-        }),
-      );
-      jest
-        .spyOn(prisma.follow, 'count')
-        .mockResolvedValue(searchUsersResponseMock().count);
-
-      const result = await service.getFollowers({
-        username: 'username',
-        query: paginationDtoMock,
-      });
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { username: 'username' },
-        select: { id: true },
-      });
-      expect(prisma.follow.findMany).toHaveBeenCalled();
-      expect(prisma.follow.count).toHaveBeenCalledWith({
-        where: { followingUserId: 'id-1' },
-      });
-      expect(result).toMatchSnapshot();
-      expect(result.count).toEqual(searchUsersResponseMock().count);
-      expect(result.items).toEqual(searchUsersResponseMock().items);
+    const result = await service.getFollowers({
+      username: 'username',
+      query: paginationDtoMock,
     });
-
-    it('should throw a not found exception if user not found', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-
-      await expect(
-        service.getFollowers({
-          username: 'username',
-          query: paginationDtoMock,
-        }),
-      ).rejects.toThrow(NotFoundException);
+    expect(getFollowers.execute).toHaveBeenCalledWith({
+      username: 'username',
+      query: paginationDtoMock,
     });
+    expect(result).toMatchSnapshot();
   });
 
   describe('GetLikedPosts', () => {

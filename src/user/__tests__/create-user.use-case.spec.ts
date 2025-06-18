@@ -12,10 +12,9 @@ import {
 } from '@/image-store/mock';
 
 import { UserMapper } from '../user.mapper';
-import { CreateUserUseCase } from '../use-cases/create-user.use-case';
+import { CreateUserUseCase } from '../use-cases';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { createUserDtoMock } from '../mocks/create-user-dto.mock';
-import { userEntityMock } from '../mocks/user-entity.mock';
+import { createUserDtoMock, userEntityMock } from '../mocks';
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase;

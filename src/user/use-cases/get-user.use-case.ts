@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FindOneUserEntity } from '../entities/find-one-user.entity';
 import { UserMapper } from '../user.mapper';
-import { Count, GetUserParam } from './types';
+import { GetUserParam } from './types';
 import { UserUseCase } from './user.use-case';
 
 @Injectable()
@@ -15,10 +15,10 @@ export class GetUserUseCase extends UserUseCase {
     });
 
     if (!user) {
-      this.throwNotFoundException('User not found');
+      throw new NotFoundException('User not found');
     }
 
-    const { _count, ...rest } = user as FindOneUserEntity & Count;
+    const { _count, ...rest } = user;
 
     return {
       user: {

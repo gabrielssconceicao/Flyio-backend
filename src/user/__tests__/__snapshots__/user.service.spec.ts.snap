@@ -1,31 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UserService GetFollowers should get a user followers 1`] = `
-{
-  "count": 1,
-  "items": [
-    {
-      "name": "John Doe",
-      "profileImg": null,
-      "username": "johndoe",
-    },
-  ],
-}
-`;
-
-exports[`UserService GetFollowings should get a user followings 1`] = `
-{
-  "count": 1,
-  "items": [
-    {
-      "name": "John Doe",
-      "profileImg": null,
-      "username": "johndoe",
-    },
-  ],
-}
-`;
-
 exports[`UserService GetLikedPosts should get a user liked posts 1`] = `
 {
   "count": 1,
@@ -138,5 +112,22 @@ exports[`UserService should get a user 1`] = `
     "profileImg": null,
     "username": "johndoe",
   },
+}
+`;
+
+exports[`UserService should get users that a user is following 1`] = `undefined`;
+
+exports[`UserService should get users that follow a user 1`] = `undefined`;
+
+exports[`UserService should search users 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "name": "John Doe",
+      "profileImg": null,
+      "username": "johndoe",
+    },
+  ],
 }
 `;

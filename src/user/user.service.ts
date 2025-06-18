@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { UserMapper } from './user.mapper';
 import { UserEntity } from './entities/user.entity';
 import { FindOneUserEntity } from './entities/find-one-user.entity';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
@@ -12,12 +11,14 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { GetLikedPostEntity } from './entities/get-liked-post-entity';
 import { FindManyPostEntity } from '@/post/entities/find-many.entity';
 import { GetUserCommentsEntity } from './entities/get-user-comments.entity';
-import { CreateUserParams } from './use-cases/types';
+import { CreateUserParams, GetFollowingsParam } from './use-cases/types';
 import {
   CreateUserUseCase,
+  GetFollowersUseCase,
   GetUserUseCase,
   SearchUserUseCase,
 } from './use-cases';
+import { GetFollowingsUseCase } from './use-cases/get-followings.use-case';
 
 @Injectable()
 export class UserService {
@@ -26,6 +27,8 @@ export class UserService {
     private readonly getUser: GetUserUseCase,
     private readonly createUser: CreateUserUseCase,
     private readonly searchUser: SearchUserUseCase,
+    private readonly getFollowing: GetFollowingsUseCase,
+    private readonly getFollower: GetFollowersUseCase,
   ) {}
 
   async create({
@@ -51,95 +54,15 @@ export class UserService {
   async getFollowings({
     username,
     query,
-  }: {
-    username: string;
-    query: PaginationDto;
-  }): Promise<SearchUserEntity> {
-    const { limit = 20, offset = 0 } = query;
-
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-      select: {
-        id: true,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const following = await this.prisma.follow.findMany({
-      where: {
-        userId: user.id,
-      },
-      select: {
-        followed: {
-          select: UserMapper.searchUserFields,
-        },
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    const count = await this.prisma.follow.count({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    return {
-      count,
-      items: following.map((follow) => follow.followed),
-    };
+  }: GetFollowingsParam): Promise<SearchUserEntity> {
+    return this.getFollowing.execute({ username, query });
   }
 
   async getFollowers({
     username,
     query,
-  }: {
-    username: string;
-    query: PaginationDto;
-  }): Promise<SearchUserEntity> {
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-      select: {
-        id: true,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const followers = await this.prisma.follow.findMany({
-      where: {
-        followingUserId: user.id,
-      },
-      select: {
-        follower: {
-          select: UserMapper.searchUserFields,
-        },
-      },
-      take: query.limit,
-      skip: query.offset,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    const count = await this.prisma.follow.count({
-      where: {
-        followingUserId: user.id,
-      },
-    });
-
-    return {
-      count,
-      items: followers.map((follow) => follow.follower),
-    };
+  }: GetFollowingsParam): Promise<SearchUserEntity> {
+    return this.getFollower.execute({ username, query });
   }
 
   async getLikedPosts({

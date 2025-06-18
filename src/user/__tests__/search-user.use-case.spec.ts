@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { PrismaService } from '@/prisma/prisma.service';
 
-import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
+import { searchUsersResponseMock } from '../mocks';
 import { SearchUserUseCase } from '../use-cases';
 
 describe('SerchUserUseCase', () => {
