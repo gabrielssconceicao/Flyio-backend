@@ -10,20 +10,10 @@ import { PostEntity } from './entities/post.entity';
 import { FindManyPostEntity } from './entities/find-many.entity';
 import { FindOnePostEntity } from './entities/find-one-post.entity';
 import { CommentPostEntity } from './entities/comment-post.entity';
-
-type CreatePost = {
-  createPostDto: CreatePostDto;
-  payload: JwtPayload;
-  images: Express.Multer.File[];
-};
-
+import { CreatePostUseCase, DeletePostUseCase } from './use-cases';
+import { CreatePost, PostParam } from './use-cases/types';
 type CommentPost = CreatePost & {
   postId: string;
-};
-
-type PostId = {
-  postId: string;
-  payload: JwtPayload;
 };
 
 type FindMany = {
@@ -36,6 +26,8 @@ export class PostService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly imageStore: PostImageStoreUseCase,
+    private readonly createPost: CreatePostUseCase,
+    private readonly deletePost: DeletePostUseCase,
   ) {}
 
   async create({
@@ -43,66 +35,14 @@ export class PostService {
     payload,
     images,
   }: CreatePost): Promise<PostEntity> {
-    let imagesUrl: string[] = [];
-
-    if (images.length) {
-      imagesUrl = await this.imageStore.uploadPostImages({
-        files: images,
-        folder: ImageStoreTypeFolder.POST,
-      });
-    }
-
-    const post = await this.prisma.post.create({
-      data: {
-        text: createPostDto.content,
-        authorId: payload.id,
-        images: {
-          createMany: {
-            data: imagesUrl.map((url) => ({ url })),
-          },
-        },
-      },
-      select: PostMapper.defautFields,
-    });
-
-    return { ...post, likes: 0, isLiked: false, replies: 0, parentId: null };
+    return this.createPost.execute({ createPostDto, payload, images });
   }
 
-  async delete({ payload, postId }: PostId): Promise<void> {
-    const postExists = await this.prisma.post.findUnique({
-      where: {
-        id: postId,
-        authorId: payload.id,
-      },
-      select: {
-        images: {
-          select: {
-            url: true,
-          },
-        },
-      },
-    });
-
-    if (!postExists) {
-      throw new NotFoundException('Post not found');
-    }
-
-    if (postExists.images.length) {
-      await this.imageStore.deletePostImages({
-        files: postExists.images.map((image) => image.url),
-      });
-    }
-
-    await this.prisma.post.delete({
-      where: {
-        id: postId,
-        authorId: payload.id,
-      },
-    });
-    return;
+  async delete({ payload, postId }: PostParam): Promise<void> {
+    return this.deletePost.execute({ postId, payload });
   }
 
-  async findOne({ postId, payload }: PostId): Promise<FindOnePostEntity> {
+  async findOne({ postId, payload }: PostParam): Promise<FindOnePostEntity> {
     const post = await this.prisma.post.findUnique({
       where: {
         id: postId,

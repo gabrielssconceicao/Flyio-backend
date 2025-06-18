@@ -1,8 +1,12 @@
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 export class PostMapper {
   static defautFields = {
     id: true,
     text: true,
     parentId: true,
+    createdAt: true,
     author: {
       select: {
         id: true,
@@ -17,7 +21,6 @@ export class PostMapper {
         url: true,
       },
     },
-    createdAt: true,
   };
 
   static likeFields(id: string) {
