@@ -1,29 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { HashingService } from '@/hash/hashing.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserImageStoreUseCase } from '@/image-store/use-cases';
 import { userImageStoreUseCaseMock } from '@/image-store/mock';
-import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
 import { UserService } from '../user.service';
-import { UserMapper } from '../user.mapper';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { createUserDtoMock } from '../mocks/create-user-dto.mock';
-import { userEntityMock } from '../mocks/user-entity.mock';
-import { userMock } from '../mocks/user.mock';
 import { searchUsersResponseMock } from '../mocks/search-users-response.mock';
 import { getLikesMock } from '../mocks/get-likes.mock';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { findManyPostMock, postMock } from '@/post/mock';
+import { GetUserUseCase } from '../use-cases/get-user.use-case';
+import { CreateUserUseCase } from '../use-cases/create-user.use-case';
+import { userEntityMock } from '../mocks/user-entity.mock';
+import { userMock } from '../mocks/user.mock';
+import { createUserDtoMock } from '../mocks/create-user-dto.mock';
 
 describe('UserService', () => {
   let service: UserService;
   let hashingService: HashingService;
-  let imageStore: UserImageStoreUseCase;
   let prisma: ReturnType<typeof prismaServiceMock>;
   const paginationDtoMock = { offset: 0, limit: 25 };
   const payload = { id: 'id-1' } as JwtPayload;
+
+  let getUser: GetUserUseCase;
+  let createUser: CreateUserUseCase;
   beforeEach(async () => {
     prisma = prismaServiceMock();
 
@@ -44,109 +45,61 @@ describe('UserService', () => {
           provide: UserImageStoreUseCase,
           useValue: userImageStoreUseCaseMock(),
         },
+        {
+          provide: GetUserUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: CreateUserUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
     hashingService = module.get<HashingService>(HashingService);
-    imageStore = module.get<UserImageStoreUseCase>(UserImageStoreUseCase);
+
+    getUser = module.get<GetUserUseCase>(GetUserUseCase);
+    createUser = module.get<CreateUserUseCase>(CreateUserUseCase);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(hashingService).toBeDefined();
     expect(prisma).toBeDefined();
+
+    expect(getUser).toBeDefined();
+    expect(createUser).toBeDefined();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('Create', () => {
-    let createUserDto: CreateUserDto;
-    let file: Express.Multer.File;
-    beforeEach(() => {
-      createUserDto = createUserDtoMock();
-      file = fileMock();
+  it('should get a user', async () => {
+    jest.spyOn(getUser, 'execute').mockResolvedValue({ user: userMock() });
+    const result = await service.findOne('johndoe');
+    expect(getUser.execute).toHaveBeenCalledWith({ username: 'johndoe' });
+    expect(result).toMatchSnapshot();
+  });
+
+  it('should create a user', async () => {
+    jest.spyOn(createUser, 'execute').mockResolvedValue(userEntityMock());
+    const result = await service.create({
+      bannerImage: null,
+      profileImage: null,
+      createUserDto: createUserDtoMock(),
     });
-
-    it('should create a user without profile and banner', async () => {
-      const hashedPassword = 'hashedPassword';
-      jest.spyOn(hashingService, 'hash').mockResolvedValue(hashedPassword);
-      jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(null);
-      jest
-        .spyOn(prisma.user, 'create')
-        .mockResolvedValue(userEntityMock() as any);
-
-      const result = await service.create({
-        createUserDto,
-        profileImage: null,
-        bannerImage: null,
-      });
-      expect(prisma.user.findFirst).toHaveBeenCalledTimes(1);
-      expect(hashingService.hash).toHaveBeenCalledWith(createUserDto.password);
-      expect(prisma.user.create).toHaveBeenCalledWith({
-        data: {
-          ...createUserDto,
-          password: hashedPassword,
-          profileImg: null,
-          bannerImg: null,
-        },
-        select: UserMapper.createUserFields,
-      });
-      expect(imageStore.uploadUserImage).not.toHaveBeenCalled();
-      expect(result).toBeDefined();
-      expect(result).toMatchSnapshot();
+    expect(createUser.execute).toHaveBeenCalledWith({
+      bannerImage: null,
+      profileImage: null,
+      createUserDto: createUserDtoMock(),
     });
-
-    it('should create a user with profile and banner', async () => {
-      const hashedPassword = 'hashedPassword';
-      jest.spyOn(hashingService, 'hash').mockResolvedValue(hashedPassword);
-      jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(null);
-      jest
-        .spyOn(imageStore, 'uploadUserImage')
-        .mockResolvedValueOnce(profilePictureMock)
-        .mockResolvedValueOnce(profilePictureMock);
-      jest.spyOn(prisma.user, 'create').mockResolvedValue({
-        ...userEntityMock(),
-        profileImg: profilePictureMock,
-      } as any);
-
-      const result = await service.create({
-        createUserDto,
-        profileImage: file,
-        bannerImage: file,
-      });
-      expect(prisma.user.findFirst).toHaveBeenCalled();
-      expect(hashingService.hash).toHaveBeenCalledWith(createUserDto.password);
-      expect(prisma.user.create).toHaveBeenCalledWith({
-        data: {
-          ...createUserDto,
-          password: hashedPassword,
-          profileImg: profilePictureMock,
-          bannerImg: profilePictureMock,
-        },
-        select: UserMapper.createUserFields,
-      });
-      expect(imageStore.uploadUserImage).toHaveBeenCalledTimes(2);
-      expect(result).toBeDefined();
-      expect(result).toMatchSnapshot();
-    });
-
-    it('should throw an conflict exception', async () => {
-      jest.spyOn(prisma.user, 'findFirst').mockResolvedValue({
-        email: createUserDto.email,
-        username: createUserDto.username,
-      } as any);
-
-      await expect(
-        service.create({
-          createUserDto,
-          profileImage: null,
-          bannerImage: null,
-        }),
-      ).rejects.toThrow(ConflictException);
-    });
+    expect(result).toMatchSnapshot();
   });
 
   describe('Search', () => {

@@ -1,10 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { HashingService } from '@/hash/hashing.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './entities/user.entity';
@@ -12,33 +6,22 @@ import { FindOneUserEntity } from './entities/find-one-user.entity';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from './entities/search-user.entity';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { UserImageStoreUseCase } from '@/image-store/use-cases';
-import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
+
 import { PostMapper } from '@/post/post.mapper';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { GetLikedPostEntity } from './entities/get-liked-post-entity';
 import { FindManyPostEntity } from '@/post/entities/find-many.entity';
 import { GetUserCommentsEntity } from './entities/get-user-comments.entity';
 import { GetUserUseCase } from './use-cases/get-user.use-case';
-
-type CheckUserParams = {
-  username?: string;
-  email?: string;
-};
-
-type CreateUserParams = {
-  createUserDto: CreateUserDto;
-  profileImage: Express.Multer.File | null;
-  bannerImage: Express.Multer.File | null;
-};
+import { CreateUserParams } from './use-cases/types';
+import { CreateUserUseCase } from './use-cases/create-user.use-case';
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
-    private readonly imageStore: UserImageStoreUseCase,
     private readonly getUser: GetUserUseCase,
+    private readonly createUser: CreateUserUseCase,
   ) {}
 
   async create({
@@ -46,52 +29,11 @@ export class UserService {
     bannerImage,
     profileImage,
   }: CreateUserParams): Promise<UserEntity> {
-    const { email, name, username, bio, password } = createUserDto;
-
-    const isTaken = await this.isUserOrEmailTaken({
-      username,
-      email,
+    return this.createUser.execute({
+      createUserDto,
+      bannerImage,
+      profileImage,
     });
-
-    if (isTaken) {
-      throw new ConflictException(
-        'User with this email or username already exists',
-      );
-    }
-    const hashedPassword = await this.hashing.hash(password);
-
-    let avatar: string | null = null;
-
-    if (profileImage) {
-      avatar = await this.imageStore.uploadUserImage({
-        file: profileImage,
-        folder: ImageStoreTypeFolder.PROFILE,
-      });
-    }
-
-    let banner: string | null = null;
-
-    if (bannerImage) {
-      banner = await this.imageStore.uploadUserImage({
-        file: bannerImage,
-        folder: ImageStoreTypeFolder.BANNER,
-      });
-    }
-
-    const user = await this.prisma.user.create({
-      data: {
-        email,
-        name,
-        username,
-        bio,
-        password: hashedPassword,
-        profileImg: avatar,
-        bannerImg: banner,
-      },
-      select: UserMapper.createUserFields,
-    });
-
-    return user;
   }
 
   async search(query: QueryParamDto): Promise<SearchUserEntity> {
@@ -209,30 +151,6 @@ export class UserService {
       count,
       items: followers.map((follow) => follow.follower),
     };
-  }
-
-  private async isUserOrEmailTaken(params: CheckUserParams): Promise<boolean> {
-    const conditions: any[] = [];
-
-    if (params.username) {
-      conditions.push({ username: params.username });
-    }
-
-    if (params.email) {
-      conditions.push({ email: params.email });
-    }
-
-    if (conditions.length === 0) {
-      return false;
-    }
-
-    const existingUser = await this.prisma.user.findFirst({
-      where: {
-        OR: conditions,
-      },
-    });
-
-    return !!existingUser;
   }
 
   async getLikedPosts({

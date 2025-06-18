@@ -1,6 +1,7 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
+@Injectable()
 export class UserUseCase {
   constructor(protected readonly prisma: PrismaService) {}
 

@@ -1,3 +1,5 @@
+import { CreateUserDto } from '../dto/create-user.dto';
+
 export type GetUserParam = {
   username: string;
 };
@@ -7,4 +9,9 @@ export type Count = {
     followers: number;
     following: number;
   };
+};
+export type CreateUserParams = {
+  createUserDto: CreateUserDto;
+  profileImage: Express.Multer.File | null;
+  bannerImage: Express.Multer.File | null;
 };

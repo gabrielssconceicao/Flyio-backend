@@ -1,40 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UserService Create should create a user with profile and banner 1`] = `
-{
-  "bio": "bio",
-  "id": "1",
-  "name": "John Doe",
-  "profileImg": "https://example.com/profile-picture.jpg",
-  "username": "johndoe",
-}
-`;
-
-exports[`UserService Create should create a user without profile and banner 1`] = `
-{
-  "bio": "bio",
-  "id": "1",
-  "name": "John Doe",
-  "profileImg": null,
-  "username": "johndoe",
-}
-`;
-
-exports[`UserService FindOne should find a user 1`] = `
-{
-  "user": {
-    "bio": "bio",
-    "createdAt": 2000-01-01T00:00:00.000Z,
-    "followers": 0,
-    "following": 0,
-    "isActive": true,
-    "name": "John Doe",
-    "profileImg": null,
-    "username": "johndoe",
-  },
-}
-`;
-
 exports[`UserService GetFollowers should get a user followers 1`] = `
 {
   "count": 1,
@@ -161,5 +126,30 @@ exports[`UserService Search should find users by name or username 1`] = `
       "username": "johndoe",
     },
   ],
+}
+`;
+
+exports[`UserService should create a user 1`] = `
+{
+  "bio": "bio",
+  "id": "1",
+  "name": "John Doe",
+  "profileImg": null,
+  "username": "johndoe",
+}
+`;
+
+exports[`UserService should get a user 1`] = `
+{
+  "user": {
+    "bio": "bio",
+    "createdAt": 2000-01-01T00:00:00.000Z,
+    "followers": 0,
+    "following": 0,
+    "isActive": true,
+    "name": "John Doe",
+    "profileImg": null,
+    "username": "johndoe",
+  },
 }
 `;

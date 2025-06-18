@@ -3,16 +3,13 @@ import { NotFoundException } from '@nestjs/common';
 
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { PrismaService } from '@/prisma/prisma.service';
-import { HashingService } from '@/hash/hashing.service';
 
-import { UserService } from '../user.service';
 import { UserMapper } from '../user.mapper';
 import { userMock } from '../mocks/user.mock';
 import { GetUserUseCase } from '../use-cases/get-user.use-case';
 
 describe('GetUserUseCase', () => {
   let useCase: GetUserUseCase;
-  let hashingService: HashingService;
   let prisma: ReturnType<typeof prismaServiceMock>;
 
   beforeEach(async () => {
@@ -20,13 +17,13 @@ describe('GetUserUseCase', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserService,
-        {
-          provide: HashingService,
-          useValue: {
-            hash: jest.fn(),
-          },
-        },
+        GetUserUseCase,
+        // {
+        //   provide: HashingService,
+        //   useValue: {
+        //     hash: jest.fn(),
+        //   },
+        // },
         {
           provide: PrismaService,
           useValue: prisma,
@@ -35,12 +32,10 @@ describe('GetUserUseCase', () => {
     }).compile();
 
     useCase = module.get<GetUserUseCase>(GetUserUseCase);
-    hashingService = module.get<HashingService>(HashingService);
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
-    expect(hashingService).toBeDefined();
     expect(prisma).toBeDefined();
   });
 
