@@ -1,4 +1,4 @@
 import { CreateUserUseCase } from './create-user.use-case';
 import { GetUserUseCase } from './get-user.use-case';
-
-export { CreateUserUseCase, GetUserUseCase };
+import { SearchUserUseCase } from './search-user.use-case';
+export { CreateUserUseCase, GetUserUseCase, SearchUserUseCase };

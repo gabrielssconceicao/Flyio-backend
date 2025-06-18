@@ -15,6 +15,8 @@ import { CreateUserUseCase } from '../use-cases/create-user.use-case';
 import { userEntityMock } from '../mocks/user-entity.mock';
 import { userMock } from '../mocks/user.mock';
 import { createUserDtoMock } from '../mocks/create-user-dto.mock';
+import { SearchUserEntity } from '../entities/search-user.entity';
+import { SearchUserUseCase } from '../use-cases';
 
 describe('UserService', () => {
   let service: UserService;
@@ -25,6 +27,7 @@ describe('UserService', () => {
 
   let getUser: GetUserUseCase;
   let createUser: CreateUserUseCase;
+  let searchUser: SearchUserUseCase;
   beforeEach(async () => {
     prisma = prismaServiceMock();
 
@@ -57,6 +60,12 @@ describe('UserService', () => {
             execute: jest.fn(),
           },
         },
+        {
+          provide: SearchUserEntity,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -65,6 +74,7 @@ describe('UserService', () => {
 
     getUser = module.get<GetUserUseCase>(GetUserUseCase);
     createUser = module.get<CreateUserUseCase>(CreateUserUseCase);
+    searchUser = module.get<SearchUserUseCase>(SearchUserUseCase);
   });
 
   it('should be defined', () => {
@@ -72,6 +82,7 @@ describe('UserService', () => {
     expect(hashingService).toBeDefined();
     expect(prisma).toBeDefined();
 
+    expect(searchUser).toBeDefined();
     expect(getUser).toBeDefined();
     expect(createUser).toBeDefined();
   });
@@ -102,23 +113,19 @@ describe('UserService', () => {
     expect(result).toMatchSnapshot();
   });
 
-  describe('Search', () => {
-    it('should find users by name or username', async () => {
-      jest
-        .spyOn(prisma.user, 'findMany')
-        .mockResolvedValue(searchUsersResponseMock().items);
+  it('should search users', async () => {
+    jest
+      .spyOn(searchUser, 'execute')
+      .mockResolvedValue(searchUsersResponseMock());
+    const query = {
+      limit: 20,
+      offset: 0,
+      search: 'johndoe',
+    };
+    const result = await service.search(query);
 
-      jest
-        .spyOn(prisma.user, 'count')
-        .mockResolvedValue(searchUsersResponseMock().count);
-      const result = await service.search({
-        search: 'johndoe',
-        ...paginationDtoMock,
-      });
-      expect(prisma.user.count).toHaveBeenCalled();
-      expect(prisma.user.findMany).toHaveBeenCalled();
-      expect(result).toMatchSnapshot();
-    });
+    expect(searchUser.execute).toHaveBeenCalledWith(query);
+    expect(result).toMatchSnapshot();
   });
 
   describe('GetFollowings', () => {

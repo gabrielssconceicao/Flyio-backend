@@ -12,9 +12,12 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { GetLikedPostEntity } from './entities/get-liked-post-entity';
 import { FindManyPostEntity } from '@/post/entities/find-many.entity';
 import { GetUserCommentsEntity } from './entities/get-user-comments.entity';
-import { GetUserUseCase } from './use-cases/get-user.use-case';
 import { CreateUserParams } from './use-cases/types';
-import { CreateUserUseCase } from './use-cases/create-user.use-case';
+import {
+  CreateUserUseCase,
+  GetUserUseCase,
+  SearchUserUseCase,
+} from './use-cases';
 
 @Injectable()
 export class UserService {
@@ -22,6 +25,7 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly getUser: GetUserUseCase,
     private readonly createUser: CreateUserUseCase,
+    private readonly searchUser: SearchUserUseCase,
   ) {}
 
   async create({
@@ -37,22 +41,7 @@ export class UserService {
   }
 
   async search(query: QueryParamDto): Promise<SearchUserEntity> {
-    const { search = '', limit = 20, offset = 0 } = query;
-    const users = await this.prisma.user.findMany({
-      where: {
-        OR: [
-          { username: { contains: search, mode: 'insensitive' } },
-          { name: { contains: search, mode: 'insensitive' } },
-        ],
-      },
-      take: limit,
-      skip: offset,
-      select: UserMapper.searchUserFields,
-    });
-
-    const count = await this.prisma.user.count();
-
-    return { count, items: users };
+    return this.searchUser.execute(query);
   }
 
   async findOne(username: string): Promise<{ user: FindOneUserEntity }> {

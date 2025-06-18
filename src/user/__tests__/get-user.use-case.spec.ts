@@ -18,12 +18,7 @@ describe('GetUserUseCase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GetUserUseCase,
-        // {
-        //   provide: HashingService,
-        //   useValue: {
-        //     hash: jest.fn(),
-        //   },
-        // },
+
         {
           provide: PrismaService,
           useValue: prisma,
