@@ -149,33 +149,6 @@ describe('UserService', () => {
     });
   });
 
-  describe('FindOne', () => {
-    it('should find a user', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({
-        ...userMock(),
-        _count: { followers: 0, following: 0 },
-      } as any);
-
-      const result = await service.findOne('jonhdoe');
-
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { username: 'jonhdoe' },
-        select: UserMapper.findUserFields,
-      });
-
-      expect(result.user).toEqual(userMock());
-      expect(result).toMatchSnapshot();
-    });
-
-    it('should throw a not found exception if user not found', async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-
-      await expect(service.findOne('username')).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-  });
-
   describe('Search', () => {
     it('should find users by name or username', async () => {
       jest

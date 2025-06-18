@@ -19,6 +19,7 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { GetLikedPostEntity } from './entities/get-liked-post-entity';
 import { FindManyPostEntity } from '@/post/entities/find-many.entity';
 import { GetUserCommentsEntity } from './entities/get-user-comments.entity';
+import { GetUserUseCase } from './use-cases/get-user.use-case';
 
 type CheckUserParams = {
   username?: string;
@@ -37,6 +38,7 @@ export class UserService {
     private readonly hashing: HashingService,
     private readonly prisma: PrismaService,
     private readonly imageStore: UserImageStoreUseCase,
+    private readonly getUser: GetUserUseCase,
   ) {}
 
   async create({
@@ -112,24 +114,7 @@ export class UserService {
   }
 
   async findOne(username: string): Promise<{ user: FindOneUserEntity }> {
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-      select: UserMapper.findUserFields,
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const { _count, ...rest } = user;
-
-    return {
-      user: {
-        ...rest,
-        followers: _count.followers,
-        following: _count.following,
-      },
-    };
+    return this.getUser.execute({ username });
   }
 
   async getFollowings({

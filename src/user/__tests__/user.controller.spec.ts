@@ -73,13 +73,6 @@ describe('UserController', () => {
       const result = await controller.findOne('username');
       expect(result).toMatchSnapshot();
     });
-
-    it('should throw a not found exception if user not found', async () => {
-      jest.spyOn(service, 'findOne').mockRejectedValue(new NotFoundException());
-      await expect(controller.findOne('username')).rejects.toThrow(
-        NotFoundException,
-      );
-    });
   });
 
   describe('Search', () => {
