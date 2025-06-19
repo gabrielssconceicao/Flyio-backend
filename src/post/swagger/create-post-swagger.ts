@@ -2,10 +2,33 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiProperty,
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
 import { PostEntity } from '../entities/post.entity';
+
+class CreateUser extends PostEntity {
+  @ApiProperty({
+    type: String,
+    description: 'Parent post ID',
+    nullable: true,
+    example: null,
+  })
+  declare parentId: string | null;
+  @ApiProperty({
+    type: Number,
+    description: 'Posts likes',
+    example: 0,
+  })
+  declare likes: number;
+  @ApiProperty({
+    type: Number,
+    description: 'Posts replies',
+    example: 0,
+  })
+  declare replies: number;
+}
 
 export const CreatePostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -41,7 +64,7 @@ export const CreatePostSwaggerDoc = () => {
     ApiResponse({
       status: HttpStatus.CREATED,
       description: 'Post created successfully',
-      type: PostEntity,
+      type: CreateUser,
     })(target, propertyKey, descriptor);
 
     ApiResponse({

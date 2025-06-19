@@ -9,7 +9,6 @@ export class PostMapper {
     createdAt: true,
     author: {
       select: {
-        id: true,
         name: true,
         username: true,
         profileImg: true,
@@ -71,15 +70,6 @@ export class PostMapper {
       likes: _count.likes,
       replies: _count.replies,
       isLiked: !!likes.length,
-    };
-  }
-
-  static separeteParent(parent: any) {
-    if (!parent) return null;
-    const { _count, likes, ...rest } = parent;
-    return {
-      ...rest,
-      ...this.separate({ _count, likes }),
     };
   }
 }

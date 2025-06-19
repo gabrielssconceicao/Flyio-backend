@@ -4,20 +4,30 @@ import { PostImageStoreUseCase } from '@/image-store/use-cases';
 import { postImageStoreUseCaseMock } from '@/image-store/mock';
 import { prismaServiceMock } from '@/prisma/prisma.service.mock';
 import { PrismaService } from '@/prisma/prisma.service';
-import { findManyPostMock, postMock } from '../mock';
+import { findManyPostMock, findOnePostMock, postMock } from '../mock';
 import { PostService } from '../post.service';
-import { NotFoundException } from '@nestjs/common';
 import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
-import { CreatePostUseCase, DeletePostUseCase } from '../use-cases';
+import {
+  CreatePostUseCase,
+  DeletePostUseCase,
+  FindManyPostUseCase,
+  FindOnePostUseCase,
+} from '../use-cases';
+
+const mock = {
+  execute: jest.fn(),
+};
+
 describe('PostService', () => {
   let service: PostService;
   let imageStore: ReturnType<typeof postImageStoreUseCaseMock>;
   let primsa: ReturnType<typeof prismaServiceMock>;
   let payload: JwtPayload;
-  const _countLikesAndReplies = { _count: { likes: 0, replies: 0 }, likes: [] };
 
   let createPost: CreatePostUseCase;
   let deletePost: DeletePostUseCase;
+  let findOnePost: FindOnePostUseCase;
+  let findManyPost: FindManyPostUseCase;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -33,15 +43,19 @@ describe('PostService', () => {
         },
         {
           provide: CreatePostUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
         },
         {
           provide: DeletePostUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
+        },
+        {
+          provide: FindOnePostUseCase,
+          useValue: mock,
+        },
+        {
+          provide: FindManyPostUseCase,
+          useValue: mock,
         },
       ],
     }).compile();
@@ -53,12 +67,22 @@ describe('PostService', () => {
 
     createPost = module.get<CreatePostUseCase>(CreatePostUseCase);
     deletePost = module.get<DeletePostUseCase>(DeletePostUseCase);
+    findOnePost = module.get<FindOnePostUseCase>(FindOnePostUseCase);
+    findManyPost = module.get<FindManyPostUseCase>(FindManyPostUseCase);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(imageStore).toBeDefined();
     expect(primsa).toBeDefined();
+    expect(createPost).toBeDefined();
+    expect(deletePost).toBeDefined();
+    expect(findOnePost).toBeDefined();
+    expect(findManyPost).toBeDefined();
   });
 
   it('should create a post', async () => {
@@ -81,57 +105,34 @@ describe('PostService', () => {
     expect(deletePost.execute).toHaveBeenCalled();
   });
 
-  describe('FindOne', () => {
-    it('should return a post', async () => {
-      jest.spyOn(primsa.post, 'findUnique').mockResolvedValue({
-        ...postMock(),
-        ..._countLikesAndReplies,
-        replies: [],
-        parent: null,
-      });
+  it('should find a post', async () => {
+    jest.spyOn(findOnePost, 'execute').mockResolvedValue(findOnePostMock());
 
-      const result = await service.findOne({
-        postId: postMock().id,
-        payload,
-      });
-
-      expect(primsa.post.findUnique).toHaveBeenCalled();
-      expect(result).toMatchSnapshot();
+    const result = await service.findOne({
+      payload,
+      postId: 'id-1',
     });
 
-    it('should throw a not found exception if post not found', async () => {
-      jest.spyOn(primsa.post, 'findUnique').mockResolvedValue(null);
-      await expect(
-        service.findOne({
-          postId: postMock().id,
-          payload,
-        }),
-      ).rejects.toThrow(NotFoundException);
+    expect(findOnePost.execute).toHaveBeenCalledWith({
+      payload,
+      postId: 'id-1',
     });
+    expect(result).toBeDefined();
+    expect(result).toMatchSnapshot();
   });
 
-  describe('FindMany', () => {
-    it('should return an array of post', async () => {
-      jest.spyOn(primsa.post, 'findMany').mockResolvedValue(
-        findManyPostMock().items.map((post) => ({
-          ...post,
-          ..._countLikesAndReplies,
-        })),
-      );
-      jest
-        .spyOn(primsa.post, 'count')
-        .mockResolvedValue(findManyPostMock().count);
+  it('should search posts', async () => {
+    jest.spyOn(findManyPost, 'execute').mockResolvedValue(findManyPostMock());
+    const body = {
+      payload,
+      query: {},
+    };
+    const result = await service.findMany(body);
 
-      const result = await service.findMany({
-        payload,
-        query: {},
-      });
-
-      expect(primsa.post.findMany).toHaveBeenCalled();
-      expect(primsa.post.count).toHaveBeenCalled();
-      expect(result).toEqual(findManyPostMock());
-      expect(result).toMatchSnapshot();
-    });
+    expect(findManyPost.execute).toHaveBeenCalledWith(body);
+    expect(result).toBeDefined();
+    expect(result).toEqual(findManyPostMock());
+    expect(result).toMatchSnapshot();
   });
 
   describe('Commennt', () => {
