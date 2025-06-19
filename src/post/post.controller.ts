@@ -86,12 +86,12 @@ export class PostController {
   )
   @Post(':postId')
   @HttpCode(HttpStatus.CREATED)
-  comment(
+  reply(
     @CurrentUser() payload: JwtPayload,
     @Param('postId') postId: string,
     @UploadedFiles(PostImageValidatorPipe) images: Express.Multer.File[],
     @Body() createPostDto: CreatePostDto,
   ) {
-    return this.postService.comment({ createPostDto, payload, images, postId });
+    return this.postService.reply({ createPostDto, payload, images, postId });
   }
 }

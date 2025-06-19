@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UseCase } from '@/common/utils/use-case';
-import { FindOnePostEntity } from '../entities/find-one-post.entity';
+import { FindOnePostEntity } from '../entities';
 import { PostMapper } from '../post.mapper';
 import { PostParam } from './types';
 

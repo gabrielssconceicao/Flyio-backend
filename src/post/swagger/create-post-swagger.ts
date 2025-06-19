@@ -16,18 +16,6 @@ class CreateUser extends PostEntity {
     example: null,
   })
   declare parentId: string | null;
-  @ApiProperty({
-    type: Number,
-    description: 'Posts likes',
-    example: 0,
-  })
-  declare likes: number;
-  @ApiProperty({
-    type: Number,
-    description: 'Posts replies',
-    example: 0,
-  })
-  declare replies: number;
 }
 
 export const CreatePostSwaggerDoc = () => {

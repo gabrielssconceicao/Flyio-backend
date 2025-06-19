@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '@/common/utils/use-case';
 import { PostMapper } from '../post.mapper';
-import { FindManyPostEntity } from '../entities/find-many.entity';
+import { FindManyPostEntity } from '../entities';
 import { FindMany } from './types';
 
 @Injectable()

@@ -17,3 +17,7 @@ export type FindMany = {
   payload: JwtPayload;
   query: QueryParamDto;
 };
+
+export type CommentPost = CreatePost & {
+  postId: string;
+};

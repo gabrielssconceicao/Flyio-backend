@@ -20,7 +20,7 @@ describe('PostController', () => {
             findMany: jest.fn(),
             findOne: jest.fn(),
             delete: jest.fn(),
-            comment: jest.fn(),
+            reply: jest.fn(),
           },
         },
       ],
@@ -89,15 +89,15 @@ describe('PostController', () => {
     });
   });
 
-  describe('Comment', () => {
+  describe('Reply', () => {
     it('should return a post', async () => {
-      jest.spyOn(service, 'comment').mockResolvedValue({
+      jest.spyOn(service, 'reply').mockResolvedValue({
         ...postMock(),
         parent: { author: { username: 'johndoe' } },
       });
       const images = [fileMock()];
       const createPostDto = { content: 'This is a post' };
-      const result = await controller.comment(
+      const result = await controller.reply(
         payload,
         postMock().id,
         images,
@@ -107,7 +107,7 @@ describe('PostController', () => {
         ...postMock(),
         parent: { author: { username: 'johndoe' } },
       });
-      expect(service.comment).toHaveBeenCalledWith({
+      expect(service.reply).toHaveBeenCalledWith({
         postId: postMock().id,
         createPostDto,
         payload,

@@ -1,26 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { PostImageStoreUseCase } from '@/image-store/use-cases';
-import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { UseCase } from '@/common/utils/use-case';
+import { PrismaService } from '@/prisma/prisma.service';
+import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
+import { PostImageStoreUseCase } from '@/image-store/use-cases';
+
+import { CommentPostEntity } from '../entities';
 import { PostMapper } from '../post.mapper';
-import { PostEntity } from '../entities';
-import { CreatePost } from './types';
+import { CommentPost } from './types';
 
 @Injectable()
-export class CreatePostUseCase extends UseCase<CreatePost, PostEntity> {
+export class ReplyPostUseCase extends UseCase<CommentPost, CommentPostEntity> {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly imageStore: PostImageStoreUseCase,
   ) {
     super(prisma);
   }
-
   async execute({
     createPostDto,
-    payload,
     images,
-  }: CreatePost): Promise<PostEntity> {
+    payload,
+    postId,
+  }: CommentPost): Promise<CommentPostEntity> {
     let imagesUrl: string[] = [];
 
     if (images.length) {
@@ -34,15 +35,27 @@ export class CreatePostUseCase extends UseCase<CreatePost, PostEntity> {
       data: {
         text: createPostDto.content,
         authorId: payload.id,
+        parentId: postId,
         images: {
           createMany: {
             data: imagesUrl.map((url) => ({ url })),
           },
         },
       },
-      select: PostMapper.defautFields,
+      select: {
+        ...PostMapper.defautFields,
+        parent: {
+          select: {
+            author: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return { ...post, likes: 0, replies: 0, isLiked: false };
+    return { ...post, likes: 0, isLiked: false, replies: 0 };
   }
 }
