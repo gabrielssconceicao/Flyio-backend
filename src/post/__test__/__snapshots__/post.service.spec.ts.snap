@@ -144,3 +144,26 @@ exports[`PostService FindOne should return a post 1`] = `
   "text": "This is a post",
 }
 `;
+
+exports[`PostService should create a post 1`] = `
+{
+  "author": {
+    "name": "John Doe",
+    "profileImg": null,
+    "username": "johndoe",
+  },
+  "createdAt": 2000-01-01T00:00:00.000Z,
+  "id": "id-1",
+  "images": [
+    {
+      "id": "id-1",
+      "url": "https://example.com/image1.jpg",
+    },
+  ],
+  "isLiked": false,
+  "likes": 0,
+  "parentId": null,
+  "replies": 0,
+  "text": "This is a post",
+}
+`;

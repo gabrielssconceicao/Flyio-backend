@@ -1,9 +1,10 @@
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UseCase } from '@/common/utils/use-case';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PostImageStoreUseCase } from '@/image-store/use-cases';
 import { PostParam } from './types';
 
+@Injectable()
 export class DeletePostUseCase extends UseCase<PostParam, void> {
   constructor(
     protected readonly prisma: PrismaService,
@@ -13,7 +14,7 @@ export class DeletePostUseCase extends UseCase<PostParam, void> {
   }
 
   async execute({ postId, payload }: PostParam): Promise<void> {
-    const postExists = await this.prisma.post.findUnique({
+    const post = await this.prisma.post.findUnique({
       where: {
         id: postId,
         authorId: payload.id,
@@ -27,13 +28,13 @@ export class DeletePostUseCase extends UseCase<PostParam, void> {
       },
     });
 
-    if (!postExists) {
+    if (!post) {
       throw new NotFoundException('Post not found');
     }
 
-    if (postExists.images.length) {
+    if (post.images.length) {
       await this.imageStore.deletePostImages({
-        files: postExists.images.map((image) => image.url),
+        files: post.images.map((image) => image.url),
       });
     }
 

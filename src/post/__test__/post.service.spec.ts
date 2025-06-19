@@ -8,7 +8,7 @@ import { findManyPostMock, postMock } from '../mock';
 import { PostService } from '../post.service';
 import { NotFoundException } from '@nestjs/common';
 import { fileMock, profilePictureMock } from '@/image-store/mock/file.mock';
-
+import { CreatePostUseCase, DeletePostUseCase } from '../use-cases';
 describe('PostService', () => {
   let service: PostService;
   let imageStore: ReturnType<typeof postImageStoreUseCaseMock>;
@@ -16,6 +16,8 @@ describe('PostService', () => {
   let payload: JwtPayload;
   const _countLikesAndReplies = { _count: { likes: 0, replies: 0 }, likes: [] };
 
+  let createPost: CreatePostUseCase;
+  let deletePost: DeletePostUseCase;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -29,6 +31,18 @@ describe('PostService', () => {
           provide: PostImageStoreUseCase,
           useValue: postImageStoreUseCaseMock(),
         },
+        {
+          provide: CreatePostUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
+        {
+          provide: DeletePostUseCase,
+          useValue: {
+            execute: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -36,6 +50,9 @@ describe('PostService', () => {
     imageStore = module.get(PostImageStoreUseCase);
     primsa = module.get(PrismaService);
     payload = { id: 'id-1' } as JwtPayload;
+
+    createPost = module.get<CreatePostUseCase>(CreatePostUseCase);
+    deletePost = module.get<DeletePostUseCase>(DeletePostUseCase);
   });
 
   it('should be defined', () => {
@@ -44,59 +61,24 @@ describe('PostService', () => {
     expect(primsa).toBeDefined();
   });
 
-  describe('Create', () => {
-    it('should create a post without images', async () => {
-      jest
-        .spyOn(primsa.post, 'create')
-        .mockResolvedValue({ ...postMock(), images: [] });
-
-      const result = await service.create({
-        createPostDto: { content: 'This is a post' },
-        payload,
-        images: [],
-      });
-
-      expect(imageStore.uploadPostImages).not.toHaveBeenCalled();
-      expect(primsa.post.create).toHaveBeenCalled();
-
-      expect(result).toEqual({ ...postMock(), images: [] });
-      expect(result).toMatchSnapshot();
-    });
-    it('should create a post with images', async () => {
-      jest.spyOn(primsa.post, 'create').mockResolvedValue(postMock());
-      jest
-        .spyOn(imageStore, 'uploadPostImages')
-        .mockResolvedValue([profilePictureMock]);
-
-      const result = await service.create({
-        createPostDto: { content: 'This is a post' },
-        payload,
-        images: [fileMock()],
-      });
-
-      expect(imageStore.uploadPostImages).toHaveBeenCalled();
-      expect(primsa.post.create).toHaveBeenCalled();
-
-      expect(result).toEqual(postMock());
-      expect(result).toMatchSnapshot();
-    });
+  it('should create a post', async () => {
+    jest.spyOn(createPost, 'execute').mockResolvedValue(postMock());
+    const body = {
+      createPostDto: {
+        content: 'Text',
+      },
+      payload,
+      images: [],
+    };
+    const result = await service.create(body);
+    expect(createPost.execute).toHaveBeenCalledWith(body);
+    expect(result).toBeDefined();
+    expect(result).toMatchSnapshot();
   });
 
-  describe('Delete', () => {
-    it('should delete a post', async () => {
-      jest.spyOn(primsa.post, 'findUnique').mockResolvedValue(postMock());
-
-      await service.delete({ postId: postMock().id, payload });
-      expect(imageStore.deletePostImages).toHaveBeenCalled();
-      expect(primsa.post.delete).toHaveBeenCalled();
-    });
-
-    it('should throw a not found exception if post not found', async () => {
-      jest.spyOn(primsa.post, 'findUnique').mockResolvedValue(null);
-      await expect(
-        service.delete({ postId: postMock().id, payload }),
-      ).rejects.toThrow(NotFoundException);
-    });
+  it('should delete a post', async () => {
+    await service.delete({ payload, postId: 'id-1' });
+    expect(deletePost.execute).toHaveBeenCalled();
   });
 
   describe('FindOne', () => {
