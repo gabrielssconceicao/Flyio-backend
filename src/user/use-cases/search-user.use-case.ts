@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UserMapper } from '../user.mapper';
-import { UserUseCase } from './user.use-case';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
-import { SearchUserEntity } from '../entities/search-user.entity';
+import { UserMapper } from '../user.mapper';
+import { SearchUserEntity } from '../entities';
+import { UserUseCase } from './user.use-case';
 
 @Injectable()
 export class SearchUserUseCase extends UserUseCase<

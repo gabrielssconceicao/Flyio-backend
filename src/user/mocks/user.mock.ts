@@ -1,4 +1,4 @@
-import { FindOneUserEntity } from '../entities/find-one-user.entity';
+import { FindOneUserEntity } from '../entities';
 
 export const userMock = (): FindOneUserEntity => {
   return {

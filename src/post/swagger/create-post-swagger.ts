@@ -6,7 +6,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { PostEntity } from '../entities/post.entity';
+import { PostEntity } from '../entities';
 
 class CreateUser extends PostEntity {
   @ApiProperty({

@@ -1,4 +1,4 @@
-import { PostEntity } from '../entities/post.entity';
+import { PostEntity } from '../entities';
 
 export const postMock = (): PostEntity => {
   return {

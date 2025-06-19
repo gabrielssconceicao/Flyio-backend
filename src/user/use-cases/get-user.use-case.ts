@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { FindOneUserEntity } from '../entities/find-one-user.entity';
+
+import { FindOneUserEntity } from '../entities';
 import { UserMapper } from '../user.mapper';
 import { GetUserParam } from './types';
 import { UserUseCase } from './user.use-case';

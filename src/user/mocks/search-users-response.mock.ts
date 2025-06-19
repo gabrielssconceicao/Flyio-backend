@@ -1,4 +1,4 @@
-import { SearchUserEntity } from '../entities/search-user.entity';
+import { SearchUserEntity } from '../entities';
 
 export const searchUsersResponseMock = (): SearchUserEntity => {
   return {

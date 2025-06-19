@@ -5,7 +5,7 @@ import { UserImageStoreUseCase } from '@/image-store/use-cases';
 import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 import { PrismaService } from '@/prisma/prisma.service';
 
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entities';
 import { UserMapper } from '../user.mapper';
 import { CreateUserParams } from './types';
 import { UserUseCase } from './user.use-case';

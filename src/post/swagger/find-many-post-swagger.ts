@@ -1,7 +1,7 @@
 import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { FindManyPostEntity } from '../entities/find-many.entity';
 import { ProtectedRouteSwaggerDocFunc } from '@/common/utils/protected-route-swagger';
+import { FindManyPostEntity } from '../entities';
 
 export const FindManyPostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

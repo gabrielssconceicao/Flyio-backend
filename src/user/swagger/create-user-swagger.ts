@@ -5,7 +5,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entities';
 
 export const CreateUserSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

@@ -6,8 +6,8 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { GetLikedPostEntity } from '../entities/get-liked-post-entity';
 import { ProtectedRouteSwaggerDocFunc } from '@/common/utils/protected-route-swagger';
+import { GetLikedPostEntity } from '../entities';
 
 export const GetUserLikedPostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

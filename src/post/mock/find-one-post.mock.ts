@@ -1,4 +1,4 @@
-import { FindOnePostEntity } from '../entities/find-one-post.entity';
+import { FindOnePostEntity } from '../entities';
 import { postMock } from './post.mock';
 
 export const findOnePostMock = (): FindOnePostEntity => {

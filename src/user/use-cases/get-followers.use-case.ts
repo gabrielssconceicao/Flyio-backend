@@ -1,6 +1,7 @@
-import { UserUseCase } from './user.use-case';
-import { SearchUserEntity } from '../entities/search-user.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { UserUseCase } from './user.use-case';
+import { SearchUserEntity } from '../entities';
 import { UserMapper } from '../user.mapper';
 import { GetFollowingsParam } from './types';
 

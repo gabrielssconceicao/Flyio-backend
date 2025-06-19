@@ -1,5 +1,5 @@
 import { postMock } from '@/post/mock';
-import { GetLikedPostEntity } from '../entities/get-liked-post-entity';
+import { GetLikedPostEntity } from '../entities';
 
 export const getLikesMock = (): GetLikedPostEntity => {
   return {
