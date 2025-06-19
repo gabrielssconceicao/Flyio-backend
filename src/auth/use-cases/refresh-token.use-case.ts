@@ -1,8 +1,15 @@
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { AuthUseCase } from './auth.use-case';
 
-export class RefreshTokenUseCase extends AuthUseCase {
-  async execute(token: string) {
+interface NewAccessToken {
+  newAccessToken: string;
+}
+
+export class RefreshTokenUseCase extends AuthUseCase<
+  string,
+  NewAccessToken | undefined
+> {
+  async execute(token: string): Promise<NewAccessToken | undefined> {
     if (!token) {
       this.throwUnauthorizedException('Invalid or missing token');
     }

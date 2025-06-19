@@ -7,8 +7,8 @@ import { Follow } from './type';
 import { DefaultFollowUseCase } from './default.use-case';
 
 @Injectable()
-export class UnfollowUseCase extends DefaultFollowUseCase {
-  async execute({ username, payload }: Follow) {
+export class UnfollowUseCase extends DefaultFollowUseCase<Follow, void> {
+  async execute({ username, payload }: Follow): Promise<void> {
     if (username === payload.username) {
       throw new BadRequestException('You cannot unfollow yourself');
     }

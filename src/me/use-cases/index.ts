@@ -1,4 +1,3 @@
-import { MeUseCase } from './me.use-case';
 import { GetMeUseCase } from './get-me.use-case';
 import { UpdateMeUseCase } from './update-me.use-case';
 import { DesactivateMeUserCase } from './desactivate-me.use-case';
@@ -11,7 +10,6 @@ export const MeUseCasesProviders = [
   DesactivateMeUserCase,
   DeleteProfileImageUseCase,
   DeleteBannerImageUseCase,
-  MeUseCase,
 ];
 export {
   GetMeUseCase,

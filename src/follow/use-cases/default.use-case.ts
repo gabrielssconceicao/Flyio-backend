@@ -1,10 +1,8 @@
-import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { UseCase } from '@/common/utils/use-case';
 
 @Injectable()
-export class DefaultFollowUseCase {
-  constructor(protected readonly prisma: PrismaService) {}
-
+export abstract class DefaultFollowUseCase<T, R> extends UseCase<T, R> {
   protected async userExists(username: string): Promise<{ id: string } | null> {
     const user = await this.prisma.user.findUnique({
       where: {

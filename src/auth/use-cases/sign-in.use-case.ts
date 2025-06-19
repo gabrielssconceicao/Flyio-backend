@@ -6,9 +6,10 @@ type User = {
   username: string;
   password: string;
 };
+type Tokens = { accessToken: string; refreshToken: string | undefined };
 @Injectable()
-export class SignInUseCase extends AuthUseCase {
-  async execute(userLoginDto: UserLoginDto) {
+export class SignInUseCase extends AuthUseCase<UserLoginDto, Tokens> {
+  async execute(userLoginDto: UserLoginDto): Promise<Tokens> {
     const { password, login } = userLoginDto;
     const user = await this.userExists(login);
 

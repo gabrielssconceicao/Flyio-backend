@@ -1,12 +1,14 @@
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PostImageStoreUseCase } from '@/image-store/use-cases';
+import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
+import { UseCase } from '@/common/utils/use-case';
 import { PostMapper } from '../post.mapper';
-import { PostUseCase } from './post.use-case';
 import { CreatePost } from './types';
 import { PostEntity } from '../entities/post.entity';
-import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
 
-export class CreatePostUseCase extends PostUseCase {
+@Injectable()
+export class CreatePostUseCase extends UseCase<CreatePost, PostEntity> {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly imageStore: PostImageStoreUseCase,

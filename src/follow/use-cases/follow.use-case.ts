@@ -1,9 +1,14 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DefaultFollowUseCase } from './default.use-case';
 import { Follow } from './type';
 
-export class FollowUseCase extends DefaultFollowUseCase {
-  async execute({ username, payload }: Follow) {
+@Injectable()
+export class FollowUseCase extends DefaultFollowUseCase<Follow, void> {
+  async execute({ username, payload }: Follow): Promise<void> {
     if (username === payload.username) {
       throw new BadRequestException('You cannot follow yourself');
     }

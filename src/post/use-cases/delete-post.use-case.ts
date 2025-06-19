@@ -1,10 +1,10 @@
 import { NotFoundException } from '@nestjs/common';
+import { UseCase } from '@/common/utils/use-case';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PostImageStoreUseCase } from '@/image-store/use-cases';
-import { PostUseCase } from './post.use-case';
 import { PostParam } from './types';
 
-export class DeletePostUseCase extends PostUseCase {
+export class DeletePostUseCase extends UseCase<PostParam, void> {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly imageStore: PostImageStoreUseCase,

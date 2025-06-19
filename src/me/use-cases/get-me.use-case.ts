@@ -5,7 +5,7 @@ import { MeMapper } from '../me.mapper';
 import { Count, Id } from './types';
 
 @Injectable()
-export class GetMeUseCase extends MeUseCase {
+export class GetMeUseCase extends MeUseCase<Id, { user: CurrentUserEntity }> {
   async execute({ id }: Id): Promise<{ user: CurrentUserEntity }> {
     const user = await this.prisma.user.findUnique({
       where: {

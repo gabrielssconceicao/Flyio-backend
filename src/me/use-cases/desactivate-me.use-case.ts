@@ -1,8 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { MeUseCase } from './me.use-case';
 import { Id } from './types';
 
-export class DesactivateMeUserCase extends MeUseCase {
-  async execute({ id }: Id) {
+@Injectable()
+export class DesactivateMeUserCase extends MeUseCase<Id, void> {
+  async execute({ id }: Id): Promise<void> {
     await this.prisma.user.update({
       where: {
         id: id,

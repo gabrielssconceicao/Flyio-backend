@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import { PrismaService } from '@/prisma/prisma.service';
 import { HashingService } from '@/hash/hashing.service';
+import { UseCase } from '@/common/utils/use-case';
 import jwtConfig from '../jwt.config';
 
 type Payload = { id: string; username: string };
@@ -12,14 +13,16 @@ type PayloadBody = {
 type Token = { accessToken: string; refreshToken?: string };
 
 @Injectable()
-export class AuthUseCase {
+export abstract class AuthUseCase<T, R> extends UseCase<T, R> {
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly hashing: HashingService,
     protected readonly jwt: JwtService,
     @Inject(jwtConfig.KEY)
     protected readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
-  ) {}
+  ) {
+    super(prisma);
+  }
 
   protected async generateAccessToken({
     payload,

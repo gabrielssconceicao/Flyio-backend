@@ -16,7 +16,10 @@ type CheckUserParams = {
 };
 
 @Injectable()
-export class CreateUserUseCase extends UserUseCase {
+export class CreateUserUseCase extends UserUseCase<
+  CreateUserParams,
+  UserEntity
+> {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly hashing: HashingService,
@@ -31,16 +34,11 @@ export class CreateUserUseCase extends UserUseCase {
   }: CreateUserParams): Promise<UserEntity> {
     const { email, name, username, bio, password } = createUserDto;
 
-    const isTaken = await this.isUserOrEmailTaken({
+    await this.isUserOrEmailTaken({
       username,
       email,
     });
 
-    if (isTaken) {
-      throw new ConflictException(
-        'User with this email or username already exists',
-      );
-    }
     const hashedPassword = await this.hashing.hash(password);
 
     let avatar: string | null = null;
@@ -77,7 +75,7 @@ export class CreateUserUseCase extends UserUseCase {
     return user;
   }
 
-  private async isUserOrEmailTaken(params: CheckUserParams): Promise<boolean> {
+  private async isUserOrEmailTaken(params: CheckUserParams): Promise<void> {
     const conditions: any[] = [];
 
     if (params.username) {
@@ -89,7 +87,7 @@ export class CreateUserUseCase extends UserUseCase {
     }
 
     if (conditions.length === 0) {
-      return false;
+      return;
     }
 
     const existingUser = await this.prisma.user.findFirst({
@@ -97,6 +95,11 @@ export class CreateUserUseCase extends UserUseCase {
         OR: conditions,
       },
     });
-    return !!existingUser;
+
+    if (existingUser) {
+      throw new ConflictException(
+        'User with this email or username already exists',
+      );
+    }
   }
 }

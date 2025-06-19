@@ -5,7 +5,10 @@ import { GetUserParam } from './types';
 import { UserUseCase } from './user.use-case';
 
 @Injectable()
-export class GetUserUseCase extends UserUseCase {
+export class GetUserUseCase extends UserUseCase<
+  GetUserParam,
+  { user: FindOneUserEntity }
+> {
   async execute({
     username,
   }: GetUserParam): Promise<{ user: FindOneUserEntity }> {

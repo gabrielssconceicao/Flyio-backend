@@ -5,7 +5,10 @@ import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { SearchUserEntity } from '../entities/search-user.entity';
 
 @Injectable()
-export class SearchUserUseCase extends UserUseCase {
+export class SearchUserUseCase extends UserUseCase<
+  QueryParamDto,
+  SearchUserEntity
+> {
   async execute(query: QueryParamDto): Promise<SearchUserEntity> {
     const { search = '', limit = 20, offset = 0 } = query;
     const users = await this.prisma.user.findMany({

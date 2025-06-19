@@ -10,7 +10,10 @@ import {
 } from './types';
 
 @Injectable()
-export class UpdateMeUseCase extends MeUseCase {
+export class UpdateMeUseCase extends MeUseCase<
+  UpdateProfileImageAndMeParams,
+  { user: CurrentUserEntity }
+> {
   async execute({
     payload,
     updateMeDto,

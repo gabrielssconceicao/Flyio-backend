@@ -5,7 +5,10 @@ import { UserMapper } from '../user.mapper';
 import { GetFollowingsParam } from './types';
 
 @Injectable()
-export class GetFollowingsUseCase extends UserUseCase {
+export class GetFollowingsUseCase extends UserUseCase<
+  GetFollowingsParam,
+  SearchUserEntity
+> {
   async execute({
     username,
     query,
