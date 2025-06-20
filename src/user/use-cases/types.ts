@@ -1,5 +1,6 @@
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { JwtPayload } from 'jsonwebtoken';
 
 export type GetUserParam = {
   username: string;
@@ -17,7 +18,14 @@ export type CreateUserParams = {
   bannerImage: Express.Multer.File | null;
 };
 
+// change name
 export type GetFollowingsParam = {
   username: string;
   query: PaginationDto;
+};
+
+export type PostRelationParam = {
+  username: string;
+  query: PaginationDto;
+  payload: JwtPayload;
 };

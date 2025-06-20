@@ -32,6 +32,7 @@ import {
   GetUserSwaggerDoc,
   SearchUsersSwaggerDoc,
 } from './swagger';
+import { GetUserRepliesSwaggerDoc } from './swagger/get-user-replies-swagger';
 
 @Controller('user')
 export class UserController {
@@ -143,6 +144,7 @@ export class UserController {
     return this.userService.getPosts({ username, query, payload });
   }
 
+  @GetUserRepliesSwaggerDoc()
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':username/comments')
