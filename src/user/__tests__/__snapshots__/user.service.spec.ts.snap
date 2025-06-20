@@ -1,34 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UserService GetLikedPosts should get a user liked posts 1`] = `
-{
-  "count": 1,
-  "items": [
-    {
-      "author": {
-        "name": "John Doe",
-        "profileImg": null,
-        "username": "johndoe",
-      },
-      "createdAt": 2000-01-01T00:00:00.000Z,
-      "id": "id-1",
-      "images": [
-        {
-          "id": "id-1",
-          "url": "https://example.com/image1.jpg",
-        },
-      ],
-      "isLiked": false,
-      "likes": 0,
-      "parent": null,
-      "parentId": null,
-      "replies": 0,
-      "text": "This is a post",
-    },
-  ],
-}
-`;
-
 exports[`UserService GetPosts should return an array of post 1`] = `
 {
   "count": 1,
@@ -115,9 +86,64 @@ exports[`UserService should get a user 1`] = `
 }
 `;
 
-exports[`UserService should get users that a user is following 1`] = `undefined`;
+exports[`UserService should get liked posts by a user 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "author": {
+        "name": "John Doe",
+        "profileImg": null,
+        "username": "johndoe",
+      },
+      "createdAt": 2000-01-01T00:00:00.000Z,
+      "id": "id-1",
+      "images": [
+        {
+          "id": "id-1",
+          "url": "https://example.com/image1.jpg",
+        },
+      ],
+      "isLiked": false,
+      "likes": 0,
+      "parent": {
+        "author": {
+          "username": "johndoe",
+        },
+      },
+      "parentId": "id-2",
+      "replies": 0,
+      "text": "This is a post",
+    },
+  ],
+}
+`;
 
-exports[`UserService should get users that follow a user 1`] = `undefined`;
+exports[`UserService should get users that a user is following 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "name": "John Doe",
+      "profileImg": null,
+      "username": "johndoe",
+    },
+  ],
+}
+`;
+
+exports[`UserService should get users that follow a user 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "name": "John Doe",
+      "profileImg": null,
+      "username": "johndoe",
+    },
+  ],
+}
+`;
 
 exports[`UserService should search users 1`] = `
 {

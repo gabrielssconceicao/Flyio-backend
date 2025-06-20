@@ -18,6 +18,10 @@ import {
   userMock,
 } from '../mocks';
 
+const mock = {
+  execute: jest.fn(),
+};
+
 import {
   GetFollowersUseCase,
   GetFollowingsUseCase,
@@ -25,6 +29,7 @@ import {
   CreateUserUseCase,
   GetUserUseCase,
 } from '../use-cases';
+import { GetUserLikedPostUseCase } from '../use-cases/get-user-liked-post.use-case';
 
 describe('UserService', () => {
   let service: UserService;
@@ -38,6 +43,7 @@ describe('UserService', () => {
   let searchUser: SearchUserUseCase;
   let getFollowings: GetFollowingsUseCase;
   let getFollowers: GetFollowersUseCase;
+  let getUserLikedPost: GetUserLikedPostUseCase;
   beforeEach(async () => {
     prisma = prismaServiceMock();
 
@@ -60,33 +66,27 @@ describe('UserService', () => {
         },
         {
           provide: GetUserUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
         },
         {
           provide: CreateUserUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
         },
         {
           provide: SearchUserUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
         },
         {
           provide: GetFollowingsUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
         },
         {
           provide: GetFollowersUseCase,
-          useValue: {
-            execute: jest.fn(),
-          },
+          useValue: mock,
+        },
+        {
+          provide: GetUserLikedPostUseCase,
+          useValue: mock,
         },
       ],
     }).compile();
@@ -99,6 +99,13 @@ describe('UserService', () => {
     searchUser = module.get<SearchUserUseCase>(SearchUserUseCase);
     getFollowings = module.get<GetFollowingsUseCase>(GetFollowingsUseCase);
     getFollowers = module.get<GetFollowersUseCase>(GetFollowersUseCase);
+    getUserLikedPost = module.get<GetUserLikedPostUseCase>(
+      GetUserLikedPostUseCase,
+    );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -109,6 +116,9 @@ describe('UserService', () => {
     expect(searchUser).toBeDefined();
     expect(getUser).toBeDefined();
     expect(createUser).toBeDefined();
+    expect(getFollowers).toBeDefined();
+    expect(getFollowings).toBeDefined();
+    expect(getUserLikedPost).toBeDefined();
   });
 
   afterEach(() => {
@@ -184,31 +194,16 @@ describe('UserService', () => {
     expect(result).toMatchSnapshot();
   });
 
-  describe('GetLikedPosts', () => {
-    it('should get a user liked posts', async () => {
-      jest.spyOn(prisma.likePost, 'findMany').mockResolvedValue(
-        getLikesMock().items.map((item) => ({
-          post: {
-            ...item,
-            _count: { replies: 0, likes: 0 },
-            likes: [],
-          },
-        })),
-      );
-      jest
-        .spyOn(prisma.likePost, 'count')
-        .mockResolvedValue(getLikesMock().count);
-      const result = await service.getLikedPosts({
-        username: 'username',
-        query: paginationDtoMock,
-        payload,
-      });
-      expect(prisma.likePost.findMany).toHaveBeenCalled();
-      expect(prisma.likePost.count).toHaveBeenCalled();
-      expect(result).toMatchSnapshot();
-      expect(result.count).toEqual(getLikesMock().count);
-      expect(result.items).toEqual(getLikesMock().items);
-    });
+  it('should get liked posts by a user', async () => {
+    jest.spyOn(getUserLikedPost, 'execute').mockResolvedValue(getLikesMock());
+    const body = {
+      username: 'username',
+      query: paginationDtoMock,
+      payload,
+    };
+    const result = await service.getLikedPosts(body);
+    expect(getUserLikedPost.execute).toHaveBeenCalledWith(body);
+    expect(result).toMatchSnapshot();
   });
 
   describe('GetPosts', () => {

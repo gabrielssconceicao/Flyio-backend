@@ -11,14 +11,19 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { GetLikedPostEntity } from './entities/get-liked-post-entity';
 import { FindManyPostEntity } from '@/post/entities/find-many.entity';
 import { GetUserCommentsEntity } from './entities/get-user-comments.entity';
-import { CreateUserParams, GetFollowingsParam } from './use-cases/types';
+import {
+  CreateUserParams,
+  GetFollowingsParam,
+  PostRelationParam,
+} from './use-cases/types';
 import {
   CreateUserUseCase,
+  GetFollowingsUseCase,
   GetFollowersUseCase,
   GetUserUseCase,
   SearchUserUseCase,
+  GetUserLikedPostUseCase,
 } from './use-cases';
-import { GetFollowingsUseCase } from './use-cases/get-followings.use-case';
 
 @Injectable()
 export class UserService {
@@ -29,6 +34,7 @@ export class UserService {
     private readonly searchUser: SearchUserUseCase,
     private readonly getFollowing: GetFollowingsUseCase,
     private readonly getFollower: GetFollowersUseCase,
+    private readonly getUserLikedPost: GetUserLikedPostUseCase,
   ) {}
 
   async create({
@@ -69,56 +75,8 @@ export class UserService {
     query,
     username,
     payload,
-  }: {
-    username: string;
-    query: PaginationDto;
-    payload: JwtPayload;
-  }): Promise<GetLikedPostEntity> {
-    const { limit = 50, offset = 0 } = query;
-    const posts = await this.prisma.likePost.findMany({
-      where: {
-        user: {
-          username,
-        },
-      },
-      select: {
-        post: {
-          select: {
-            ...PostMapper.defautFields,
-            ...PostMapper.likeFields(payload.id),
-            ...PostMapper.countField,
-            parent: {
-              select: {
-                author: {
-                  select: {
-                    username: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: limit,
-      skip: offset,
-    });
-    const count = await this.prisma.likePost.count({
-      where: {
-        user: {
-          username,
-        },
-      },
-    });
-    return {
-      count,
-      items: posts.map(({ post: { _count, likes, ...post } }) => ({
-        ...post,
-        ...PostMapper.separate({ _count, likes }),
-      })),
-    };
+  }: PostRelationParam): Promise<GetLikedPostEntity> {
+    return this.getUserLikedPost.execute({ query, username, payload });
   }
 
   async getPosts({
