@@ -38,6 +38,10 @@ exports[`UserController should find users by name or username 1`] = `
 }
 `;
 
+exports[`UserController should get user liked posts 1`] = `Promise {}`;
+
+exports[`UserController should get user posts 1`] = `Promise {}`;
+
 exports[`UserController should get users that a user follow 1`] = `
 {
   "count": 1,

@@ -58,6 +58,18 @@ export class PostMapper {
     },
   };
 
+  static parentField = {
+    parent: {
+      select: {
+        author: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    },
+  };
+
   static separate({
     _count,
     likes,

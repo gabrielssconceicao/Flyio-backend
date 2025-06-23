@@ -6,20 +6,5 @@ This project involves the development of a social network using the NestJS frame
 [ ] try nodemailer to reactivate acconts?
 [ ] try websocket
 
-[ ] refactor
-  [x] auth
-  [x] image-store
-  [x] me
-  [ ] user
-      [x] default
-      [x] follow
-      [ ] liked
-      [ ] posts
-      [ ] comments
-  [x] follow
-      [x] follow
-      [x] unllow
-  [x] post
-  [x] comment
-  [x] likes
+
 

@@ -1,35 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '@/common/utils/use-case';
 import { PostMapper } from '@/post/post.mapper';
-import { GetLikedPostEntity } from '../entities';
 import { PostRelationParam } from './types';
+import { GetUserPostsEntity } from '../entities';
 
 @Injectable()
-export class GetUserLikedPostUseCase extends UseCase<
+export class GetUserPostsUseCase extends UseCase<
   PostRelationParam,
-  GetLikedPostEntity
+  GetUserPostsEntity
 > {
   async execute({
-    payload,
     query,
     username,
-  }: PostRelationParam): Promise<GetLikedPostEntity> {
+    payload,
+  }: PostRelationParam): Promise<GetUserPostsEntity> {
     const { limit = 50, offset = 0 } = query;
-    const posts = await this.prisma.likePost.findMany({
+    const posts = await this.prisma.post.findMany({
       where: {
-        user: {
+        author: {
           username,
         },
       },
       select: {
-        post: {
-          select: {
-            ...PostMapper.defautFields,
-            ...PostMapper.likeFields(payload.id),
-            ...PostMapper.countField,
-            ...PostMapper.parentField,
-          },
-        },
+        ...PostMapper.defautFields,
+        ...PostMapper.likeFields(payload.id),
+        ...PostMapper.countField,
+        ...PostMapper.parentField,
       },
       orderBy: {
         createdAt: 'desc',
@@ -37,16 +33,17 @@ export class GetUserLikedPostUseCase extends UseCase<
       take: limit,
       skip: offset,
     });
-    const count = await this.prisma.likePost.count({
+
+    const count = await this.prisma.post.count({
       where: {
-        user: {
+        author: {
           username,
         },
       },
     });
     return {
       count,
-      items: posts.map(({ post: { _count, likes, ...post } }) => ({
+      items: posts.map(({ _count, likes, ...post }) => ({
         ...post,
         ...PostMapper.separate({ _count, likes }),
       })),

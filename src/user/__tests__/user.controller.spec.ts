@@ -10,7 +10,10 @@ import {
   userEntityMock,
   userMock,
   searchUsersResponseMock,
+  getLikesMock,
 } from '../mocks';
+import { payloadMock } from '@/auth/mock/token-payload.mock';
+import { findManyPostMock } from '@/post/mock';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -29,6 +32,8 @@ describe('UserController', () => {
             search: jest.fn(),
             getFollowings: jest.fn(),
             getFollowers: jest.fn(),
+            getPosts: jest.fn(),
+            getLikedPosts: jest.fn(),
           },
         },
       ],
@@ -61,6 +66,7 @@ describe('UserController', () => {
   it('should find a user', async () => {
     jest.spyOn(service, 'findOne').mockResolvedValue({ user: userMock() });
     const result = await controller.findOne('username');
+    expect(service.findOne).toHaveBeenCalledWith({ username: 'username' });
     expect(result).toMatchSnapshot();
   });
 
@@ -68,7 +74,7 @@ describe('UserController', () => {
     const query = { search: 'johndoe', ...paginationDtoMock };
     jest.spyOn(service, 'search').mockResolvedValue(searchUsersResponseMock());
     const result = await controller.search(query);
-    expect(service.search).toHaveBeenCalledWith(query);
+    expect(service.search).toHaveBeenCalledWith({ query });
     expect(result).toMatchSnapshot();
   });
 
@@ -95,6 +101,43 @@ describe('UserController', () => {
     expect(service.getFollowers).toHaveBeenCalledWith({
       username: 'username',
       query: paginationDtoMock,
+    });
+    expect(result).toMatchSnapshot();
+  });
+
+  it('should get user liked posts', () => {
+    jest.spyOn(service, 'getLikedPosts').mockResolvedValue(getLikesMock());
+    const result = controller.getLikedPosts(
+      payloadMock,
+      'username',
+      paginationDtoMock,
+    );
+    expect(service.getLikedPosts).toHaveBeenCalledWith({
+      username: 'username',
+      query: paginationDtoMock,
+      payload: payloadMock,
+    });
+    expect(result).toMatchSnapshot();
+  });
+
+  it('should get user posts', () => {
+    jest.spyOn(service, 'getPosts').mockResolvedValue({
+      count: 1,
+      items: findManyPostMock().items.map((post) => ({
+        ...post,
+        parent: { author: { username: 'johndoe' } },
+      })),
+    });
+    const result = controller.getPosts(
+      'username',
+
+      paginationDtoMock,
+      payloadMock,
+    );
+    expect(service.getPosts).toHaveBeenCalledWith({
+      username: 'username',
+      query: paginationDtoMock,
+      payload: payloadMock,
     });
     expect(result).toMatchSnapshot();
   });

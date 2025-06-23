@@ -1,16 +1,10 @@
-import {
-  ApiCookieAuth,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { ProtectedRouteSwaggerDocFunc } from '@/common/utils/protected-route-swagger';
+import { GetUserPostsEntity } from '../entities';
 
-export const GetUserRepliesSwaggerDoc = () => {
+export const GetUserPostsSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-    ApiOperation({ summary: 'Get user replies' })(
+    ApiOperation({ summary: 'Get posts of a user' })(
       target,
       propertyKey,
       descriptor,
@@ -19,6 +13,7 @@ export const GetUserRepliesSwaggerDoc = () => {
       name: 'username',
       type: String,
       required: true,
+      example: 'jdoe',
     })(target, propertyKey, descriptor);
 
     ApiQuery({ name: 'limit', required: false })(
@@ -33,9 +28,8 @@ export const GetUserRepliesSwaggerDoc = () => {
     );
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Replies found successfully',
+      description: 'Users found successfully',
+      type: GetUserPostsEntity,
     })(target, propertyKey, descriptor);
-    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
-    ProtectedRouteSwaggerDocFunc()(target, propertyKey, descriptor);
   };
 };

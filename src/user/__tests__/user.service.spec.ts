@@ -1,13 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { prismaServiceMock } from '@/prisma/prisma.service.mock';
-import { PrismaService } from '@/prisma/prisma.service';
-
-import { HashingService } from '@/hash/hashing.service';
 import { UserImageStoreUseCase } from '@/image-store/use-cases';
 import { userImageStoreUseCaseMock } from '@/image-store/mock';
-import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { findManyPostMock, postMock } from '@/post/mock';
+import { findManyPostMock } from '@/post/mock';
+import { payloadMock } from '@/auth/mock/token-payload.mock';
 
 import { UserService } from '../user.service';
 import {
@@ -18,25 +14,22 @@ import {
   userMock,
 } from '../mocks';
 
-const mock = {
-  execute: jest.fn(),
-};
-
 import {
   GetFollowersUseCase,
   GetFollowingsUseCase,
   SearchUserUseCase,
   CreateUserUseCase,
   GetUserUseCase,
+  GetUserPostsUseCase,
+  GetUserLikedPostUseCase,
 } from '../use-cases';
-import { GetUserLikedPostUseCase } from '../use-cases/get-user-liked-post.use-case';
 
+const mock = {
+  execute: jest.fn(),
+};
 describe('UserService', () => {
   let service: UserService;
-  let hashingService: HashingService;
-  let prisma: ReturnType<typeof prismaServiceMock>;
   const paginationDtoMock = { offset: 0, limit: 25 };
-  const payload = { id: 'id-1' } as JwtPayload;
 
   let getUser: GetUserUseCase;
   let createUser: CreateUserUseCase;
@@ -44,22 +37,12 @@ describe('UserService', () => {
   let getFollowings: GetFollowingsUseCase;
   let getFollowers: GetFollowersUseCase;
   let getUserLikedPost: GetUserLikedPostUseCase;
+  let getUserPosts: GetUserPostsUseCase;
   beforeEach(async () => {
-    prisma = prismaServiceMock();
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
-        {
-          provide: HashingService,
-          useValue: {
-            hash: jest.fn(),
-          },
-        },
-        {
-          provide: PrismaService,
-          useValue: prisma,
-        },
+
         {
           provide: UserImageStoreUseCase,
           useValue: userImageStoreUseCaseMock(),
@@ -88,11 +71,14 @@ describe('UserService', () => {
           provide: GetUserLikedPostUseCase,
           useValue: mock,
         },
+        {
+          provide: GetUserPostsUseCase,
+          useValue: mock,
+        },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    hashingService = module.get<HashingService>(HashingService);
 
     getUser = module.get<GetUserUseCase>(GetUserUseCase);
     createUser = module.get<CreateUserUseCase>(CreateUserUseCase);
@@ -102,6 +88,7 @@ describe('UserService', () => {
     getUserLikedPost = module.get<GetUserLikedPostUseCase>(
       GetUserLikedPostUseCase,
     );
+    getUserPosts = module.get<GetUserPostsUseCase>(GetUserPostsUseCase);
   });
 
   afterEach(() => {
@@ -110,8 +97,6 @@ describe('UserService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(hashingService).toBeDefined();
-    expect(prisma).toBeDefined();
 
     expect(searchUser).toBeDefined();
     expect(getUser).toBeDefined();
@@ -119,6 +104,7 @@ describe('UserService', () => {
     expect(getFollowers).toBeDefined();
     expect(getFollowings).toBeDefined();
     expect(getUserLikedPost).toBeDefined();
+    expect(getUserPosts).toBeDefined();
   });
 
   afterEach(() => {
@@ -127,26 +113,22 @@ describe('UserService', () => {
 
   it('should get a user', async () => {
     jest.spyOn(getUser, 'execute').mockResolvedValue({ user: userMock() });
-    const result = await service.findOne('johndoe');
+    const result = await service.findOne({ username: 'johndoe' });
     expect(getUser.execute).toHaveBeenCalledWith({ username: 'johndoe' });
     expect(result).toMatchSnapshot();
   });
 
   it('should create a user', async () => {
+    const body = {
+      bannerImage: null,
+      profileImage: null,
+      createUserDto: createUserDtoMock(),
+    };
     jest.spyOn(createUser, 'execute').mockResolvedValue(userEntityMock());
-    const result = await service.create({
-      bannerImage: null,
-      profileImage: null,
-      createUserDto: createUserDtoMock(),
-    });
-    expect(createUser.execute).toHaveBeenCalledWith({
-      bannerImage: null,
-      profileImage: null,
-      createUserDto: createUserDtoMock(),
-    });
+    const result = await service.create(body);
+    expect(createUser.execute).toHaveBeenCalledWith(body);
     expect(result).toMatchSnapshot();
   });
-
   it('should search users', async () => {
     jest
       .spyOn(searchUser, 'execute')
@@ -156,41 +138,29 @@ describe('UserService', () => {
       offset: 0,
       search: 'johndoe',
     };
-    const result = await service.search(query);
+    const result = await service.search({ query });
 
     expect(searchUser.execute).toHaveBeenCalledWith(query);
     expect(result).toMatchSnapshot();
   });
 
   it('should get users that a user is following', async () => {
-    jest
-      .spyOn(prisma.user, 'findUnique')
-      .mockResolvedValue(searchUsersResponseMock());
-
-    const result = await service.getFollowings({
+    const body = {
       username: 'username',
       query: paginationDtoMock,
-    });
-    expect(getFollowings.execute).toHaveBeenCalledWith({
-      username: 'username',
-      query: paginationDtoMock,
-    });
+    };
+    const result = await service.getFollowings(body);
+    expect(getFollowings.execute).toHaveBeenCalledWith(body);
     expect(result).toMatchSnapshot();
   });
 
   it('should get users that follow a user', async () => {
-    jest
-      .spyOn(prisma.user, 'findUnique')
-      .mockResolvedValue(searchUsersResponseMock());
-
-    const result = await service.getFollowers({
+    const body = {
       username: 'username',
       query: paginationDtoMock,
-    });
-    expect(getFollowers.execute).toHaveBeenCalledWith({
-      username: 'username',
-      query: paginationDtoMock,
-    });
+    };
+    const result = await service.getFollowers(body);
+    expect(getFollowers.execute).toHaveBeenCalledWith(body);
     expect(result).toMatchSnapshot();
   });
 
@@ -199,58 +169,29 @@ describe('UserService', () => {
     const body = {
       username: 'username',
       query: paginationDtoMock,
-      payload,
+      payload: payloadMock,
     };
     const result = await service.getLikedPosts(body);
     expect(getUserLikedPost.execute).toHaveBeenCalledWith(body);
     expect(result).toMatchSnapshot();
   });
 
-  describe('GetPosts', () => {
-    it('should return an array of post', async () => {
-      jest.spyOn(prisma.post, 'findMany').mockResolvedValue(
-        findManyPostMock().items.map((post) => ({
-          ...post,
-          ...{ _count: { replies: 0, likes: 0 } },
-        })),
-      );
-      jest
-        .spyOn(prisma.post, 'count')
-        .mockResolvedValue(findManyPostMock().count);
-
-      const result = await service.getPosts({
-        username: 'username',
-        query: paginationDtoMock,
-        payload,
-      });
-
-      expect(prisma.post.findMany).toHaveBeenCalled();
-      expect(prisma.post.count).toHaveBeenCalled();
-      expect(result).toEqual(findManyPostMock());
-      expect(result).toMatchSnapshot();
+  it('should get user posts', async () => {
+    jest.spyOn(getUserPosts, 'execute').mockResolvedValue({
+      count: findManyPostMock().count,
+      items: findManyPostMock().items.map((post) => ({
+        ...post,
+        parent: { author: { username: 'johndoe' } },
+      })),
     });
-  });
 
-  describe('GetReplies', () => {
-    it('should get user replies', async () => {
-      jest.spyOn(prisma.post, 'findMany').mockResolvedValue([
-        {
-          ...postMock(),
-          likes: [],
-          _count: { replies: 0, likes: 0 },
-          parent: { author: { username: 'johndoe' } },
-        },
-      ]);
-      jest.spyOn(prisma.post, 'count').mockResolvedValue(1);
-
-      const result = await service.getComments({
-        username: 'username',
-        payload,
-        query: paginationDtoMock,
-      });
-
-      expect(prisma.post.findMany).toHaveBeenCalled();
-      expect(result).toMatchSnapshot();
-    });
+    const body = {
+      username: 'username',
+      query: paginationDtoMock,
+      payload: payloadMock,
+    };
+    const result = await service.getPosts(body);
+    expect(getUserPosts.execute).toHaveBeenCalledWith(body);
+    expect(result).toMatchSnapshot();
   });
 });

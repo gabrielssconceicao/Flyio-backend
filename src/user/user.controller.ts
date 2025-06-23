@@ -21,7 +21,6 @@ import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { CurrentUser } from '@/common/params/current-user.params';
 
 import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
-import { FindManyPostSwaggerDoc } from '@/post/swagger/find-many-post-swagger';
 
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -32,7 +31,7 @@ import {
   GetUserSwaggerDoc,
   SearchUsersSwaggerDoc,
 } from './swagger';
-import { GetUserRepliesSwaggerDoc } from './swagger/get-user-replies-swagger';
+import { GetUserPostsSwaggerDoc } from './swagger/get-user-posts.swagger';
 
 @Controller('user')
 export class UserController {
@@ -90,14 +89,14 @@ export class UserController {
   @SearchUsersSwaggerDoc()
   @Get()
   search(@Query() query: QueryParamDto) {
-    return this.userService.search(query);
+    return this.userService.search({ query });
   }
 
   @GetUserSwaggerDoc()
   @HttpCode(HttpStatus.OK)
   @Get(':username')
   findOne(@Param('username') username: string) {
-    return this.userService.findOne(username);
+    return this.userService.findOne({ username });
   }
 
   @FollowUsersSwaggerDoc('followings')
@@ -132,7 +131,7 @@ export class UserController {
     return this.userService.getLikedPosts({ username, query, payload });
   }
 
-  @FindManyPostSwaggerDoc()
+  @GetUserPostsSwaggerDoc()
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':username/posts')
@@ -142,17 +141,5 @@ export class UserController {
     @CurrentUser() payload: JwtPayload,
   ) {
     return this.userService.getPosts({ username, query, payload });
-  }
-
-  @GetUserRepliesSwaggerDoc()
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @Get(':username/comments')
-  getComments(
-    @Param('username') username: string,
-    @Query() query: PaginationDto,
-    @CurrentUser() payload: JwtPayload,
-  ) {
-    return this.userService.getComments({ username, query, payload });
   }
 }
