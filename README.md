@@ -1,5 +1,6 @@
 # Flyio - Social Network API
 
+[ ] add docker
 [ ] try nodemailer to reactivate acconts?
 [ ] try websocket
 
