@@ -10,20 +10,25 @@ import {
   UseInterceptors,
   UploadedFiles,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiCookieAuth } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
+import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
+
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
 
 import { UpdateMeDto } from './dto/update-me.dto';
 import { MeService } from './me.service';
-import { CurrentUserEntity } from './entities/current-user.entity';
-import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
-import { UpdateMeSwaggerDoc } from './swagger/update-me-swagger';
-import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
+import {
+  UpdateMeSwaggerDoc,
+  DeleteImageSwaggerDoc,
+  DesactivateMeSwaggerDoc,
+  GetMeSwaggerDoc,
+} from './swagger';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
@@ -32,15 +37,10 @@ import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger
 export class MeController {
   constructor(private readonly meService: MeService) {}
 
-  @ApiOperation({ summary: 'Get current user' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'User found successfully',
-    type: CurrentUserEntity,
-  })
+  @GetMeSwaggerDoc()
   @Get()
   getMe(@CurrentUser() payload: JwtPayload) {
-    return this.meService.getMe(payload);
+    return this.meService.get(payload);
   }
 
   @UpdateMeSwaggerDoc()
@@ -85,7 +85,7 @@ export class MeController {
         metatype: undefined,
       },
     );
-    return this.meService.updateMe({
+    return this.meService.update({
       payload,
       updateMeDto,
       profileImage: validatedProfile,
@@ -93,41 +93,21 @@ export class MeController {
     });
   }
 
-  @ApiOperation({ summary: 'Desactivate current user' })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'User desactivated successfully',
-  })
+  @DesactivateMeSwaggerDoc()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete()
   desactivateMe(@CurrentUser() payload: JwtPayload) {
-    return this.meService.desactivateMe(payload);
+    return this.meService.desactivate(payload);
   }
 
-  @ApiOperation({ summary: 'Delete profile image' })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'Profile image deleted successfully',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Error deleting profile image',
-  })
+  @DeleteImageSwaggerDoc('profile')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('profile-image')
   deleteProfileImage(@CurrentUser() payload: JwtPayload) {
     return this.meService.deleteProfileImage({ payload });
   }
 
-  @ApiOperation({ summary: 'Delete banner image' })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'Banner image deleted successfully',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Error deleting profile image',
-  })
+  @DeleteImageSwaggerDoc('banner')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('banner-image')
   deleteBannerImage(@CurrentUser() payload: JwtPayload) {

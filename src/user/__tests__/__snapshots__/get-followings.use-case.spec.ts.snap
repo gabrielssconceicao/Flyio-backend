@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GetFollowingsUseCase should get a user followings 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "name": "John Doe",
+      "profileImg": null,
+      "username": "johndoe",
+    },
+  ],
+}
+`;

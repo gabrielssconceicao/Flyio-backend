@@ -1,11 +1,14 @@
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 export class PostMapper {
   static defautFields = {
     id: true,
     text: true,
     parentId: true,
+    createdAt: true,
     author: {
       select: {
-        id: true,
         name: true,
         username: true,
         profileImg: true,
@@ -17,7 +20,6 @@ export class PostMapper {
         url: true,
       },
     },
-    createdAt: true,
   };
 
   static likeFields(id: string) {
@@ -56,6 +58,18 @@ export class PostMapper {
     },
   };
 
+  static parentField = {
+    parent: {
+      select: {
+        author: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    },
+  };
+
   static separate({
     _count,
     likes,
@@ -68,15 +82,6 @@ export class PostMapper {
       likes: _count.likes,
       replies: _count.replies,
       isLiked: !!likes.length,
-    };
-  }
-
-  static separeteParent(parent: any) {
-    if (!parent) return null;
-    const { _count, likes, ...rest } = parent;
-    return {
-      ...rest,
-      ...this.separate({ _count, likes }),
     };
   }
 }

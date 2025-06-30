@@ -9,7 +9,7 @@ class Username {
   })
   username: string;
 }
-export class Author {
+export class PostAuthor {
   @ApiProperty({
     type: Username,
     description: 'Author username',
@@ -17,6 +17,10 @@ export class Author {
   author: Username;
 }
 export class CommentPostEntity extends PostEntity {
-  @ApiProperty({ type: Author, description: 'Comment author', nullable: true })
-  parent: Author | null;
+  @ApiProperty({
+    type: PostAuthor,
+    description: 'Comment author',
+    nullable: true,
+  })
+  parent: PostAuthor | null;
 }

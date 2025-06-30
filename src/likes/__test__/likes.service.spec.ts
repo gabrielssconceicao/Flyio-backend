@@ -1,100 +1,49 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@/prisma/prisma.service';
+import { payloadMock } from '@/auth/mock/token-payload.mock';
 import { LikesService } from '../likes.service';
-import { prismaServiceMock } from '@/prisma/prisma.service.mock';
-import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-
+import { DislikePostUseCase, LikePostUseCase } from '../use-cases';
+import { Like } from '../use-cases/type';
+const mock = {
+  execute: jest.fn(),
+};
 describe('LikesService', () => {
   let service: LikesService;
-  let prisma: ReturnType<typeof prismaServiceMock>;
-  let payload: JwtPayload;
-  let postId: string;
+  let likePost: LikePostUseCase;
+  let dislikePost: DislikePostUseCase;
+  let body: Like;
   beforeEach(async () => {
-    prisma = prismaServiceMock();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LikesService,
         {
-          provide: PrismaService,
-          useValue: prisma,
+          provide: LikePostUseCase,
+          useValue: mock,
+        },
+        {
+          provide: DislikePostUseCase,
+          useValue: mock,
         },
       ],
     }).compile();
 
     service = module.get<LikesService>(LikesService);
-    payload = { id: 'id-1' } as JwtPayload;
-    postId = 'id-2';
+    likePost = module.get<LikePostUseCase>(LikePostUseCase);
+    dislikePost = module.get<DislikePostUseCase>(DislikePostUseCase);
+    body = { payload: payloadMock, postId: 'id-1' };
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(likePost).toBeDefined();
+    expect(dislikePost).toBeDefined();
   });
 
-  describe('LikePost', () => {
-    it('should like a post', async () => {
-      jest.spyOn(prisma.post, 'findUnique').mockResolvedValue({} as any);
-      jest.spyOn(prisma.likePost, 'findUnique').mockResolvedValue(null);
-
-      await service.likePost({ payload, postId });
-
-      expect(prisma.post.findUnique).toHaveBeenCalledWith({
-        where: { id: postId },
-      });
-      expect(prisma.likePost.findUnique).toHaveBeenCalledWith({
-        where: { postId_userId: { postId, userId: payload.id } },
-      });
-      expect(prisma.likePost.create).toHaveBeenCalledWith({
-        data: { postId, userId: payload.id },
-      });
-    });
-
-    it('should throw NotFoundException if post not found', async () => {
-      jest.spyOn(prisma.post, 'findUnique').mockResolvedValue(null);
-      await expect(service.likePost({ payload, postId })).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-    it('should throw BadRequestException if post already liked', async () => {
-      jest.spyOn(prisma.post, 'findUnique').mockResolvedValue({} as any);
-      jest.spyOn(prisma.likePost, 'findUnique').mockResolvedValue({} as any);
-      await expect(service.likePost({ payload, postId })).rejects.toThrow(
-        BadRequestException,
-      );
-    });
+  it('should like a post', async () => {
+    await service.like(body);
+    expect(likePost.execute).toHaveBeenCalledWith(body);
   });
-
-  describe('DeslikePost', () => {
-    it('should like a post', async () => {
-      jest.spyOn(prisma.post, 'findUnique').mockResolvedValue({} as any);
-      jest.spyOn(prisma.likePost, 'findUnique').mockResolvedValue({} as any);
-
-      await service.deslikePost({ payload, postId });
-
-      expect(prisma.post.findUnique).toHaveBeenCalledWith({
-        where: { id: postId },
-      });
-      expect(prisma.likePost.findUnique).toHaveBeenCalledWith({
-        where: { postId_userId: { postId, userId: payload.id } },
-      });
-      expect(prisma.likePost.delete).toHaveBeenCalledWith({
-        where: { postId_userId: { userId: payload.id, postId } },
-      });
-    });
-
-    it('should throw NotFoundException if post not found', async () => {
-      jest.spyOn(prisma.post, 'findUnique').mockResolvedValue(null);
-      await expect(service.likePost({ payload, postId })).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw BadRequestException if post already desliked', async () => {
-      jest.spyOn(prisma.post, 'findUnique').mockResolvedValue({} as any);
-      jest.spyOn(prisma.likePost, 'findUnique').mockResolvedValue(null);
-      await expect(service.deslikePost({ payload, postId })).rejects.toThrow(
-        BadRequestException,
-      );
-    });
+  it('should dislike a post', async () => {
+    await service.deslike(body);
+    expect(dislikePost.execute).toHaveBeenCalledWith(body);
   });
 });

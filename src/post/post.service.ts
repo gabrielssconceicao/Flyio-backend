@@ -1,41 +1,32 @@
-import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { QueryParamDto } from '@/common/dto/query-param.dto';
-import { ImageStoreService } from '@/image-store/image-store.service';
-import { ImageStoreTypeFolder } from '@/image-store/image-store.constants';
-import { PostMapper } from './post.mapper';
-import { CreatePostDto } from './dto/create-post.dto';
+import { Injectable } from '@nestjs/common';
 import { PostEntity } from './entities/post.entity';
-import { FindManyPostEntity } from './entities/find-many.entity';
-import { FindOnePostEntity } from './entities/find-one-post.entity';
-import { CommentPostEntity } from './entities/comment-post.entity';
-
-type CreatePost = {
-  createPostDto: CreatePostDto;
-  payload: JwtPayload;
-  images: Express.Multer.File[];
-};
-
-type CommentPost = CreatePost & {
-  postId: string;
-};
-
-type PostId = {
-  postId: string;
-  payload: JwtPayload;
-};
-
-type FindMany = {
-  payload: JwtPayload;
-  query: QueryParamDto;
-};
+import {
+  CommentPostEntity,
+  FindManyPostEntity,
+  FindOnePostEntity,
+} from './entities';
+import {
+  CreatePostUseCase,
+  DeletePostUseCase,
+  FindOnePostUseCase,
+  FindManyPostUseCase,
+  ReplyPostUseCase,
+} from './use-cases';
+import {
+  CommentPost,
+  CreatePost,
+  FindMany,
+  PostParam,
+} from './use-cases/types';
 
 @Injectable()
 export class PostService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly imageStore: ImageStoreService,
+    private readonly createPost: CreatePostUseCase,
+    private readonly deletePost: DeletePostUseCase,
+    private readonly findOnePost: FindOnePostUseCase,
+    private readonly findManyPost: FindManyPostUseCase,
+    private readonly replyPost: ReplyPostUseCase,
   ) {}
 
   async create({
@@ -43,178 +34,27 @@ export class PostService {
     payload,
     images,
   }: CreatePost): Promise<PostEntity> {
-    let imagesUrl: string[] = [];
-
-    if (images.length) {
-      imagesUrl = await this.imageStore.uploadPostImages({
-        files: images,
-        folder: ImageStoreTypeFolder.POST,
-      });
-    }
-
-    const post = await this.prisma.post.create({
-      data: {
-        text: createPostDto.content,
-        authorId: payload.id,
-        images: {
-          createMany: {
-            data: imagesUrl.map((url) => ({ url })),
-          },
-        },
-      },
-      select: PostMapper.defautFields,
-    });
-
-    return { ...post, likes: 0, isLiked: false, replies: 0, parentId: null };
+    return this.createPost.execute({ createPostDto, payload, images });
   }
 
-  async delete({ payload, postId }: PostId): Promise<void> {
-    const postExists = await this.prisma.post.findUnique({
-      where: {
-        id: postId,
-        authorId: payload.id,
-      },
-      select: {
-        images: {
-          select: {
-            url: true,
-          },
-        },
-      },
-    });
-
-    if (!postExists) {
-      throw new NotFoundException('Post not found');
-    }
-
-    if (postExists.images.length) {
-      await this.imageStore.deletePostImages({
-        files: postExists.images.map((image) => image.url),
-      });
-    }
-
-    await this.prisma.post.delete({
-      where: {
-        id: postId,
-        authorId: payload.id,
-      },
-    });
-    return;
+  async delete({ payload, postId }: PostParam): Promise<void> {
+    return this.deletePost.execute({ postId, payload });
   }
 
-  async findOne({ postId, payload }: PostId): Promise<FindOnePostEntity> {
-    const post = await this.prisma.post.findUnique({
-      where: {
-        id: postId,
-      },
-      select: {
-        ...PostMapper.defautFields,
-        ...PostMapper.likeFields(payload.id),
-        ...PostMapper.commentFields(payload.id),
-
-        ...PostMapper.countField,
-        parent: {
-          select: {
-            ...PostMapper.defautFields,
-            ...PostMapper.likeFields(payload.id),
-            ...PostMapper.countField,
-          },
-        },
-      },
-    });
-
-    if (!post) {
-      throw new NotFoundException('Post not found');
-    }
-
-    const { _count, likes, replies, parent, ...restPost } = post;
-    return {
-      ...restPost,
-      ...PostMapper.separate({ _count, likes }),
-      comments: replies.map(({ _count, likes, ...reply }) => {
-        return {
-          ...reply,
-          ...PostMapper.separate({ _count, likes }),
-        };
-      }),
-      parent: PostMapper.separeteParent(parent),
-    };
+  async findOne({ postId, payload }: PostParam): Promise<FindOnePostEntity> {
+    return this.findOnePost.execute({ postId, payload });
   }
 
   async findMany({ payload, query }: FindMany): Promise<FindManyPostEntity> {
-    const { search = '', limit = 50, offset = 0 } = query;
-
-    const posts = await this.prisma.post.findMany({
-      where: {
-        text: {
-          contains: search,
-          mode: 'insensitive',
-        },
-        parentId: null,
-      },
-      select: {
-        ...PostMapper.defautFields,
-        ...PostMapper.likeFields(payload.id),
-        ...PostMapper.countField,
-      },
-      take: limit,
-      skip: offset,
-    });
-
-    const count = await this.prisma.post.count({
-      where: {
-        parentId: null,
-      },
-    });
-
-    return {
-      count,
-      items: posts.map(({ _count, likes, ...post }) => {
-        return { ...post, ...PostMapper.separate({ _count, likes }) };
-      }),
-    };
+    return this.findManyPost.execute({ payload, query });
   }
 
-  async comment({
+  async reply({
     createPostDto,
     images,
     payload,
     postId,
   }: CommentPost): Promise<CommentPostEntity> {
-    let imagesUrl: string[] = [];
-
-    if (images.length) {
-      imagesUrl = await this.imageStore.uploadPostImages({
-        files: images,
-        folder: ImageStoreTypeFolder.POST,
-      });
-    }
-
-    const post = await this.prisma.post.create({
-      data: {
-        text: createPostDto.content,
-        authorId: payload.id,
-        parentId: postId,
-        images: {
-          createMany: {
-            data: imagesUrl.map((url) => ({ url })),
-          },
-        },
-      },
-      select: {
-        ...PostMapper.defautFields,
-        parent: {
-          select: {
-            author: {
-              select: {
-                username: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return { ...post, likes: 0, isLiked: false, replies: 0 };
+    return this.replyPost.execute({ createPostDto, images, payload, postId });
   }
 }

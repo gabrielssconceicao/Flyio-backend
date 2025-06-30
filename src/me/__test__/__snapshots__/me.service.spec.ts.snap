@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MeService GetMe should get current user 1`] = `
+exports[`MeService should get me 1`] = `
 {
   "user": {
     "bannerImg": null,
@@ -16,7 +16,7 @@ exports[`MeService GetMe should get current user 1`] = `
 }
 `;
 
-exports[`MeService UpdateMe should update current user 1`] = `
+exports[`MeService should update me 1`] = `
 {
   "user": {
     "bannerImg": null,
@@ -26,24 +26,6 @@ exports[`MeService UpdateMe should update current user 1`] = `
     "following": 0,
     "id": "1",
     "name": "John Doe",
-    "password": "hashedPassword",
-    "profileImg": null,
-    "username": "johndoe",
-  },
-}
-`;
-
-exports[`MeService UpdateMe should update current user with images 1`] = `
-{
-  "user": {
-    "bannerImg": "https://example.com/profile-picture.jpg",
-    "bio": "bio",
-    "createdAt": 2000-01-01T00:00:00.000Z,
-    "followers": 0,
-    "following": 0,
-    "id": "1",
-    "name": "John Doe",
-    "prfileImg": "https://example.com/profile-picture.jpg",
     "profileImg": null,
     "username": "johndoe",
   },

@@ -15,19 +15,24 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiCookieAuth } from '@nestjs/swagger';
 import * as multer from 'multer';
+
 import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
+
 import { PostImageValidatorPipe } from '@/image-store/pipes/post-image-validatitor.pipe';
+
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { CreatePostSwaggerDoc } from './swagger/create-post-swagger';
-import { DeletePostSwaggerDoc } from './swagger/delete-post-swagger';
-import { GetOnePostSwaggerDoc } from './swagger/get-one-post-swagger';
-import { FindManyPostSwaggerDoc } from './swagger/find-many-post-swagger';
-import { CommentPostSwaggerDoc } from './swagger/comment-post-swagger';
+import {
+  CommentPostSwaggerDoc,
+  CreatePostSwaggerDoc,
+  DeletePostSwaggerDoc,
+  GetOnePostSwaggerDoc,
+  FindManyPostSwaggerDoc,
+} from './swagger';
 
 @ProtectedRouteSwaggerDoc()
 @ApiCookieAuth('access_token')
@@ -81,12 +86,12 @@ export class PostController {
   )
   @Post(':postId')
   @HttpCode(HttpStatus.CREATED)
-  comment(
+  reply(
     @CurrentUser() payload: JwtPayload,
     @Param('postId') postId: string,
     @UploadedFiles(PostImageValidatorPipe) images: Express.Multer.File[],
     @Body() createPostDto: CreatePostDto,
   ) {
-    return this.postService.comment({ createPostDto, payload, images, postId });
+    return this.postService.reply({ createPostDto, payload, images, postId });
   }
 }

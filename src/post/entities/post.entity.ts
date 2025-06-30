@@ -56,13 +56,13 @@ export class PostEntity {
   images: Image[];
 
   @ApiProperty({
-    example: 2,
+    example: 0,
     description: 'Number of likes',
   })
   likes: number;
 
   @ApiProperty({
-    example: 1,
+    example: 0,
     description: 'Number of comments',
   })
   replies: number;

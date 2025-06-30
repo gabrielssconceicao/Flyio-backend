@@ -1,6 +1,6 @@
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { SearchUserEntity } from '../entities/search-user.entity';
+import { SearchUserEntity } from '../entities';
 
 export const SearchUsersSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

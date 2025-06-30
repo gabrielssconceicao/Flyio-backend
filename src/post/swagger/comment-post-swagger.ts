@@ -6,7 +6,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { CommentPostEntity } from '../entities/comment-post.entity';
+import { CommentPostEntity } from '../entities';
 
 export const CommentPostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

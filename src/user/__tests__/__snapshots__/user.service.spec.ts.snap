@@ -1,16 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UserService Create should create a user with profile and banner 1`] = `
-{
-  "bio": "bio",
-  "id": "1",
-  "name": "John Doe",
-  "profileImg": "https://example.com/profile-picture.jpg",
-  "username": "johndoe",
-}
-`;
-
-exports[`UserService Create should create a user without profile and banner 1`] = `
+exports[`UserService should create a user 1`] = `
 {
   "bio": "bio",
   "id": "1",
@@ -20,7 +10,7 @@ exports[`UserService Create should create a user without profile and banner 1`] 
 }
 `;
 
-exports[`UserService FindOne should find a user 1`] = `
+exports[`UserService should get a user 1`] = `
 {
   "user": {
     "bio": "bio",
@@ -35,33 +25,7 @@ exports[`UserService FindOne should find a user 1`] = `
 }
 `;
 
-exports[`UserService GetFollowers should get a user followers 1`] = `
-{
-  "count": 1,
-  "items": [
-    {
-      "name": "John Doe",
-      "profileImg": null,
-      "username": "johndoe",
-    },
-  ],
-}
-`;
-
-exports[`UserService GetFollowings should get a user followings 1`] = `
-{
-  "count": 1,
-  "items": [
-    {
-      "name": "John Doe",
-      "profileImg": null,
-      "username": "johndoe",
-    },
-  ],
-}
-`;
-
-exports[`UserService GetLikedPosts should get a user liked posts 1`] = `
+exports[`UserService should get liked posts by a user 1`] = `
 {
   "count": 1,
   "items": [
@@ -81,36 +45,12 @@ exports[`UserService GetLikedPosts should get a user liked posts 1`] = `
       ],
       "isLiked": false,
       "likes": 0,
-      "parent": null,
-      "parentId": null,
-      "replies": 0,
-      "text": "This is a post",
-    },
-  ],
-}
-`;
-
-exports[`UserService GetPosts should return an array of post 1`] = `
-{
-  "count": 1,
-  "items": [
-    {
-      "author": {
-        "name": "John Doe",
-        "profileImg": null,
-        "username": "johndoe",
-      },
-      "createdAt": 2000-01-01T00:00:00.000Z,
-      "id": "id-1",
-      "images": [
-        {
-          "id": "id-1",
-          "url": "https://example.com/image1.jpg",
+      "parent": {
+        "author": {
+          "username": "johndoe",
         },
-      ],
-      "isLiked": false,
-      "likes": 0,
-      "parentId": null,
+      },
+      "parentId": "id-2",
       "replies": 0,
       "text": "This is a post",
     },
@@ -118,7 +58,7 @@ exports[`UserService GetPosts should return an array of post 1`] = `
 }
 `;
 
-exports[`UserService GetReplies should get user replies 1`] = `
+exports[`UserService should get user posts 1`] = `
 {
   "count": 1,
   "items": [
@@ -151,7 +91,33 @@ exports[`UserService GetReplies should get user replies 1`] = `
 }
 `;
 
-exports[`UserService Search should find users by name or username 1`] = `
+exports[`UserService should get users that a user is following 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "name": "John Doe",
+      "profileImg": null,
+      "username": "johndoe",
+    },
+  ],
+}
+`;
+
+exports[`UserService should get users that follow a user 1`] = `
+{
+  "count": 1,
+  "items": [
+    {
+      "name": "John Doe",
+      "profileImg": null,
+      "username": "johndoe",
+    },
+  ],
+}
+`;
+
+exports[`UserService should search users 1`] = `
 {
   "count": 1,
   "items": [

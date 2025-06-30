@@ -7,12 +7,15 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ApiCookieAuth } from '@nestjs/swagger';
+
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { CurrentUser } from '@/common/params/current-user.params';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { FollowService } from './follow.service';
-import { ApiCookieAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger';
+
+import { FollowUserSwaggerDoc } from './swagger/follow-swagger';
+import { FollowService } from './follow.service';
 
 @ApiCookieAuth('access_token')
 @UseGuards(JwtAuthGuard)
@@ -21,31 +24,23 @@ import { ProtectedRouteSwaggerDoc } from '@/common/utils/protected-route-swagger
 export class FollowController {
   constructor(private readonly followService: FollowService) {}
 
-  @ApiOperation({ description: 'Follow a user' })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'User followed successfully',
-  })
+  @FollowUserSwaggerDoc('follow')
   @HttpCode(HttpStatus.CREATED)
-  @Post('follow/:followingUserId')
+  @Post('follow/:username')
   follow(
     @CurrentUser() payload: JwtPayload,
-    @Param('followingUserId') followingUserId: string,
+    @Param('username') username: string,
   ) {
-    return this.followService.follow({ payload, followingUserId });
+    return this.followService.follow({ payload, username });
   }
 
-  @ApiOperation({ description: 'Unfollow a user' })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'User unfollowed successfully',
-  })
+  @FollowUserSwaggerDoc('unfollow')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('unfollow/:followingUserId')
+  @Delete('unfollow/:username')
   unfollow(
     @CurrentUser() payload: JwtPayload,
-    @Param('followingUserId') followingUserId: string,
+    @Param('username') username: string,
   ) {
-    return this.followService.unfollow({ payload, followingUserId });
+    return this.followService.unfollow({ payload, username });
   }
 }

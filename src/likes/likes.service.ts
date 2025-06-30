@@ -1,75 +1,19 @@
-import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
-import { PrismaService } from '@/prisma/prisma.service';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-
-type Like = {
-  postId: string;
-  payload: JwtPayload;
-};
+import { Injectable } from '@nestjs/common';
+import { LikePostUseCase, DislikePostUseCase } from './use-cases';
+import { Like } from './use-cases/type';
 
 @Injectable()
 export class LikesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly likePost: LikePostUseCase,
+    private readonly dislike: DislikePostUseCase,
+  ) {}
 
-  async likePost({ payload, postId }: Like) {
-    await this.postExists(postId);
-
-    const isLiked = await this.isLiked({ payload, postId });
-    if (isLiked) {
-      throw new BadRequestException('Post already liked');
-    }
-
-    await this.prisma.likePost.create({
-      data: {
-        userId: payload.id,
-        postId,
-      },
-    });
-    return;
+  async like({ payload, postId }: Like): Promise<void> {
+    return this.likePost.execute({ payload, postId });
   }
 
-  async deslikePost({ payload, postId }: Like) {
-    await this.postExists(postId);
-
-    const isLiked = await this.isLiked({ payload, postId });
-    if (!isLiked) {
-      throw new BadRequestException('Post already unliked');
-    }
-
-    await this.prisma.likePost.delete({
-      where: {
-        postId_userId: {
-          userId: payload.id,
-          postId,
-        },
-      },
-    });
-  }
-
-  private async postExists(postId: string) {
-    const post = await this.prisma.post.findUnique({
-      where: {
-        id: postId,
-      },
-    });
-    if (!post) {
-      throw new NotFoundException('Post not found');
-    }
-  }
-
-  private async isLiked({ payload, postId }: Like): Promise<boolean> {
-    const like = await this.prisma.likePost.findUnique({
-      where: {
-        postId_userId: {
-          userId: payload.id,
-          postId,
-        },
-      },
-    });
-    return !!like;
+  async deslike({ payload, postId }: Like) {
+    return this.dislike.execute({ payload, postId });
   }
 }

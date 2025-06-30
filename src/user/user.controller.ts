@@ -13,20 +13,25 @@ import {
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
+
 import { QueryParamDto } from '@/common/dto/query-param.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { CreateUserSwaggerDoc } from './swagger/create-user-swagger';
-import { GetUserSwaggerDoc } from './swagger/find-one-user-swagger';
-import { SearchUsersSwaggerDoc } from './swagger/search-users-swagger';
-import { FollowUsersSwaggerDoc } from './swagger/get-follow-swagger';
 import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { CurrentUser } from '@/common/params/current-user.params';
-import { GetUserLikedPostSwaggerDoc } from './swagger/get-user-liked-post-swagger';
-import { FindManyPostSwaggerDoc } from '@/post/swagger/find-many-post-swagger';
+
+import { ProfileImageValidatorPipe } from '@/image-store/pipes/profile-image-validatitor.pipe';
+
+import { UserService } from './user.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import {
+  CreateUserSwaggerDoc,
+  FollowUsersSwaggerDoc,
+  GetUserLikedPostSwaggerDoc,
+  GetUserSwaggerDoc,
+  SearchUsersSwaggerDoc,
+} from './swagger';
+import { GetUserPostsSwaggerDoc } from './swagger/get-user-posts.swagger';
 
 @Controller('user')
 export class UserController {
@@ -84,14 +89,14 @@ export class UserController {
   @SearchUsersSwaggerDoc()
   @Get()
   search(@Query() query: QueryParamDto) {
-    return this.userService.search(query);
+    return this.userService.search({ query });
   }
 
   @GetUserSwaggerDoc()
   @HttpCode(HttpStatus.OK)
   @Get(':username')
   findOne(@Param('username') username: string) {
-    return this.userService.findOne(username);
+    return this.userService.findOne({ username });
   }
 
   @FollowUsersSwaggerDoc('followings')
@@ -126,7 +131,7 @@ export class UserController {
     return this.userService.getLikedPosts({ username, query, payload });
   }
 
-  @FindManyPostSwaggerDoc()
+  @GetUserPostsSwaggerDoc()
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':username/posts')
@@ -136,16 +141,5 @@ export class UserController {
     @CurrentUser() payload: JwtPayload,
   ) {
     return this.userService.getPosts({ username, query, payload });
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @Get(':username/comments')
-  getComments(
-    @Param('username') username: string,
-    @Query() query: PaginationDto,
-    @CurrentUser() payload: JwtPayload,
-  ) {
-    return this.userService.getComments({ username, query, payload });
   }
 }

@@ -1,6 +1,6 @@
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { SearchUserEntity } from '../entities/search-user.entity';
+import { SearchUserEntity } from '../entities';
 
 const msgs = (string: 'followings' | 'followed') => {
   if (string === 'followings') {

@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RefreshTokenUseCase Execute should refresh a token 1`] = `
+{
+  "newAccessToken": "newAccessToken",
+}
+`;

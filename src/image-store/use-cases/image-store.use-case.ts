@@ -4,32 +4,15 @@ import { env } from '@/env';
 import {
   ImageStoreFolders,
   ImageStoreTypeFolder,
-} from './image-store.constants';
+} from '../image-store.constants';
 
-type UploadUserImage = {
-  file: Express.Multer.File;
-  folder: ImageStoreTypeFolder;
-};
-type UpdateUserImage = UploadUserImage & {
-  filename: string;
-};
-
-type DeleteImage = {
+export type DeleteImage = {
   fileUrl: string;
   folder: ImageStoreTypeFolder;
 };
 
-type PostImages = {
-  files: Express.Multer.File[];
-  folder: ImageStoreTypeFolder;
-};
-
-type DeletePostImages = {
-  files: string[];
-};
-
 @Injectable()
-export class ImageStoreService {
+export class ImageStoreUseCase {
   constructor() {
     cloudinary.config({
       cloud_name: env.CLOUDINARY_CLOUD_NAME,
@@ -38,7 +21,7 @@ export class ImageStoreService {
     });
   }
 
-  private async uploadToCloudinary(
+  protected async uploadToCloudinary(
     buffer: Buffer,
     uploadConfig: any,
   ): Promise<string> {
@@ -60,7 +43,7 @@ export class ImageStoreService {
       });
   }
 
-  private async deleteFromCloudinary(
+  protected async deleteFromCloudinary(
     publicId: string,
   ): Promise<{ result: string }> {
     return new Promise((resolve, reject) => {
@@ -79,7 +62,7 @@ export class ImageStoreService {
       });
   }
 
-  private renameFile(fileName: string): string {
+  protected renameFile(fileName: string): string {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const fileNameWithoutExtension = fileName
       .split('.')
@@ -89,13 +72,13 @@ export class ImageStoreService {
     return `file_${uniqueSuffix}_${fileNameWithoutExtension}`;
   }
 
-  private extractIdFromImageUrl(imageUrl: string): string {
+  protected extractIdFromImageUrl(imageUrl: string): string {
     const parts = imageUrl.split('/');
     const fileId = parts[parts.length - 1].split('.')[0];
     return fileId;
   }
 
-  private getImageStoreFolder(key: ImageStoreTypeFolder): string {
+  protected getImageStoreFolder(key: ImageStoreTypeFolder): string {
     switch (key) {
       case ImageStoreTypeFolder.BANNER:
         return ImageStoreFolders.BANNER;
@@ -106,31 +89,7 @@ export class ImageStoreService {
     }
   }
 
-  async uploadUserImage({ file, folder }: UploadUserImage): Promise<string> {
-    const { buffer, originalname } = file;
-    return this.uploadToCloudinary(buffer, {
-      resource_type: 'image',
-      folder: this.getImageStoreFolder(folder),
-      public_id: this.renameFile(originalname),
-    });
-  }
-
-  async updateUserImage({
-    filename,
-    folder,
-    file,
-  }: UpdateUserImage): Promise<string> {
-    const { buffer } = file;
-    const fileId = this.extractIdFromImageUrl(filename);
-    return this.uploadToCloudinary(buffer, {
-      resource_type: 'image',
-      folder: this.getImageStoreFolder(folder),
-      public_id: fileId,
-      overwrite: true,
-    });
-  }
-
-  async deleteImage({
+  protected async deleteImage({
     fileUrl,
     folder,
   }: DeleteImage): Promise<{ result: string }> {
@@ -138,35 +97,5 @@ export class ImageStoreService {
     return this.deleteFromCloudinary(
       `${this.getImageStoreFolder(folder)}/${fileId}`,
     );
-  }
-
-  async uploadPostImages({ files, folder }: PostImages): Promise<string[]> {
-    const uploadedFiles: string[] = [];
-    try {
-      const promises = files.map(async (file) => {
-        const { buffer, originalname } = file;
-        const image = await this.uploadToCloudinary(buffer, {
-          resource_type: 'image',
-          folder: this.getImageStoreFolder(folder),
-          public_id: this.renameFile(originalname),
-        });
-        uploadedFiles.push(image);
-      });
-      await Promise.all(promises);
-    } catch {
-      await Promise.all(
-        uploadedFiles.map((file) =>
-          this.deleteImage({ fileUrl: file, folder }),
-        ),
-      );
-    }
-    return uploadedFiles;
-  }
-
-  deletePostImages({ files }: DeletePostImages) {
-    const promises = files.map((file) =>
-      this.deleteImage({ fileUrl: file, folder: ImageStoreTypeFolder.POST }),
-    );
-    return Promise.all(promises);
   }
 }

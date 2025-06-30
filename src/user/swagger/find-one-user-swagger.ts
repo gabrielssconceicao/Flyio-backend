@@ -1,6 +1,6 @@
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { HttpStatus } from '@nestjs/common';
-import { FindOneUserEntity } from '../entities/find-one-user.entity';
+import { FindOneUserEntity } from '../entities';
 
 export const GetUserSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {

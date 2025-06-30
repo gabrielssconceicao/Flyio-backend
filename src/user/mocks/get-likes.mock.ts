@@ -1,9 +1,19 @@
 import { postMock } from '@/post/mock';
-import { GetLikedPostEntity } from '../entities/get-liked-post-entity';
+import { GetLikedPostEntity } from '../entities';
 
 export const getLikesMock = (): GetLikedPostEntity => {
   return {
     count: 1,
-    items: [{ ...postMock(), parent: null }],
+    items: [
+      {
+        ...postMock(),
+        parentId: 'id-2',
+        parent: {
+          author: {
+            username: 'johndoe',
+          },
+        },
+      },
+    ],
   };
 };

@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 
 export const DeletePostSwaggerDoc = () => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-    ApiOperation({ summary: 'Deletes a poster' })(
+    ApiOperation({ summary: 'Delete a poster' })(
       target,
       propertyKey,
       descriptor,

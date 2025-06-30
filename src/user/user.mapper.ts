@@ -28,4 +28,13 @@ export class UserMapper {
     name: true,
     profileImg: true,
   };
+
+  static separateCount(count: {
+    _count: { followers: number; following: number };
+  }) {
+    return {
+      followers: count._count.followers,
+      following: count._count.following,
+    };
+  }
 }
