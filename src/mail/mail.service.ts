@@ -3,33 +3,34 @@ import { Resend } from 'resend';
 
 import { env } from '@/env';
 import { ReactivationLinkTemplate } from './template/reactivate-account';
+import { SendLinkUseCase } from './use-cases';
+import { link } from 'fs';
 
-interface ReactivationParams {
-  email: string;
-  link: string;
-}
 @Injectable()
 export class MailService {
   private resend: Resend;
 
-  constructor() {
+  constructor(private readonly sendLink: SendLinkUseCase) {
     this.resend = new Resend(env.RESEND_API_KEY);
     this.resend.apiKeys.create({ name: 'Production' });
   }
 
-  async sendReactivateUserLink({ email, link }: ReactivationParams) {
-    const { data, error } = await this.resend.emails.send({
-      from: 'Flyio <no-reply@flyio.com>',
+  async sendReactivateLink({ email }: { email: string }): Promise<void> {
+    const { authLinkId } = await this.sendLink.execute({ email });
+    const authLink = new URL('/auth-links/authenticate', env.API_BASE_URL);
+    authLink.searchParams.set('code', authLinkId);
+    authLink.searchParams.set('redirect', env.AUTH_REDIRECT_URL);
+
+    await this.resend.emails.send({
+      from: 'Flyio <onboarding@resend.dev>',
       to: email,
       subject: '[Pizza Shop] Link para reativar a sua conta',
       react: ReactivationLinkTemplate({
         userEmail: email,
-        reactivationLink: link,
+        reactivationLink: authLink.toString(),
       }),
     });
-    if (error) {
-      console.log(error);
-    }
-    console.log(data);
+    console.log(authLink.toString());
+    return;
   }
 }

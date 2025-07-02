@@ -23,6 +23,9 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string(),
 
   RESEND_API_KEY: z.string(),
+
+  API_BASE_URL: z.string(),
+  AUTH_REDIRECT_URL: z.string(),
 });
 const _env = envSchema.safeParse(process.env);
 if (!_env.success) {

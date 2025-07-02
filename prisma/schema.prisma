@@ -27,10 +27,11 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
-  following Follow[]   @relation("FollowingRelation")
-  followers Follow[]   @relation("FollowersRelation")
+  following Follow[]    @relation("FollowingRelation")
+  followers Follow[]    @relation("FollowersRelation")
   posts     Post[]
   likes     LikePost[]
+  AuthLinks AuthLinks[]
 }
 
 model Follow {
@@ -78,4 +79,11 @@ model LikePost {
   user User @relation(fields: [userId], references: [id])
 
   @@id([postId, userId])
+}
+
+model AuthLinks {
+  id        String   @id @default(uuid())
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }

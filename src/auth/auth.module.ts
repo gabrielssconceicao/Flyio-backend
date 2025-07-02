@@ -7,8 +7,10 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AuthUseCasesProviders } from './use-cases';
+import { MailModule } from '@/mail/mail.module';
 @Module({
   imports: [
+    MailModule,
     HashingModule,
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
