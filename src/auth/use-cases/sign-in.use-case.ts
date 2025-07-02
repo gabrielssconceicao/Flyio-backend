@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthUseCase } from './auth.use-case';
 import { UserLoginDto } from '../dto/user-login.dto';
 type User = {
   id: string;
   username: string;
   password: string;
+  isActive: boolean;
 };
 type Tokens = { accessToken: string; refreshToken: string | undefined };
 @Injectable()
@@ -20,6 +21,16 @@ export class SignInUseCase extends AuthUseCase<UserLoginDto, Tokens> {
     if (!isPasswordCorrect) {
       this.throwUnauthorizedException('Invalid credentials');
     }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException({
+        message: 'User is not active',
+        type: 'UserNotActive',
+        error: 'Unauthorized',
+        statusCode: 401,
+      });
+    }
+
     const { accessToken, refreshToken } = await this.generateAccessToken({
       payload: {
         id: user.id,
@@ -41,6 +52,7 @@ export class SignInUseCase extends AuthUseCase<UserLoginDto, Tokens> {
         id: true,
         username: true,
         password: true,
+        isActive: true,
       },
     });
 
