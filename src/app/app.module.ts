@@ -9,6 +9,7 @@ import { MeModule } from '@/me/me.module';
 import { FollowModule } from '@/follow/follow.module';
 import { PostModule } from '@/post/post.module';
 import { LikesModule } from '@/likes/likes.module';
+import { MailModule } from '@/mail/mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { LikesModule } from '@/likes/likes.module';
     FollowModule,
     PostModule,
     LikesModule,
+    MailModule,
   ],
   controllers: [],
   providers: [

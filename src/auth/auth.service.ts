@@ -10,7 +10,7 @@ export class AuthService {
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
   ) {}
 
-  signIn(userLoginDto: UserLoginDto) {
+  async signIn(userLoginDto: UserLoginDto) {
     return this.signInUseCase.execute(userLoginDto);
   }
 

@@ -32,5 +32,11 @@ export const prismaServiceMock = () => {
       findMany: jest.fn(),
       count: jest.fn(),
     },
+
+    authLinks: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      deleteMany: jest.fn(),
+    },
   };
 };
