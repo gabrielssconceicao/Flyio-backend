@@ -15,14 +15,14 @@ export class ReactivateAccountUseCase extends UseCase<{ code: string }, void> {
     });
 
     if (!data) {
-      throw new BadRequestException('Invalid link');
+      throw new BadRequestException('Link invalid or expired');
     }
 
     const EXPIRATION_DAYS = 1;
-    const daysPassed = differenceInDays(new Date(), data.createdAt);
+    const daysPassed = differenceInDays(new Date(), new Date(data.createdAt));
 
     if (daysPassed > EXPIRATION_DAYS) {
-      throw new BadRequestException('Link expired');
+      throw new BadRequestException('Link invalid or expired');
     }
 
     await this.prisma.user.update({

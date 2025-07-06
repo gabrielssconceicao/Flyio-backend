@@ -25,7 +25,6 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string(),
 
   API_BASE_URL: z.string(),
-  AUTH_REDIRECT_URL: z.string(),
 });
 const _env = envSchema.safeParse(process.env);
 if (!_env.success) {

@@ -9,7 +9,7 @@ export class SendLinkUseCase extends UseCase<
   async execute({ email }: { email: string }): Promise<{ authLinkId: string }> {
     const user = await this.getUserFromEmail(email);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Email not registered');
     }
     const authLink = await this.prisma.authLinks.create({
       data: {

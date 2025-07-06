@@ -1,25 +1,31 @@
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { MailService } from './mail.service';
-import { Response } from 'express';
-
-type QueryParam = {
-  redirect: string;
-  code: string;
-};
+import { ReactivateAccountSwaggerDoc, SendLinkSwaggerDoc } from './swagger';
+import { SendLinkDto } from './dto/send-link.dto';
 
 @Controller()
 export class MailController {
   constructor(private readonly mailService: MailService) {}
 
+  @SendLinkSwaggerDoc()
+  @HttpCode(HttpStatus.CREATED)
   @Post('/send-link')
-  async sendLink(@Body('email') email: string) {
-    return this.mailService.sendReactivateLink({ email });
+  async sendLink(@Body() body: SendLinkDto) {
+    return this.mailService.sendReactivateLink({ email: body.email });
   }
 
-  @Get('/auth-links/authenticate')
-  async reactivateAccount(@Query() query: QueryParam, @Res() res: Response) {
-    const { code, redirect } = query;
-    await this.mailService.reactivateAccount({ code });
-    res.redirect(redirect);
+  @ReactivateAccountSwaggerDoc()
+  @HttpCode(HttpStatus.OK)
+  @Get('/authenticate')
+  async reactivateAccount(@Query() query: { code: string }) {
+    await this.mailService.reactivateAccount({ code: query.code });
   }
 }

@@ -19,9 +19,8 @@ export class MailService {
 
   async sendReactivateLink({ email }: { email: string }): Promise<void> {
     const { authLinkId } = await this.sendLink.execute({ email });
-    const authLink = new URL('/auth-links/authenticate', env.API_BASE_URL);
+    const authLink = new URL('/authenticate', env.API_BASE_URL);
     authLink.searchParams.set('code', authLinkId);
-    authLink.searchParams.set('redirect', env.AUTH_REDIRECT_URL);
 
     await this.resend.emails.send({
       from: 'Flyio <onboarding@resend.dev>',
