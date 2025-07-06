@@ -1,4 +1,4 @@
 import { SendLinkUseCase } from './send-link.use-case';
-
-export const MailUseCases = [SendLinkUseCase];
-export { SendLinkUseCase };
+import { ReactivateAccountUseCase } from './reactivate-account.use-case';
+export const MailUseCases = [SendLinkUseCase, ReactivateAccountUseCase];
+export { SendLinkUseCase, ReactivateAccountUseCase };

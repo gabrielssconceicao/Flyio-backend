@@ -7,20 +7,16 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { env } from '@/env';
 import { Request, Response } from 'express';
+import { env } from '@/env';
 import { AuthService } from './auth.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from './cookie.constant';
 import { SignInSwaggerDoc, RefreshTokenSwaggerDoc } from './swagger';
-import { MailService } from '@/mail/mail.service';
 
 @Controller()
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly mailService: MailService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @SignInSwaggerDoc()
   @HttpCode(HttpStatus.CREATED)
@@ -63,10 +59,5 @@ export class AuthController {
       secure: env.NODE_ENV === 'production',
       maxAge: Number(env.JWT_ACCESS_TOKEN_EXPIRES_IN),
     });
-  }
-
-  @Post('/send-link')
-  async reactivate(@Body('email') email: string) {
-    return this.mailService.sendReactivateLink({ email });
   }
 }

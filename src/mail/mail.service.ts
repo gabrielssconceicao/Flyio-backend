@@ -3,14 +3,16 @@ import { Resend } from 'resend';
 
 import { env } from '@/env';
 import { ReactivationLinkTemplate } from './template/reactivate-account';
-import { SendLinkUseCase } from './use-cases';
-import { link } from 'fs';
+import { SendLinkUseCase, ReactivateAccountUseCase } from './use-cases';
 
 @Injectable()
 export class MailService {
   private resend: Resend;
 
-  constructor(private readonly sendLink: SendLinkUseCase) {
+  constructor(
+    private readonly sendLink: SendLinkUseCase,
+    private readonly reactivate: ReactivateAccountUseCase,
+  ) {
     this.resend = new Resend(env.RESEND_API_KEY);
     this.resend.apiKeys.create({ name: 'Production' });
   }
@@ -24,7 +26,7 @@ export class MailService {
     await this.resend.emails.send({
       from: 'Flyio <onboarding@resend.dev>',
       to: email,
-      subject: '[Pizza Shop] Link para reativar a sua conta',
+      subject: '[Flyio] Link para reativar a sua conta',
       react: ReactivationLinkTemplate({
         userEmail: email,
         reactivationLink: authLink.toString(),
@@ -32,5 +34,9 @@ export class MailService {
     });
     console.log(authLink.toString());
     return;
+  }
+
+  async reactivateAccount({ code }: { code: string }) {
+    return await this.reactivate.execute({ code });
   }
 }
