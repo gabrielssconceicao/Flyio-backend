@@ -20,6 +20,6 @@ export class MailController {
   async reactivateAccount(@Query() query: QueryParam, @Res() res: Response) {
     const { code, redirect } = query;
     await this.mailService.reactivateAccount({ code });
-    // res.redirect(redirect);
+    res.redirect(redirect);
   }
 }
