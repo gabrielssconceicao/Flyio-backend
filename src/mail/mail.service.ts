@@ -31,7 +31,6 @@ export class MailService {
         reactivationLink: authLink.toString(),
       }),
     });
-    console.log(authLink.toString());
     return;
   }
 

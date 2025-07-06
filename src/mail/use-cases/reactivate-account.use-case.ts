@@ -1,7 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { differenceInDays } from 'date-fns';
 import { UseCase } from '@/common/utils/use-case';
 
+@Injectable()
 export class ReactivateAccountUseCase extends UseCase<{ code: string }, void> {
   async execute({ code }: { code: string }): Promise<void> {
     const data = await this.prisma.authLinks.findUnique({

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SignInUseCase Execute should generate access token 1`] = `
+exports[`SignInUseCase should generate access token 1`] = `
 {
   "accessToken": "accessToken",
   "refreshToken": "refreshToken",

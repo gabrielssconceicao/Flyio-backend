@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ReactivateAccountUseCase should return authLink Id 1`] = `
+{
+  "authLinkId": "auth-link-id-1",
+}
+`;
