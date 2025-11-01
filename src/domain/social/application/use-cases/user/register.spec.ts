@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { ExistingUserError } from '@/core/errors/existing-user-error';
+import { UserAlreadyExistError } from '@/core/errors/user-already-exist-error';
 import { TestHasher } from '@/test/cryptography/test-hasher';
 import { makeUser } from '@/test/factories/make-user';
 import { InMemoryUsersRepository } from '@/test/repositories/in-memory-users-repository';
@@ -57,6 +57,24 @@ describe('Register', () => {
     });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(ExistingUserError);
+    expect(result.value).toBeInstanceOf(UserAlreadyExistError);
+  });
+  it('should not be able to register a user with a existing username', async () => {
+    const username = 'johndoe';
+    usersRepository.items.push(
+      makeUser({
+        username,
+      }),
+    );
+
+    const result = await sut.execute({
+      email: 'johndoe@email.com',
+      name: 'John Doe',
+      username,
+      password: '123456',
+    });
+
+    expect(result.isLeft()).toBe(true);
+    expect(result.value).toBeInstanceOf(UserAlreadyExistError);
   });
 });

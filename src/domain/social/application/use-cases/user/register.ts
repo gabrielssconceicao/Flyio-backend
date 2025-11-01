@@ -1,5 +1,5 @@
 import { Either, left, right } from '@/core/either';
-import { ExistingUserError } from '@/core/errors/existing-user-error';
+import { UserAlreadyExistError } from '@/core/errors/user-already-exist-error';
 import { User } from '@/domain/social/enterprise/entities/user';
 
 import { Hasher } from '../../cryptography/hasher';
@@ -12,7 +12,7 @@ interface RegisterUseCaseRequest {
   password: string;
 }
 
-type RegisterUseCaseResponse = Either<ExistingUserError, null>;
+type RegisterUseCaseResponse = Either<UserAlreadyExistError, null>;
 
 export class RegisterUseCase {
   constructor(
@@ -26,10 +26,12 @@ export class RegisterUseCase {
     username,
     password,
   }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
-    const existingUser = await this.usersRepository.findByEmail(email);
+    const userWithSameEmail = await this.usersRepository.findByEmail(email);
+    const userWithSameUsername =
+      await this.usersRepository.findByUsername(username);
 
-    if (existingUser) {
-      return left(new ExistingUserError());
+    if (userWithSameEmail || userWithSameUsername) {
+      return left(new UserAlreadyExistError());
     }
     const hashed_password = await this.hasher.hash(password);
 
