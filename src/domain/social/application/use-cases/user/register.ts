@@ -5,16 +5,16 @@ import { User } from '@/domain/social/enterprise/entities/user';
 import { Hasher } from '../../cryptography/hasher';
 import { UsersRepository } from '../../repositories/users-repository';
 
-interface CreateUserUseCaseRequest {
+interface RegisterUseCaseRequest {
   name: string;
   username: string;
   email: string;
   password: string;
 }
 
-type CreateUserUseCaseResponse = Either<ExistingUserError, null>;
+type RegisterUseCaseResponse = Either<ExistingUserError, null>;
 
-export class CreateUserUseCase {
+export class RegisterUseCase {
   constructor(
     private hasher: Hasher,
     private usersRepository: UsersRepository,
@@ -25,7 +25,7 @@ export class CreateUserUseCase {
     name,
     username,
     password,
-  }: CreateUserUseCaseRequest): Promise<CreateUserUseCaseResponse> {
+  }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
     const existingUser = await this.usersRepository.findByEmail(email);
 
     if (existingUser) {
