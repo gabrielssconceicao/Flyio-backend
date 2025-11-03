@@ -1,28 +1,43 @@
+import { PaginationParams } from '@/core/repositories/pagination-params';
 import { UsersRepository } from '@/domain/social/application/repositories/users-repository';
 import { User } from '@/domain/social/enterprise/entities/user';
 
 export class InMemoryUsersRepository extends UsersRepository {
   public items: User[] = [];
 
-  async create(user: User): Promise<void> {
+  async create(user: User) {
     this.items.push(user);
     return;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string) {
     const user = this.items.find((item) => item.email === email);
 
     return user || null;
   }
-  async findByUsername(username: string): Promise<User | null> {
+  async findByUsername(username: string) {
     const user = this.items.find((item) => item.username === username);
 
     return user || null;
   }
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string) {
     const user = this.items.find((item) => item.id.toString() === id);
 
     return user || null;
+  }
+
+  async findByNameOrUsername(query: string, params: PaginationParams) {
+    const queryLowerCase = query.toLowerCase();
+    const users = this.items
+      .filter((item) => {
+        return (
+          item.username.toLowerCase().includes(queryLowerCase) ||
+          item.name.toLowerCase().includes(queryLowerCase)
+        );
+      })
+      .slice((params.page - 1) * 20, params.page * 20);
+
+    return users;
   }
 }
