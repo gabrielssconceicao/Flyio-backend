@@ -7,6 +7,8 @@ export interface UserProps {
   username: string;
   email: string;
   password_hash: string;
+  isActive: boolean;
+  deactivatedAt: Date | null;
   created_at: Date;
   updated_at?: Date;
 }
@@ -28,38 +30,73 @@ export class User extends Entity<UserProps> {
     return this.props.password_hash;
   }
 
+  get created_at() {
+    return this.props.created_at;
+  }
+
+  get updated_at() {
+    return this.props.updated_at;
+  }
+
+  get isActive() {
+    return this.props.isActive;
+  }
+
+  get deactivatedAt() {
+    return this.props.deactivatedAt;
+  }
+
   set name(name: string) {
     this.props.name = name;
-    this.thouch();
+    this.touch();
   }
 
   set username(username: string) {
     this.props.username = username;
-    this.thouch();
+    this.touch();
   }
 
   set email(email: string) {
     this.props.email = email;
-    this.thouch();
+    this.touch();
   }
 
   set password_hash(passwordHash: string) {
     this.props.password_hash = passwordHash;
-    this.thouch();
+    this.touch();
   }
 
-  private thouch() {
+  private touch() {
     this.props.updated_at = new Date();
   }
 
-  static create(props: Optional<UserProps, 'created_at'>, id?: UniqueEntityId) {
+  deactivate() {
+    this.props.isActive = false;
+    this.props.deactivatedAt = new Date();
+    this.touch();
+  }
+
+  activate() {
+    this.props.isActive = true;
+    this.props.deactivatedAt = null;
+    this.touch();
+  }
+
+  static create(
+    props: Optional<UserProps, 'created_at' | 'isActive'>,
+    id?: UniqueEntityId,
+  ) {
     const user = new User(
       {
         ...props,
+        isActive: props.isActive ?? true,
         created_at: props.created_at ?? new Date(),
+        updated_at: props.updated_at ?? null,
+        deactivatedAt: props.deactivatedAt ?? null,
       },
       id,
     );
+
     return user;
   }
 }
