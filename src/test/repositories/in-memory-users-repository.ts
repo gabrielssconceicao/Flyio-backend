@@ -36,6 +36,7 @@ export class InMemoryUsersRepository extends UsersRepository {
     const queryLowerCase = query.toLowerCase();
     const users = this.items
       .filter((item) => {
+        if (item.isActive === false) return false;
         return (
           item.username.toLowerCase().includes(queryLowerCase) ||
           item.name.toLowerCase().includes(queryLowerCase)

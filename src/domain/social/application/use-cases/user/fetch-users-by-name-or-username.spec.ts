@@ -11,7 +11,7 @@ describe('Fetch Users by name or username', () => {
     sut = new FetchUsersByNameOrUsernameUseCase(usersRepository);
   });
 
-  it('should be able to fetch users by name or username', async () => {
+  it('should be able to fetch active users by name or username', async () => {
     await usersRepository.create(
       makeUser({
         username: 'johndoe',
@@ -25,6 +25,12 @@ describe('Fetch Users by name or username', () => {
     await usersRepository.create(
       makeUser({
         username: 'maryjane',
+      }),
+    );
+    await usersRepository.create(
+      makeUser({
+        username: 'doe',
+        isActive: false,
       }),
     );
 
