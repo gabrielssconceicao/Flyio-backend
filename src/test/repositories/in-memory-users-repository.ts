@@ -10,6 +10,11 @@ export class InMemoryUsersRepository extends UsersRepository {
     return;
   }
 
+  async save(user: User) {
+    const userIndex = this.items.findIndex((item) => item.id === user.id);
+    this.items[userIndex] = user;
+  }
+
   async findByEmail(email: string) {
     const user = this.items.find((item) => item.email === email);
 
