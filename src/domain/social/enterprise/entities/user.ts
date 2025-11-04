@@ -7,9 +7,11 @@ export interface UserProps {
   username: string;
   email: string;
   password_hash: string;
-  isActive: boolean;
-  deactivatedAt: Date | null;
-  created_at: Date;
+  followersCount: number;
+  followingCount: number;
+  isActive?: boolean;
+  deactivatedAt?: Date | null;
+  created_at?: Date;
   updated_at?: Date;
 }
 
@@ -70,6 +72,22 @@ export class User extends Entity<UserProps> {
     this.props.updated_at = new Date();
   }
 
+  private increaseFollowersCount() {
+    this.props.followersCount++;
+  }
+
+  private decreaseFollowersCount() {
+    this.props.followersCount--;
+  }
+
+  private increaseFollowingCount() {
+    this.props.followingCount++;
+  }
+
+  private decreaseFollowingCount() {
+    this.props.followingCount--;
+  }
+
   deactivate() {
     this.props.isActive = false;
     this.props.deactivatedAt = new Date();
@@ -82,8 +100,20 @@ export class User extends Entity<UserProps> {
     this.touch();
   }
 
+  follow(user: User) {
+    this.increaseFollowingCount();
+    user.increaseFollowersCount();
+  }
+  unfollow(user: User) {
+    this.decreaseFollowingCount();
+    user.decreaseFollowersCount();
+  }
+
   static create(
-    props: Optional<UserProps, 'created_at' | 'isActive'>,
+    props: Optional<
+      UserProps,
+      'created_at' | 'isActive' | 'followersCount' | 'followingCount'
+    >,
     id?: UniqueEntityId,
   ) {
     const user = new User(
@@ -93,6 +123,8 @@ export class User extends Entity<UserProps> {
         created_at: props.created_at ?? new Date(),
         updated_at: props.updated_at ?? null,
         deactivatedAt: props.deactivatedAt ?? null,
+        followersCount: props.followersCount ?? 0,
+        followingCount: props.followingCount ?? 0,
       },
       id,
     );

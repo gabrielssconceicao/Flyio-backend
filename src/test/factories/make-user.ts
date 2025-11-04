@@ -12,6 +12,8 @@ export function makeUser(
       email: faker.internet.email(),
       username: faker.person.firstName(),
       password_hash: faker.internet.password(),
+      followersCount: 0,
+      followingCount: 0,
       ...override,
     },
     id,
