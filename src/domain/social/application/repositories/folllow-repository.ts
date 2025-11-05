@@ -5,7 +5,7 @@ export interface FollowParams {
   followingId: string;
 }
 export abstract class FollowRepository {
-  abstract follow(follow: Follow): Promise<void>;
+  abstract create(follow: Follow): Promise<void>;
 
   abstract findByFollowerIdAndFollowingId(
     props: FollowParams,

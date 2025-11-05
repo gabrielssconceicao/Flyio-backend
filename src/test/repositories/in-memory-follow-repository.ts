@@ -7,7 +7,7 @@ import { Follow } from '@/domain/social/enterprise/entities/follow';
 export class ImMemoryFollowRepository extends FollowRepository {
   items: Follow[] = [];
 
-  async follow(follow: Follow): Promise<void> {
+  async create(follow: Follow): Promise<void> {
     this.items.push(follow);
   }
 

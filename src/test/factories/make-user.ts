@@ -14,6 +14,7 @@ export function makeUser(
       password_hash: faker.internet.password(),
       followersCount: 0,
       followingCount: 0,
+      deactivatedAt: null,
       ...override,
     },
     id,

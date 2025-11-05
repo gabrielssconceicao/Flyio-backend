@@ -48,6 +48,14 @@ export class User extends Entity<UserProps> {
     return this.props.deactivatedAt;
   }
 
+  get followersCount() {
+    return this.props.followersCount;
+  }
+
+  get followingCount() {
+    return this.props.followingCount;
+  }
+
   set name(name: string) {
     this.props.name = name;
     this.touch();

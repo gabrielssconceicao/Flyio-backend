@@ -56,7 +56,7 @@ export class FollowUserUseCase {
     await this.usersRepository.save(follower);
     await this.usersRepository.save(following);
 
-    await this.followRepository.follow(follow);
+    await this.followRepository.create(follow);
 
     return right(null);
   }
