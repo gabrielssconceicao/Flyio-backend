@@ -9,9 +9,9 @@ export interface UserProps {
   password_hash: string;
   followersCount: number;
   followingCount: number;
-  isActive?: boolean;
-  deactivatedAt?: Date | null;
-  created_at?: Date;
+  isActive: boolean;
+  deactivatedAt: Date | null;
+  created_at: Date;
   updated_at?: Date;
 }
 
