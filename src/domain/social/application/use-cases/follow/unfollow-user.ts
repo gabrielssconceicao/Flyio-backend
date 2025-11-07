@@ -47,10 +47,6 @@ export class UnfollowUserUseCase {
     }
 
     follower.unfollow(following);
-    console.log({
-      follower: follower.followingCount,
-      following: following.followersCount,
-    });
 
     await this.followRepository.delete(isFollowing);
     await this.usersRepository.save(follower);

@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/core/repositories/pagination-params';
 import {
   FollowParams,
   FollowRepository,
@@ -31,5 +32,13 @@ export class ImMemoryFollowRepository extends FollowRepository {
     });
 
     return follow || null;
+  }
+
+  async findFollowingByUserId(userId: string, params: PaginationParams) {
+    const followings = this.items
+      .filter((item) => item.followerId.toString() === userId)
+      .slice((params.page - 1) * 20, params.page * 20);
+
+    return followings;
   }
 }
