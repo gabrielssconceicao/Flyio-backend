@@ -41,4 +41,11 @@ export class ImMemoryFollowRepository extends FollowRepository {
 
     return followings;
   }
+  async findFollowersByUserId(userId: string, params: PaginationParams) {
+    const followers = this.items
+      .filter((item) => item.followingId.toString() === userId)
+      .slice((params.page - 1) * 20, params.page * 20);
+
+    return followers;
+  }
 }

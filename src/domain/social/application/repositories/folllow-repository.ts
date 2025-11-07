@@ -14,6 +14,10 @@ export abstract class FollowRepository {
     userId: string,
     params: PaginationParams,
   ): Promise<Follow[]>;
+  abstract findFollowersByUserId(
+    userId: string,
+    params: PaginationParams,
+  ): Promise<Follow[]>;
   abstract findByFollowerIdAndFollowingId(
     props: FollowParams,
   ): Promise<Follow | null>;

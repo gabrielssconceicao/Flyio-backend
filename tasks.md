@@ -13,7 +13,7 @@ GymPass style app
  - [x] Deve ser possivel desativar/activar um perfil
  - [x] Deve ser possivel seguir um usuario
  - [ ] Deve ser possivel verificar se eu usario está seguindo outro (isFolowing)
- - [] Deve ser possivel obter os usuarios que outro usuario segue
+ - [x] Deve ser possivel obter os usuarios que outro usuario segue
  - [] Deve ser possivel um usuario criar um post
  - [] Deve ser possivel um usuario comentar num post
  - [] Deve ser possivel um usuario dar uma curtida num post
