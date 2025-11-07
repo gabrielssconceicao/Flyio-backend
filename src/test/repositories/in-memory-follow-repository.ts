@@ -5,7 +5,7 @@ import {
 } from '@/domain/social/application/repositories/folllow-repository';
 import { Follow } from '@/domain/social/enterprise/entities/follow';
 
-export class ImMemoryFollowRepository extends FollowRepository {
+export class InMemoryFollowRepository extends FollowRepository {
   items: Follow[] = [];
 
   async create(follow: Follow): Promise<void> {
@@ -21,6 +21,17 @@ export class ImMemoryFollowRepository extends FollowRepository {
     });
 
     this.items.splice(index, 1);
+  }
+
+  async isFollowing(props: FollowParams) {
+    const follow = this.items.find((item) => {
+      return (
+        item.followerId.toString() === props.followerId &&
+        item.followingId.toString() === props.followingId
+      );
+    });
+
+    return !!follow;
   }
 
   async findByFollowerIdAndFollowingId(props: FollowParams) {

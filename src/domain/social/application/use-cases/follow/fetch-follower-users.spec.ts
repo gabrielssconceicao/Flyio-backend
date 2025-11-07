@@ -1,19 +1,19 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { makeFollow } from '@/test/factories/make-follow';
 import { makeUser } from '@/test/factories/make-user';
-import { ImMemoryFollowRepository } from '@/test/repositories/in-memory-follow-repository';
+import { InMemoryFollowRepository } from '@/test/repositories/in-memory-follow-repository';
 import { InMemoryUsersRepository } from '@/test/repositories/in-memory-users-repository';
 
 import { FetchFollowerUsersUseCase } from './fetch-follower-users';
 
 let userRepository: InMemoryUsersRepository;
-let followRepository: ImMemoryFollowRepository;
+let followRepository: InMemoryFollowRepository;
 let sut: FetchFollowerUsersUseCase;
 
 describe('Fetch Follower Users', () => {
   beforeEach(() => {
     userRepository = new InMemoryUsersRepository();
-    followRepository = new ImMemoryFollowRepository();
+    followRepository = new InMemoryFollowRepository();
     sut = new FetchFollowerUsersUseCase(userRepository, followRepository);
   });
 

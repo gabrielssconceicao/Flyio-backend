@@ -9,6 +9,7 @@ export interface FollowParams {
 export abstract class FollowRepository {
   abstract create(follow: Follow): Promise<void>;
   abstract delete(follow: Follow): Promise<void>;
+  abstract isFollowing(props: FollowParams): Promise<boolean>;
 
   abstract findFollowingByUserId(
     userId: string,
