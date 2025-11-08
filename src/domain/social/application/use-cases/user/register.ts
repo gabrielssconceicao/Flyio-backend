@@ -40,6 +40,7 @@ export class RegisterUseCase {
       username,
       email,
       password_hash: hashed_password,
+      isActive: true,
     });
     await this.usersRepository.create(user);
 

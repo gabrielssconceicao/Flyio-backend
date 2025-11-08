@@ -10,7 +10,7 @@ export interface UserProps {
   followersCount: number;
   followingCount: number;
   isActive: boolean;
-  deactivatedAt: Date | null;
+  deactivatedAt?: Date | null;
   created_at: Date;
   updated_at?: Date;
 }
