@@ -12,14 +12,14 @@ GymPass style app
  - [x] Deve ser possivel editar dados de um usuario logado
  - [x] Deve ser possivel desativar/activar um perfil
  - [x] Deve ser possivel seguir um usuario
- - [ ] Deve ser possivel verificar se eu usario está seguindo outro (isFolowing)
+ - [x] Deve ser possivel verificar se eu usario está seguindo outro (isFolowing)
  - [x] Deve ser possivel obter os usuarios que outro usuario segue
  - [] Deve ser possivel um usuario criar um post
+ - [] Deve ser possivel pesquisar por posts
+ - [] Deve ser possivel obter os posts de um usuario
  - [] Deve ser possivel um usuario comentar num post
  - [] Deve ser possivel um usuario dar uma curtida num post
- - [] Deve ser possivel obter os posts de um usuario
  - [] Deve ser possivel obter os posts curtidos por um usuario
- - [] Deve ser possivel pesquisar por posts
 
 ## RNs (Regras de Negócio)
 
