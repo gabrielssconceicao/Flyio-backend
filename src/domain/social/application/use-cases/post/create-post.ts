@@ -4,7 +4,10 @@ import { Post } from '@/domain/social/enterprise/entities/post';
 import { PostTag } from '@/domain/social/enterprise/entities/post-tag';
 import { Tag } from '@/domain/social/enterprise/entities/tag';
 
-import { PostsRepository } from '../../repositories/posts-repository';
+import {
+  PostsRepository,
+  PostWithAuthor,
+} from '../../repositories/posts-repository';
 import { TagRepository as TagsRepository } from '../../repositories/tag-repository';
 
 interface CreatePostRequest {
@@ -13,7 +16,10 @@ interface CreatePostRequest {
   tags: string[];
 }
 
-type CreatePostResponse = Either<null, { post: Post }>;
+type CreatePostResponse = Either<
+  null,
+  { post: PostWithAuthor['post']; author: PostWithAuthor['author'] }
+>;
 
 export class CreatePostUseCase {
   constructor(
@@ -59,8 +65,8 @@ export class CreatePostUseCase {
     );
     post.tags = postTags;
 
-    await this.postRepository.create(post);
+    const { author } = await this.postRepository.create(post);
 
-    return right({ post });
+    return right({ post: post, author });
   }
 }
