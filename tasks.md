@@ -2,6 +2,9 @@
 
 GymPass style app
 
+## ToDO
+
+- Chechar fetch following e Trocar por findMany
 
 ## RFs (Requesitos funcionais)
 

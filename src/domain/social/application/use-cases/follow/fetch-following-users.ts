@@ -52,6 +52,7 @@ export class FetchFollowingUsersUseCase {
       (following) => following.followingId,
     );
 
+    // Trocar por findMany
     const followingUsers = await Promise.all(
       followingUsersId.map(async (followingUserId) => {
         const followingUser = (await this.usersRepository.findById(
