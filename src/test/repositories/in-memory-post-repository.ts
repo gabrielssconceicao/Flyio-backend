@@ -2,7 +2,7 @@ import { PostsRepository } from '@/domain/social/application/repositories/posts-
 import { Post } from '@/domain/social/enterprise/entities/post';
 
 export class InMemoryPostRepository extends PostsRepository {
-  items: any[] = [];
+  items: Post[] = [];
 
   async create(post: Post) {
     this.items.push(post);

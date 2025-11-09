@@ -32,7 +32,7 @@ export class CreatePostUseCase {
 
     // filter new tags from existing tags
     const newTags = tags
-      .filter((tag) => existingTagNames.includes(tag))
+      .filter((tag) => !existingTagNames.includes(tag))
       .map((tag) =>
         Tag.create({
           name: tag,
@@ -45,7 +45,6 @@ export class CreatePostUseCase {
     }
     // add new tags to existing tags
     const allTags = [...existingTags, ...newTags];
-
     const post = Post.create({
       author_id: new UniqueEntityId(authorId),
       content: content,
