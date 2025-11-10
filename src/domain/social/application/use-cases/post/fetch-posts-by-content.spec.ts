@@ -10,7 +10,7 @@ let postRepository: InMemoryPostRepository;
 let userRepository: InMemoryUsersRepository;
 let sut: FetchPostsByContentUseCase;
 
-describe('FetchPostsByContentUseCase', () => {
+describe('Fetch Posts By Content', () => {
   beforeEach(() => {
     userRepository = new InMemoryUsersRepository();
     postRepository = new InMemoryPostRepository(userRepository);

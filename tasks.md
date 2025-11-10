@@ -19,9 +19,9 @@ GymPass style app
  - [x] Deve ser possivel obter os usuarios que outro usuario segue
  - [x] Deve ser possivel um usuario criar um post
    - [ ] Com imagem
- - [] Deve ser possivel pesquisar por posts
-   - [] Por conteudo
-   - [] Por tags
+ - [x] Deve ser possivel pesquisar por posts
+   - [x] Por conteudo
+   - [x] Por tags
  - [] Deve ser possivel obter os posts de um usuario
  - [] Deve ser possivel um usuario comentar num post
  - [] Deve ser possivel um usuario dar uma curtida num post

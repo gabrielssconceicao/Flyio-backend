@@ -15,4 +15,8 @@ export abstract class PostsRepository {
     query: string,
     params: PaginationParams,
   ): Promise<PostWithAuthor[]>;
+  abstract findManyByTag(
+    query: string[],
+    params: PaginationParams,
+  ): Promise<PostWithAuthor[]>;
 }

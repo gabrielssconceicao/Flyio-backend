@@ -1,7 +1,7 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 
-interface PostTagProps {
+export interface PostTagProps {
   postId: UniqueEntityId;
   tagId: UniqueEntityId;
 }
