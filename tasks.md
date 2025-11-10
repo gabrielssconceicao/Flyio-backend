@@ -23,6 +23,7 @@ GymPass style app
    - [x] Por conteudo
    - [x] Por tags
  - [] Deve ser possivel obter os posts de um usuario
+ - [] Deve ser possivel obter os posts mais recentes
  - [] Deve ser possivel um usuario comentar num post
  - [] Deve ser possivel um usuario dar uma curtida num post
  - [] Deve ser possivel obter os posts curtidos por um usuario
