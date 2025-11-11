@@ -83,4 +83,18 @@ export class InMemoryPostRepository extends PostsRepository {
 
     return Promise.all(mapPosts);
   }
+
+  findManyByUserId(id: string, params: PaginationParams) {
+    const posts = this.items
+      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+      .filter((post) => post.author_id.toString() === id)
+      .slice((params.page - 1) * 20, params.page * 20);
+
+    const mapPosts = posts.map(async (post) => {
+      const user = await this.getUser(post.author_id.toString());
+      return { post, author: user };
+    });
+
+    return Promise.all(mapPosts);
+  }
 }

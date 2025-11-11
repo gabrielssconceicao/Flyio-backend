@@ -20,4 +20,8 @@ export abstract class PostsRepository {
     query: string[],
     params: PaginationParams,
   ): Promise<PostWithAuthor[]>;
+  abstract findManyByUserId(
+    id: string,
+    params: PaginationParams,
+  ): Promise<PostWithAuthor[]>;
 }
