@@ -7,94 +7,84 @@ import { InMemoryTagRepository } from './in-memory-tag-repository';
 
 export class InMemoryPostRepository extends PostsRepository {
   items: Post[] = [];
-  private tagRepository: InMemoryTagRepository;
+
   constructor(
     private userRepository: UsersRepository,
-    tagRepository?: InMemoryTagRepository,
+    private tagRepository?: InMemoryTagRepository,
   ) {
     super();
-    if (tagRepository) this.tagRepository = tagRepository;
   }
 
   private async getUser(id: string) {
     const user = await this.userRepository.findById(id);
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
+    if (!user) throw new Error('User not found');
     return user;
   }
 
+  private async mapPostsWithAuthor(posts: Post[]) {
+    const mapped = posts.map(async (post) => {
+      const author = await this.getUser(post.author_id.toString());
+      return { post, author };
+    });
+    return Promise.all(mapped);
+  }
+
   async create(post: Post) {
-    const user = await this.getUser(post.author_id.toString());
-    const postWithAuthor = { post, author: user };
+    const author = await this.getUser(post.author_id.toString());
     this.items.push(post);
-    return postWithAuthor;
+    return { post, author };
+  }
+
+  async findById(postId: string) {
+    const post = this.items.find((item) => item.id.toString() === postId);
+    if (!post) return null;
+    const author = await this.getUser(post.author_id.toString());
+    return { post, author };
   }
 
   async findManyByContent(query: string, params: PaginationParams) {
+    const words = query.toLowerCase().split(' ');
     const posts = this.items
-
-      .filter((item) => {
-        const words = query.toLowerCase().split(' ');
-        return words.some((word) => item.content.toLowerCase().includes(word));
-      })
+      .filter((item) =>
+        words.some((word) => item.content.toLowerCase().includes(word)),
+      )
       .slice((params.page - 1) * 20, params.page * 20);
 
-    const mapPosts = posts.map(async (post) => {
-      const user = await this.getUser(post.author_id.toString());
-      return { post, author: user };
-    });
-
-    return Promise.all(mapPosts);
+    return this.mapPostsWithAuthor(posts);
   }
 
   async findManyByTag(query: string[], params: PaginationParams) {
+    if (!this.tagRepository)
+      throw new Error('TagRepository not provided in InMemoryPostRepository');
+
     const tags = query.map((tag) => tag.toLowerCase());
-    const tagsId = await this.tagRepository.findManyByNames(tags);
+    const tagsFound = await this.tagRepository.findManyByNames(tags);
+
     const posts = this.items
-      .filter((item) => {
-        const result = tagsId.some((tag) =>
+      .filter((item) =>
+        tagsFound.some((tag) =>
           item.tags.some((postTag) => postTag.tagId === tag.id),
-        );
-
-        return result;
-      })
+        ),
+      )
       .slice((params.page - 1) * 20, params.page * 20);
 
-    const mapPosts = posts.map(async (post) => {
-      const user = await this.getUser(post.author_id.toString());
-      return { post, author: user };
-    });
-
-    return Promise.all(mapPosts);
+    return this.mapPostsWithAuthor(posts);
   }
 
-  findMany(params: PaginationParams) {
+  async findMany(params: PaginationParams) {
     const posts = this.items
       .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice((params.page - 1) * 20, params.page * 20);
 
-    const mapPosts = posts.map(async (post) => {
-      const user = await this.getUser(post.author_id.toString());
-      return { post, author: user };
-    });
-
-    return Promise.all(mapPosts);
+    return this.mapPostsWithAuthor(posts);
   }
 
-  findManyByUserId(id: string, params: PaginationParams) {
+  async findManyByUserId(id: string, params: PaginationParams) {
     const posts = this.items
-      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .filter((post) => post.author_id.toString() === id)
+      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice((params.page - 1) * 20, params.page * 20);
 
-    const mapPosts = posts.map(async (post) => {
-      const user = await this.getUser(post.author_id.toString());
-      return { post, author: user };
-    });
-
-    return Promise.all(mapPosts);
+    return this.mapPostsWithAuthor(posts);
   }
 }

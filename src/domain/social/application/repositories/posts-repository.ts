@@ -11,6 +11,7 @@ export interface PostWithAuthor {
 export abstract class PostsRepository {
   abstract create(post: Post): Promise<PostWithAuthor>;
 
+  abstract findById(postId: string): Promise<PostWithAuthor | null>;
   abstract findMany(params: PaginationParams): Promise<PostWithAuthor[]>;
   abstract findManyByContent(
     query: string,
