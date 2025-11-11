@@ -23,7 +23,7 @@ export class GetPostByIdUseCase {
   async execute({
     postId,
   }: GetPostByIdUseCaseRequest): Promise<GetPostByIdUseCaseResponse> {
-    const data = await this.postsRepository.findById(postId);
+    const data = await this.postsRepository.findPostById(postId);
 
     if (!data) {
       return left(new ResourceNotFoundError());

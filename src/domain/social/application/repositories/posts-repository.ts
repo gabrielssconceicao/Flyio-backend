@@ -12,8 +12,10 @@ export interface PostWithAuthorAndTags {
 
 export abstract class PostsRepository {
   abstract create(post: Post): Promise<PostWithAuthorAndTags>;
+  abstract save(post: Post): Promise<void>;
 
-  abstract findById(postId: string): Promise<PostWithAuthorAndTags | null>;
+  abstract findPostById(postId: string): Promise<PostWithAuthorAndTags | null>;
+  abstract findById(id: string): Promise<Post | null>;
   abstract findMany(params: PaginationParams): Promise<PostWithAuthorAndTags[]>;
   abstract findManyByContent(
     query: string,

@@ -8,6 +8,7 @@ export interface PostProps {
   author_id: UniqueEntityId;
   content: string;
   tags: PostTag[];
+  likes: number;
   created_at: Date;
   updated_at?: Date;
 }
@@ -33,8 +34,23 @@ export class Post extends Entity<PostProps> {
     return this.props.tags;
   }
 
+  get likes() {
+    return this.props.likes;
+  }
+
   set tags(tags: PostTag[]) {
     this.props.tags = tags;
+  }
+
+  addLike() {
+    this.props.likes += 1;
+    this.touch();
+  }
+
+  removeLike() {
+    if (this.props.likes <= 0) return;
+    this.props.likes -= 1;
+    this.touch();
   }
 
   private touch() {
@@ -42,13 +58,14 @@ export class Post extends Entity<PostProps> {
   }
 
   static create(
-    props: Optional<PostProps, 'tags' | 'created_at'>,
+    props: Optional<PostProps, 'tags' | 'created_at' | 'likes'>,
     id?: UniqueEntityId,
   ) {
     const post = new Post(
       {
         ...props,
         tags: props.tags ?? [],
+        likes: props.likes ?? 0,
         created_at: props.created_at ?? new Date(),
       },
       id,

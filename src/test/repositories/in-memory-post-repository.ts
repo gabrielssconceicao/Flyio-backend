@@ -46,7 +46,18 @@ export class InMemoryPostRepository extends PostsRepository {
     return { post, author, tags };
   }
 
-  async findById(postId: string): Promise<PostWithAuthorAndTags | null> {
+  async findById(id: string): Promise<Post | null> {
+    const post = this.items.find((item) => item.id.toString() === id);
+    if (!post) return null;
+    return post;
+  }
+
+  async save(post: Post): Promise<void> {
+    const index = this.items.findIndex((item) => item.id === post.id);
+    this.items[index] = post;
+  }
+
+  async findPostById(postId: string): Promise<PostWithAuthorAndTags | null> {
     const post = this.items.find((item) => item.id.toString() === postId);
     if (!post) return null;
     const author = await this.getUser(post.author_id.toString());
