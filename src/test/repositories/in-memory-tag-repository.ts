@@ -13,4 +13,8 @@ export class InMemoryTagRepository extends TagRepository {
 
     return tagsFound;
   }
+
+  findManyById(ids: string[]) {
+    return this.items.filter((tag) => ids.includes(tag.id.toString()));
+  }
 }

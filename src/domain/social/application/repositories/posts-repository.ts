@@ -1,28 +1,30 @@
 import { PaginationParams } from '@/core/repositories/pagination-params';
 
 import { Post } from '../../enterprise/entities/post';
+import { Tag } from '../../enterprise/entities/tag';
 import { User } from '../../enterprise/entities/user';
 
-export interface PostWithAuthor {
+export interface PostWithAuthorAndTags {
   post: Post;
   author: User;
+  tags: Tag[];
 }
 
 export abstract class PostsRepository {
-  abstract create(post: Post): Promise<PostWithAuthor>;
+  abstract create(post: Post): Promise<PostWithAuthorAndTags>;
 
-  abstract findById(postId: string): Promise<PostWithAuthor | null>;
-  abstract findMany(params: PaginationParams): Promise<PostWithAuthor[]>;
+  abstract findById(postId: string): Promise<PostWithAuthorAndTags | null>;
+  abstract findMany(params: PaginationParams): Promise<PostWithAuthorAndTags[]>;
   abstract findManyByContent(
     query: string,
     params: PaginationParams,
-  ): Promise<PostWithAuthor[]>;
+  ): Promise<PostWithAuthorAndTags[]>;
   abstract findManyByTag(
     query: string[],
     params: PaginationParams,
-  ): Promise<PostWithAuthor[]>;
+  ): Promise<PostWithAuthorAndTags[]>;
   abstract findManyByUserId(
     id: string,
     params: PaginationParams,
-  ): Promise<PostWithAuthor[]>;
+  ): Promise<PostWithAuthorAndTags[]>;
 }

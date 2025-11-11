@@ -2,18 +2,22 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { makePost } from '@/test/factories/make-post';
 import { makeUser } from '@/test/factories/make-user';
 import { InMemoryPostRepository } from '@/test/repositories/in-memory-post-repository';
+import { InMemoryTagRepository } from '@/test/repositories/in-memory-tag-repository';
 import { InMemoryUsersRepository } from '@/test/repositories/in-memory-users-repository';
 
 import { FetchUserPostsUseCase } from './fetch-user-posts';
 
 let postRepository: InMemoryPostRepository;
 let userRepository: InMemoryUsersRepository;
+let tagRepository: InMemoryTagRepository;
+
 let sut: FetchUserPostsUseCase;
 
 describe('Fetch User Posts', () => {
   beforeEach(() => {
     userRepository = new InMemoryUsersRepository();
-    postRepository = new InMemoryPostRepository(userRepository);
+    tagRepository = new InMemoryTagRepository();
+    postRepository = new InMemoryPostRepository(userRepository, tagRepository);
     sut = new FetchUserPostsUseCase(userRepository, postRepository);
   });
 

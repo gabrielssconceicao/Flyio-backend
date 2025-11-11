@@ -17,8 +17,8 @@ let user: User;
 describe('Create Post', () => {
   beforeEach(() => {
     userRepository = new InMemoryUsersRepository();
-    postRepository = new InMemoryPostRepository(userRepository);
     tagRepository = new InMemoryTagRepository();
+    postRepository = new InMemoryPostRepository(userRepository, tagRepository);
     sut = new CreatePostUseCase(postRepository, tagRepository);
     user = makeUser({}, new UniqueEntityId('user-1'));
   });
@@ -29,7 +29,7 @@ describe('Create Post', () => {
     const result = await sut.execute({
       authorId: 'user-1',
       content: 'content',
-      tags: [],
+      tagNames: [],
     });
 
     expect(result.isRight()).toBe(true);
@@ -46,7 +46,7 @@ describe('Create Post', () => {
     const result = await sut.execute({
       authorId: 'user-1',
       content: 'Content',
-      tags: ['tag-1', 'tag-2'],
+      tagNames: ['tag-1', 'tag-2'],
     });
     expect(result.isRight()).toBe(true);
     expect(tagRepository.items).toHaveLength(2);

@@ -6,19 +6,23 @@ import { Tag } from '@/domain/social/enterprise/entities/tag';
 
 import {
   PostsRepository,
-  PostWithAuthor,
+  PostWithAuthorAndTags,
 } from '../../repositories/posts-repository';
 import { TagRepository as TagsRepository } from '../../repositories/tag-repository';
 
 interface CreatePostRequest {
   authorId: string;
   content: string;
-  tags: string[];
+  tagNames: string[];
 }
 
 type CreatePostResponse = Either<
   null,
-  { post: PostWithAuthor['post']; author: PostWithAuthor['author'] }
+  {
+    post: PostWithAuthorAndTags['post'];
+    author: PostWithAuthorAndTags['author'];
+    tags: PostWithAuthorAndTags['tags'];
+  }
 >;
 
 export class CreatePostUseCase {
@@ -30,14 +34,14 @@ export class CreatePostUseCase {
   async execute({
     authorId,
     content,
-    tags,
+    tagNames,
   }: CreatePostRequest): Promise<CreatePostResponse> {
     // get existing tags
-    const existingTags = await this.tagReposotiory.findManyByNames(tags);
+    const existingTags = await this.tagReposotiory.findManyByNames(tagNames);
     const existingTagNames = existingTags.map((tag) => tag.name);
 
     // filter new tags from existing tags
-    const newTags = tags
+    const newTags = tagNames
       .filter((tag) => !existingTagNames.includes(tag))
       .map((tag) =>
         Tag.create({
@@ -65,8 +69,8 @@ export class CreatePostUseCase {
     );
     post.tags = postTags;
 
-    const { author } = await this.postRepository.create(post);
+    const { author, tags } = await this.postRepository.create(post);
 
-    return right({ post: post, author });
+    return right({ post, author, tags });
   }
 }

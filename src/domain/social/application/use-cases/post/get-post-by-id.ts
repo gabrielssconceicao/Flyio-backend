@@ -3,7 +3,7 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
 import {
   PostsRepository,
-  PostWithAuthor,
+  PostWithAuthorAndTags,
 } from '../../repositories/posts-repository';
 
 interface GetPostByIdUseCaseRequest {
@@ -12,21 +12,28 @@ interface GetPostByIdUseCaseRequest {
 
 type GetPostByIdUseCaseResponse = Either<
   ResourceNotFoundError,
-  { post: PostWithAuthor }
+  {
+    post: PostWithAuthorAndTags['post'];
+    author: PostWithAuthorAndTags['author'];
+    tags: PostWithAuthorAndTags['tags'];
+  }
 >;
 export class GetPostByIdUseCase {
   constructor(private postsRepository: PostsRepository) {}
   async execute({
     postId,
   }: GetPostByIdUseCaseRequest): Promise<GetPostByIdUseCaseResponse> {
-    const post = await this.postsRepository.findById(postId);
+    const data = await this.postsRepository.findById(postId);
 
-    if (!post) {
+    if (!data) {
       return left(new ResourceNotFoundError());
     }
 
+    const { author, post, tags } = data;
     return right({
       post,
+      author,
+      tags,
     });
   }
 }
