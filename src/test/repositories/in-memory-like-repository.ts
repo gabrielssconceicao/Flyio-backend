@@ -11,6 +11,15 @@ export class InMemoryLikeRepository implements LikeRepository {
     this.items.push(like);
   }
 
+  async delete(like: Like): Promise<void> {
+    const index = this.items.findIndex(
+      (item) =>
+        item.post_id.toString() === like.post_id.toString() &&
+        item.user_id.toString() === like.user_id.toString(),
+    );
+    this.items.splice(index, 1);
+  }
+
   async findByUserAndPostId(params: LikeParams): Promise<Like | null> {
     const like = this.items.find(
       (like) =>
