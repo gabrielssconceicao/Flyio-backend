@@ -2,8 +2,8 @@ import { Either, left, right } from '@/core/either';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
 import {
+  PostResponse,
   PostsRepository,
-  PostWithAuthor,
 } from '../../repositories/posts-repository';
 import { UsersRepository } from '../../repositories/users-repository';
 
@@ -15,7 +15,7 @@ interface FetchUserPostsRequest {
 type FetchUserPostsResponse = Either<
   ResourceNotFoundError,
   {
-    posts: PostWithAuthor[];
+    posts: PostResponse[];
   }
 >;
 

@@ -1,4 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { makeInMemoryPostRepository } from '@/test/factories/make-in-memory-post-repository';
 import { makePost } from '@/test/factories/make-post';
 import { makePostTag } from '@/test/factories/make-post-tag';
 import { makeTag } from '@/test/factories/make-tag';
@@ -18,7 +19,10 @@ describe('Fetch Posts By Content', () => {
   beforeEach(() => {
     userRepository = new InMemoryUsersRepository();
     tagRepository = new InMemoryTagRepository();
-    postRepository = new InMemoryPostRepository(userRepository, tagRepository);
+    postRepository = makeInMemoryPostRepository({
+      userRepository,
+      tagRepository,
+    });
     sut = new FetchPostsByTagUseCase(postRepository);
   });
 

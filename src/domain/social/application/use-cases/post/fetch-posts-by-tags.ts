@@ -1,8 +1,8 @@
 import { Either, right } from '@/core/either';
 
 import {
+  PostResponse,
   PostsRepository,
-  PostWithAuthor,
 } from '../../repositories/posts-repository';
 
 interface FetchPostsByTagRequest {
@@ -13,7 +13,7 @@ interface FetchPostsByTagRequest {
 type FetchPostsByTagResponse = Either<
   null,
   {
-    posts: PostWithAuthor[];
+    posts: PostResponse[];
   }
 >;
 

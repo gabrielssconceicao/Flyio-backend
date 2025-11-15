@@ -23,6 +23,7 @@ export abstract class PostsRepository {
   abstract findMany(params: PaginationParams): Promise<PostResponse[]>;
   abstract findManyByContent(
     query: string,
+    currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]>;
   abstract findManyByTag(

@@ -32,7 +32,8 @@ export class InMemoryPostRepository extends PostsRepository {
     return tags;
   }
 
-  private async getIsLiked(postId: string, currentUserId: string) {
+  private async getIsLiked(postId: string, currentUserId: string | null) {
+    if (!currentUserId) return false;
     const isLiked = await this.likeRepository.findByUserAndPostId({
       postId,
       userId: currentUserId,
@@ -40,11 +41,15 @@ export class InMemoryPostRepository extends PostsRepository {
     return isLiked !== null;
   }
 
-  private async mapPostsWithAuthorAndTags(posts: Post[]) {
+  private async mapPostsWithAuthorAndTags(
+    posts: Post[],
+    currentUserId: string | null,
+  ) {
     const mapped = posts.map(async (post) => {
       const author = await this.getUser(post.author_id.toString());
       const tags = await this.getTags(post.tags);
-      return { post, author, tags };
+      const isLiked = await this.getIsLiked(post.id.toString(), currentUserId);
+      return { post, author, tags, isLiked };
     });
     return Promise.all(mapped);
   }
@@ -81,6 +86,7 @@ export class InMemoryPostRepository extends PostsRepository {
 
   async findManyByContent(
     query: string,
+    currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]> {
     const words = query.toLowerCase().split(' ');
@@ -90,7 +96,7 @@ export class InMemoryPostRepository extends PostsRepository {
       )
       .slice((params.page - 1) * 20, params.page * 20);
 
-    return this.mapPostsWithAuthorAndTags(posts);
+    return this.mapPostsWithAuthorAndTags(posts, currentUserId);
   }
 
   async findManyByTag(

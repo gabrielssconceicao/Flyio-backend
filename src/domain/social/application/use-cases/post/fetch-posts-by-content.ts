@@ -1,13 +1,14 @@
 import { Either, right } from '@/core/either';
 
 import {
-  PostsRepository,
   PostResponse,
+  PostsRepository,
 } from '../../repositories/posts-repository';
 
 interface FetchPostsByContentRequest {
   query: string;
   page: number;
+  currentUserId?: string | null;
 }
 
 type FetchPostsByContentResponse = Either<
@@ -23,8 +24,15 @@ export class FetchPostsByContentUseCase {
   async execute({
     query,
     page,
+    currentUserId = null,
   }: FetchPostsByContentRequest): Promise<FetchPostsByContentResponse> {
-    const posts = await this.postsRepository.findManyByContent(query, { page });
+    const posts = await this.postsRepository.findManyByContent(
+      query,
+      currentUserId,
+      {
+        page,
+      },
+    );
 
     return right({
       posts,
