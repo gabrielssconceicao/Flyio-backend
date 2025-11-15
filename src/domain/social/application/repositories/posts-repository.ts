@@ -15,7 +15,10 @@ export abstract class PostsRepository {
   abstract create(post: Post): Promise<PostResponse>;
   abstract save(post: Post): Promise<void>;
 
-  abstract findPostById(postId: string): Promise<PostResponse | null>;
+  abstract findPostById(
+    postId: string,
+    currentUserId: string | null,
+  ): Promise<PostResponse | null>;
   abstract findById(id: string): Promise<Post | null>;
   abstract findMany(params: PaginationParams): Promise<PostResponse[]>;
   abstract findManyByContent(

@@ -1,5 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { User } from '@/domain/social/enterprise/entities/user';
+import { makeInMemoryPostRepository } from '@/test/factories/make-in-memory-post-repository';
 import { makeTag } from '@/test/factories/make-tag';
 import { makeUser } from '@/test/factories/make-user';
 import { InMemoryPostRepository } from '@/test/repositories/in-memory-post-repository';
@@ -18,7 +19,10 @@ describe('Create Post', () => {
   beforeEach(() => {
     userRepository = new InMemoryUsersRepository();
     tagRepository = new InMemoryTagRepository();
-    postRepository = new InMemoryPostRepository(userRepository, tagRepository);
+    postRepository = makeInMemoryPostRepository({
+      userRepository,
+      tagRepository,
+    });
     sut = new CreatePostUseCase(postRepository, tagRepository);
     user = makeUser({}, new UniqueEntityId('user-1'));
   });

@@ -16,15 +16,7 @@ interface CreatePostRequest {
   tagNames: string[];
 }
 
-type CreatePostResponse = Either<
-  null,
-  {
-    post: PostResponse['post'];
-    author: PostResponse['author'];
-    tags: PostResponse['tags'];
-    isLiked: PostResponse['isLiked'];
-  }
->;
+type CreatePostResponse = Either<null, PostResponse>;
 
 export class CreatePostUseCase {
   constructor(

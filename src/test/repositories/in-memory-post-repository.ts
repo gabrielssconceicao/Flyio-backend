@@ -6,6 +6,7 @@ import {
 import { UsersRepository } from '@/domain/social/application/repositories/users-repository';
 import { Post } from '@/domain/social/enterprise/entities/post';
 
+import { InMemoryLikeRepository } from './in-memory-like-repository';
 import { InMemoryTagRepository } from './in-memory-tag-repository';
 
 export class InMemoryPostRepository extends PostsRepository {
@@ -14,6 +15,7 @@ export class InMemoryPostRepository extends PostsRepository {
   constructor(
     private userRepository: UsersRepository,
     private tagRepository: InMemoryTagRepository,
+    private likeRepository: InMemoryLikeRepository,
   ) {
     super();
   }
@@ -28,6 +30,14 @@ export class InMemoryPostRepository extends PostsRepository {
     const tagsIds = tagIds.map((tag) => tag.tagId.toString());
     const tags = this.tagRepository.findManyById(tagsIds);
     return tags;
+  }
+
+  private async getIsLiked(postId: string, currentUserId: string) {
+    const isLiked = await this.likeRepository.findByUserAndPostId({
+      postId,
+      userId: currentUserId,
+    });
+    return isLiked !== null;
   }
 
   private async mapPostsWithAuthorAndTags(posts: Post[]) {
@@ -57,12 +67,16 @@ export class InMemoryPostRepository extends PostsRepository {
     this.items[index] = post;
   }
 
-  async findPostById(postId: string): Promise<PostResponse | null> {
+  async findPostById(
+    postId: string,
+    currentUserId: string,
+  ): Promise<PostResponse | null> {
     const post = this.items.find((item) => item.id.toString() === postId);
     if (!post) return null;
     const author = await this.getUser(post.author_id.toString());
     const tags = await this.getTags(post.tags);
-    return { post, author, tags };
+    const isLiked = await this.getIsLiked(post.id.toString(), currentUserId);
+    return { post, author, tags, isLiked };
   }
 
   async findManyByContent(
