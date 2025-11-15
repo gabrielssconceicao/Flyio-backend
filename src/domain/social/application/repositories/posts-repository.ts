@@ -4,29 +4,30 @@ import { Post } from '../../enterprise/entities/post';
 import { Tag } from '../../enterprise/entities/tag';
 import { User } from '../../enterprise/entities/user';
 
-export interface PostWithAuthorAndTags {
+export interface PostResponse {
   post: Post;
   author: User;
   tags: Tag[];
+  isLiked: boolean;
 }
 
 export abstract class PostsRepository {
-  abstract create(post: Post): Promise<PostWithAuthorAndTags>;
+  abstract create(post: Post): Promise<PostResponse>;
   abstract save(post: Post): Promise<void>;
 
-  abstract findPostById(postId: string): Promise<PostWithAuthorAndTags | null>;
+  abstract findPostById(postId: string): Promise<PostResponse | null>;
   abstract findById(id: string): Promise<Post | null>;
-  abstract findMany(params: PaginationParams): Promise<PostWithAuthorAndTags[]>;
+  abstract findMany(params: PaginationParams): Promise<PostResponse[]>;
   abstract findManyByContent(
     query: string,
     params: PaginationParams,
-  ): Promise<PostWithAuthorAndTags[]>;
+  ): Promise<PostResponse[]>;
   abstract findManyByTag(
     query: string[],
     params: PaginationParams,
-  ): Promise<PostWithAuthorAndTags[]>;
+  ): Promise<PostResponse[]>;
   abstract findManyByUserId(
     id: string,
     params: PaginationParams,
-  ): Promise<PostWithAuthorAndTags[]>;
+  ): Promise<PostResponse[]>;
 }

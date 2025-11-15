@@ -1,7 +1,7 @@
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import {
+  PostResponse,
   PostsRepository,
-  PostWithAuthorAndTags,
 } from '@/domain/social/application/repositories/posts-repository';
 import { UsersRepository } from '@/domain/social/application/repositories/users-repository';
 import { Post } from '@/domain/social/enterprise/entities/post';
@@ -39,11 +39,11 @@ export class InMemoryPostRepository extends PostsRepository {
     return Promise.all(mapped);
   }
 
-  async create(post: Post): Promise<PostWithAuthorAndTags> {
+  async create(post: Post): Promise<PostResponse> {
     const author = await this.getUser(post.author_id.toString());
     const tags = await this.getTags(post.tags);
     this.items.push(post);
-    return { post, author, tags };
+    return { post, author, tags, isLiked: false };
   }
 
   async findById(id: string): Promise<Post | null> {
@@ -57,7 +57,7 @@ export class InMemoryPostRepository extends PostsRepository {
     this.items[index] = post;
   }
 
-  async findPostById(postId: string): Promise<PostWithAuthorAndTags | null> {
+  async findPostById(postId: string): Promise<PostResponse | null> {
     const post = this.items.find((item) => item.id.toString() === postId);
     if (!post) return null;
     const author = await this.getUser(post.author_id.toString());
@@ -68,7 +68,7 @@ export class InMemoryPostRepository extends PostsRepository {
   async findManyByContent(
     query: string,
     params: PaginationParams,
-  ): Promise<PostWithAuthorAndTags[]> {
+  ): Promise<PostResponse[]> {
     const words = query.toLowerCase().split(' ');
     const posts = this.items
       .filter((item) =>
@@ -82,7 +82,7 @@ export class InMemoryPostRepository extends PostsRepository {
   async findManyByTag(
     query: string[],
     params: PaginationParams,
-  ): Promise<PostWithAuthorAndTags[]> {
+  ): Promise<PostResponse[]> {
     const tags = query.map((tag) => tag.toLowerCase());
     const tagsFound = await this.tagRepository.findManyByNames(tags);
 
@@ -97,7 +97,7 @@ export class InMemoryPostRepository extends PostsRepository {
     return this.mapPostsWithAuthorAndTags(posts);
   }
 
-  async findMany(params: PaginationParams): Promise<PostWithAuthorAndTags[]> {
+  async findMany(params: PaginationParams): Promise<PostResponse[]> {
     const posts = this.items
       .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice((params.page - 1) * 20, params.page * 20);
@@ -108,7 +108,7 @@ export class InMemoryPostRepository extends PostsRepository {
   async findManyByUserId(
     id: string,
     params: PaginationParams,
-  ): Promise<PostWithAuthorAndTags[]> {
+  ): Promise<PostResponse[]> {
     const posts = this.items
       .filter((post) => post.author_id.toString() === id)
       .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())

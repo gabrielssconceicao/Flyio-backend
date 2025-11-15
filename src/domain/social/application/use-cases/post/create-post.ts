@@ -5,8 +5,8 @@ import { PostTag } from '@/domain/social/enterprise/entities/post-tag';
 import { Tag } from '@/domain/social/enterprise/entities/tag';
 
 import {
+  PostResponse,
   PostsRepository,
-  PostWithAuthorAndTags,
 } from '../../repositories/posts-repository';
 import { TagRepository as TagsRepository } from '../../repositories/tag-repository';
 
@@ -19,9 +19,10 @@ interface CreatePostRequest {
 type CreatePostResponse = Either<
   null,
   {
-    post: PostWithAuthorAndTags['post'];
-    author: PostWithAuthorAndTags['author'];
-    tags: PostWithAuthorAndTags['tags'];
+    post: PostResponse['post'];
+    author: PostResponse['author'];
+    tags: PostResponse['tags'];
+    isLiked: PostResponse['isLiked'];
   }
 >;
 
@@ -69,8 +70,8 @@ export class CreatePostUseCase {
     );
     post.tags = postTags;
 
-    const { author, tags } = await this.postRepository.create(post);
+    const { author, tags, isLiked } = await this.postRepository.create(post);
 
-    return right({ post, author, tags });
+    return right({ post, author, tags, isLiked });
   }
 }

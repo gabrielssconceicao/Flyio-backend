@@ -3,7 +3,7 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
 import {
   PostsRepository,
-  PostWithAuthorAndTags,
+  PostResponse,
 } from '../../repositories/posts-repository';
 
 interface GetPostByIdUseCaseRequest {
@@ -13,9 +13,9 @@ interface GetPostByIdUseCaseRequest {
 type GetPostByIdUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    post: PostWithAuthorAndTags['post'];
-    author: PostWithAuthorAndTags['author'];
-    tags: PostWithAuthorAndTags['tags'];
+    post: PostResponse['post'];
+    author: PostResponse['author'];
+    tags: PostResponse['tags'];
   }
 >;
 export class GetPostByIdUseCase {

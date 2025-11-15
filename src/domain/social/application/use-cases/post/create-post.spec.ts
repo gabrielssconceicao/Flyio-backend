@@ -33,6 +33,7 @@ describe('Create Post', () => {
     });
 
     expect(result.isRight()).toBe(true);
+    expect(result.value?.isLiked).toEqual(false);
     expect(postRepository.items[0]?.id).toEqual(result?.value?.post.id);
     expect(postRepository.items[0]?.author_id).toEqual(
       result?.value?.author.id,
