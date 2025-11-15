@@ -74,7 +74,7 @@ export class InMemoryPostRepository extends PostsRepository {
 
   async findPostById(
     postId: string,
-    currentUserId: string,
+    currentUserId: string | null,
   ): Promise<PostResponse | null> {
     const post = this.items.find((item) => item.id.toString() === postId);
     if (!post) return null;
@@ -101,6 +101,7 @@ export class InMemoryPostRepository extends PostsRepository {
 
   async findManyByTag(
     query: string[],
+    currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]> {
     const tags = query.map((tag) => tag.toLowerCase());
@@ -114,19 +115,23 @@ export class InMemoryPostRepository extends PostsRepository {
       )
       .slice((params.page - 1) * 20, params.page * 20);
 
-    return this.mapPostsWithAuthorAndTags(posts);
+    return this.mapPostsWithAuthorAndTags(posts, currentUserId);
   }
 
-  async findMany(params: PaginationParams): Promise<PostResponse[]> {
+  async findMany(
+    currentUserId: string | null,
+    params: PaginationParams,
+  ): Promise<PostResponse[]> {
     const posts = this.items
       .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice((params.page - 1) * 20, params.page * 20);
 
-    return this.mapPostsWithAuthorAndTags(posts);
+    return this.mapPostsWithAuthorAndTags(posts, currentUserId);
   }
 
   async findManyByUserId(
     id: string,
+    currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]> {
     const posts = this.items
@@ -134,6 +139,6 @@ export class InMemoryPostRepository extends PostsRepository {
       .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice((params.page - 1) * 20, params.page * 20);
 
-    return this.mapPostsWithAuthorAndTags(posts);
+    return this.mapPostsWithAuthorAndTags(posts, currentUserId);
   }
 }

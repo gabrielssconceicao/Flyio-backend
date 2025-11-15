@@ -10,6 +10,7 @@ import { UsersRepository } from '../../repositories/users-repository';
 interface FetchUserPostsRequest {
   username: string;
   page: number;
+  currentUserId?: string | null;
 }
 
 type FetchUserPostsResponse = Either<
@@ -28,6 +29,7 @@ export class FetchUserPostsUseCase {
   async execute({
     username,
     page,
+    currentUserId = null,
   }: FetchUserPostsRequest): Promise<FetchUserPostsResponse> {
     const user = await this.userRepository.findByUsername(username);
 
@@ -36,6 +38,7 @@ export class FetchUserPostsUseCase {
     }
     const posts = await this.postsRepository.findManyByUserId(
       user.id.toString(),
+      currentUserId,
       {
         page,
       },

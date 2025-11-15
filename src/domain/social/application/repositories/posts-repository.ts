@@ -19,19 +19,29 @@ export abstract class PostsRepository {
     postId: string,
     currentUserId: string | null,
   ): Promise<PostResponse | null>;
+
   abstract findById(id: string): Promise<Post | null>;
-  abstract findMany(params: PaginationParams): Promise<PostResponse[]>;
+
+  abstract findMany(
+    currentUserId: string | null,
+    params: PaginationParams,
+  ): Promise<PostResponse[]>;
+
   abstract findManyByContent(
     query: string,
     currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]>;
+
   abstract findManyByTag(
     query: string[],
+    currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]>;
+
   abstract findManyByUserId(
     id: string,
+    currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]>;
 }

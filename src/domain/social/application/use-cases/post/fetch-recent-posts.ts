@@ -1,18 +1,19 @@
 import { Either, right } from '@/core/either';
 
 import {
+  PostResponse,
   PostsRepository,
-  PostWithAuthor,
 } from '../../repositories/posts-repository';
 
 interface FetchRecentPostsRequest {
   page: number;
+  currentUserId?: string | null;
 }
 
 type FetchRecentPostsResponse = Either<
   null,
   {
-    posts: PostWithAuthor[];
+    posts: PostResponse[];
   }
 >;
 
@@ -21,8 +22,9 @@ export class FetchRecentPostsUseCase {
 
   async execute({
     page,
+    currentUserId = null,
   }: FetchRecentPostsRequest): Promise<FetchRecentPostsResponse> {
-    const posts = await this.postsRepository.findMany({ page });
+    const posts = await this.postsRepository.findMany(currentUserId, { page });
 
     return right({
       posts,

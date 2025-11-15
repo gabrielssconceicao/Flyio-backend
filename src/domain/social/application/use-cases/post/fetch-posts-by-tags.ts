@@ -8,6 +8,7 @@ import {
 interface FetchPostsByTagRequest {
   query: string[];
   page: number;
+  currentUserId?: string | null;
 }
 
 type FetchPostsByTagResponse = Either<
@@ -23,8 +24,13 @@ export class FetchPostsByTagUseCase {
   async execute({
     query,
     page,
+    currentUserId = null,
   }: FetchPostsByTagRequest): Promise<FetchPostsByTagResponse> {
-    const posts = await this.postsRepository.findManyByTag(query, { page });
+    const posts = await this.postsRepository.findManyByTag(
+      query,
+      currentUserId,
+      { page },
+    );
 
     return right({
       posts,
