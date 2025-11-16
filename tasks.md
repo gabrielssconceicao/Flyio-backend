@@ -23,7 +23,7 @@ GymPass style app
    - [x] Por conteudo
    - [x] Por tags
  - [x] Deve ser possivel obter os posts de um usuario
- - [ ] Deve ser possivel apagar um post
+ - [x] Deve ser possivel apagar um post
  - [x] Deve ser possivel obter um post de um usuario
  - [x] Deve ser possivel obter os posts mais recentes
  - [x] Deve ser possivel um usuario dar uma curtida num post

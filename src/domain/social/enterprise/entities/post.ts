@@ -6,11 +6,13 @@ import { PostTag } from './post-tag';
 
 export interface PostProps {
   author_id: UniqueEntityId;
-  content: string;
+  content: string | null;
   tags: PostTag[];
   likes: number;
+  isDeleted: boolean;
   created_at: Date;
   updated_at?: Date;
+  deleted_at?: Date | null;
 }
 
 export class Post extends Entity<PostProps> {
@@ -30,12 +32,20 @@ export class Post extends Entity<PostProps> {
     return this.props.updated_at;
   }
 
+  get deleted_at() {
+    return this.props.deleted_at;
+  }
+
   get tags() {
     return this.props.tags;
   }
 
   get likes() {
     return this.props.likes;
+  }
+
+  get isDeleted() {
+    return this.props.isDeleted;
   }
 
   set tags(tags: PostTag[]) {
@@ -53,12 +63,19 @@ export class Post extends Entity<PostProps> {
     this.touch();
   }
 
+  delete() {
+    this.props.isDeleted = true;
+    this.props.content = null;
+    this.props.deleted_at = new Date();
+    this.touch();
+  }
+
   private touch() {
     this.props.updated_at = new Date();
   }
 
   static create(
-    props: Optional<PostProps, 'tags' | 'created_at' | 'likes'>,
+    props: Optional<PostProps, 'tags' | 'created_at' | 'likes' | 'deleted_at'>,
     id?: UniqueEntityId,
   ) {
     const post = new Post(
@@ -67,6 +84,7 @@ export class Post extends Entity<PostProps> {
         tags: props.tags ?? [],
         likes: props.likes ?? 0,
         created_at: props.created_at ?? new Date(),
+        deleted_at: props.deleted_at ?? null,
       },
       id,
     );

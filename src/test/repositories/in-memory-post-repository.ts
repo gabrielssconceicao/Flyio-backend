@@ -92,7 +92,7 @@ export class InMemoryPostRepository extends PostsRepository {
     const words = query.toLowerCase().split(' ');
     const posts = this.items
       .filter((item) =>
-        words.some((word) => item.content.toLowerCase().includes(word)),
+        words.some((word) => item.content?.toLowerCase().includes(word)),
       )
       .slice((params.page - 1) * 20, params.page * 20);
 
