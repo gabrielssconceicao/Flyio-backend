@@ -40,7 +40,13 @@ export abstract class PostsRepository {
   ): Promise<PostResponse[]>;
 
   abstract findManyByUserId(
-    id: string,
+    userId: string,
+    currentUserId: string | null,
+    params: PaginationParams,
+  ): Promise<PostResponse[]>;
+
+  abstract findManyLikedByUserId(
+    userId: string,
     currentUserId: string | null,
     params: PaginationParams,
   ): Promise<PostResponse[]>;

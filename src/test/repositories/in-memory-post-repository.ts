@@ -141,4 +141,21 @@ export class InMemoryPostRepository extends PostsRepository {
 
     return this.mapPostsWithAuthorAndTags(posts, currentUserId);
   }
+
+  async findManyLikedByUserId(
+    userId: string,
+    currentUserId: string | null,
+    params: PaginationParams,
+  ): Promise<PostResponse[]> {
+    const likes = await this.likeRepository.findLikedPostByUserId(userId);
+
+    const posts = this.items
+      .filter((post) =>
+        likes.some((like) => like.post_id.toString() === post.id.toString()),
+      )
+      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+      .slice((params.page - 1) * 20, params.page * 20);
+
+    return this.mapPostsWithAuthorAndTags(posts, currentUserId);
+  }
 }

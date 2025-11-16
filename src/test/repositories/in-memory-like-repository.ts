@@ -29,4 +29,8 @@ export class InMemoryLikeRepository implements LikeRepository {
 
     return like ?? null;
   }
+
+  async findLikedPostByUserId(userId: string): Promise<Like[]> {
+    return this.items.filter((like) => like.user_id.toString() === userId);
+  }
 }
