@@ -11,6 +11,7 @@ export interface UserProps {
   email: Email;
   password_hash: string;
   created_at: Date;
+  is_active: boolean;
   updated_at?: Date;
 }
 
@@ -47,6 +48,10 @@ export class User extends Entity<UserProps> {
     this.touch();
   }
 
+  get is_active() {
+    return this.props.is_active;
+  }
+
   get created_at() {
     return this.props.created_at;
   }
@@ -59,11 +64,15 @@ export class User extends Entity<UserProps> {
     this.props.updated_at = new Date();
   }
 
-  static create(props: Optional<UserProps, 'created_at'>, id?: UniqueEntityId) {
+  static create(
+    props: Optional<UserProps, 'created_at' | 'is_active'>,
+    id?: UniqueEntityId,
+  ) {
     const user = new User(
       {
         ...props,
         created_at: props.created_at ?? new Date(),
+        is_active: props.is_active ?? true,
       },
       id,
     );
