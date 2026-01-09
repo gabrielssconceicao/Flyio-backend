@@ -1,0 +1,28 @@
+import { UserRepository } from '@/domain/social/application/repository/user-repository';
+import { User } from '@/domain/social/enterprise/entities/user';
+
+export class InMemoryUserRepository extends UserRepository {
+  items: User[] = [];
+
+  create(user: User): Promise<void> {
+    this.items.push(user);
+    return Promise.resolve();
+  }
+
+  findByEmailOrUsername(data: {
+    email: string;
+    username: string;
+  }): Promise<User | null> {
+    const user = this.items.find(
+      (item) =>
+        item.email.value === data.email ||
+        item.username.value === data.username,
+    );
+
+    if (!user) {
+      return Promise.resolve(null);
+    }
+
+    return Promise.resolve(user);
+  }
+}
