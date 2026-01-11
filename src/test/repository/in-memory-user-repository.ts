@@ -25,4 +25,14 @@ export class InMemoryUserRepository extends UserRepository {
 
     return Promise.resolve(user);
   }
+
+  findByEmail(email: string): Promise<User | null> {
+    const user = this.items.find((item) => item.email.value === email);
+
+    if (!user) {
+      return Promise.resolve(null);
+    }
+
+    return Promise.resolve(user);
+  }
 }

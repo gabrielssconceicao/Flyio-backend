@@ -7,4 +7,5 @@ export abstract class UserRepository {
     email: string;
     username: string;
   }): Promise<User | null>;
+  abstract findByEmail(email: string): Promise<User | null>;
 }
