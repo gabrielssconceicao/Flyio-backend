@@ -9,6 +9,14 @@ export class InMemoryUserRepository extends UserRepository {
     return Promise.resolve();
   }
 
+  save(user: User): Promise<void> {
+    const index = this.items.findIndex(
+      (item) => item.id.value === user.id.value,
+    );
+    this.items[index] = user;
+    return Promise.resolve();
+  }
+
   findByEmailOrUsername(data: {
     email: string;
     username: string;

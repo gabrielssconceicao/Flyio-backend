@@ -34,6 +34,7 @@ describe('Register Use Case', () => {
       username: 'johndoe',
       email: 'teste@example.com',
       password: 'password123',
+      bio: 'lorem ipsum dolor sit amet',
     });
 
     expect(response.isRight()).toBe(true);

@@ -8,7 +8,7 @@ import { GetProfileUseCase } from './get-profile';
 let userRepository: InMemoryUserRepository;
 let sut: GetProfileUseCase;
 
-describe('Get User Use Case', () => {
+describe('Get User Profile Use Case', () => {
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
     sut = new GetProfileUseCase(userRepository);
@@ -21,7 +21,7 @@ describe('Get User Use Case', () => {
     expect(response.isRight()).toBe(true);
     expect(response.isRight() && response.value.id.value).toEqual('teste-id');
   });
-  it('should return a user by username', async () => {
+  it('should not return a user if not found', async () => {
     const response = await sut.execute({ userId: 'fail-test-id' });
 
     expect(response.isLeft()).toBe(true);

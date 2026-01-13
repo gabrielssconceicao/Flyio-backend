@@ -8,6 +8,7 @@ import { Username } from './value-obj/username';
 export interface UserProps {
   name: string;
   username: Username;
+  bio: string;
   email: Email;
   password_hash: string;
   created_at: Date;
@@ -29,6 +30,14 @@ export class User extends Entity<UserProps> {
   }
   set username(username: Username) {
     this.props.username = username;
+    this.touch();
+  }
+
+  get bio(): string {
+    return this.props.bio;
+  }
+  set bio(bio: string) {
+    this.props.bio = bio;
     this.touch();
   }
 
@@ -65,12 +74,13 @@ export class User extends Entity<UserProps> {
   }
 
   static create(
-    props: Optional<UserProps, 'created_at' | 'is_active'>,
+    props: Optional<UserProps, 'created_at' | 'bio' | 'is_active'>,
     id?: UniqueEntityId,
   ) {
     const user = new User(
       {
         ...props,
+        bio: props.bio ?? '',
         created_at: props.created_at ?? new Date(),
         is_active: props.is_active ?? true,
       },

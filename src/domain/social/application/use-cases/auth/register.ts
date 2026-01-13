@@ -9,6 +9,7 @@ import { UserRepository } from '../../repository/user-repository';
 
 interface RegisterUseCaseRequest {
   name: string;
+  bio?: string;
   username: string;
   email: string;
   password: string;
@@ -25,7 +26,7 @@ export class RegisterUseCase {
   async execute(
     data: RegisterUseCaseRequest,
   ): Promise<RegisterUseCaseResponse> {
-    const { email, name, password, username } = data;
+    const { email, name, password, username, bio } = data;
     const userexists = await this.userRepository.findByEmailOrUsername({
       email,
       username,
@@ -42,6 +43,7 @@ export class RegisterUseCase {
       username: Username.create(username),
       email: Email.create(email),
       password_hash: hashed_password,
+      bio,
     });
     await this.userRepository.create(user);
     return right(null);
