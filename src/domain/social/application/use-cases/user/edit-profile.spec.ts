@@ -15,9 +15,9 @@ describe('Edit User Profile Use Case', () => {
   });
 
   it('should update user data', async () => {
-    await userRepository.create(makeUser({}, new UniqueEntityId('teste-id')));
+    await userRepository.create(makeUser({}, new UniqueEntityId('test-id')));
     const response = await sut.execute({
-      userId: 'teste-id',
+      userId: 'test-id',
       data: { name: 'Updated Name', bio: 'Updated Bio' },
     });
 

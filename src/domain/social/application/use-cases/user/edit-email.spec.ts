@@ -16,9 +16,9 @@ describe('Edit User Email Use Case', () => {
   });
 
   it('should update user email', async () => {
-    await userRepository.create(makeUser({}, new UniqueEntityId('teste-id')));
+    await userRepository.create(makeUser({}, new UniqueEntityId('test-id')));
     const response = await sut.execute({
-      userId: 'teste-id',
+      userId: 'test-id',
       email: 'johndoe@example.com',
     });
 
@@ -31,12 +31,12 @@ describe('Edit User Email Use Case', () => {
     await userRepository.create(
       makeUser(
         { email: makeEmail('johndoe@example.com') },
-        new UniqueEntityId('teste-id'),
+        new UniqueEntityId('test-id'),
       ),
     );
 
     const response = await sut.execute({
-      userId: 'teste-id',
+      userId: 'test-id',
       email: 'johndoe@example.com',
     });
 

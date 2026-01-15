@@ -18,9 +18,9 @@ describe('Edit User Password Use Case', () => {
   });
 
   it('should update user password', async () => {
-    await userRepository.create(makeUser({}, new UniqueEntityId('teste-id')));
+    await userRepository.create(makeUser({}, new UniqueEntityId('test-id')));
     const response = await sut.execute({
-      userId: 'teste-id',
+      userId: 'test-id',
       password: 'updated-password',
     });
 

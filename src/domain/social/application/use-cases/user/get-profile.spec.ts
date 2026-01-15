@@ -15,11 +15,11 @@ describe('Get User Profile Use Case', () => {
   });
 
   it('should return a user by username', async () => {
-    await userRepository.create(makeUser({}, new UniqueEntityId('teste-id')));
-    const response = await sut.execute({ userId: 'teste-id' });
+    await userRepository.create(makeUser({}, new UniqueEntityId('test-id')));
+    const response = await sut.execute({ userId: 'test-id' });
 
     expect(response.isRight()).toBe(true);
-    expect(response.isRight() && response.value.id.value).toEqual('teste-id');
+    expect(response.isRight() && response.value.id.value).toEqual('test-id');
   });
   it('should not return a user if not found', async () => {
     const response = await sut.execute({ userId: 'fail-test-id' });
