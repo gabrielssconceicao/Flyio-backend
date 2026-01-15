@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/core/repository/pagination-params';
 import { UserRepository } from '@/domain/social/application/repository/user-repository';
 import { User } from '@/domain/social/enterprise/entities/user';
 
@@ -61,5 +62,25 @@ export class InMemoryUserRepository extends UserRepository {
     }
 
     return Promise.resolve(user);
+  }
+
+  fetch(search: string, pagination: PaginationParams): Promise<User[]> {
+    const { page, limit } = pagination;
+
+    const normalizedSearch = search.toLowerCase();
+
+    const filteredUsers = this.items.filter((item) => {
+      return (
+        item.username.value.toLowerCase().includes(normalizedSearch) ||
+        item.name.toLowerCase().includes(normalizedSearch)
+      );
+    });
+
+    const start = (page - 1) * limit;
+    const end = start + limit;
+
+    const users = filteredUsers.slice(start, end);
+
+    return Promise.resolve(users);
   }
 }
