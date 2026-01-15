@@ -69,6 +69,11 @@ export class User extends Entity<UserProps> {
     return this.props.updated_at;
   }
 
+  deactivate() {
+    this.props.is_active = false;
+    this.touch();
+  }
+
   private touch() {
     this.props.updated_at = new Date();
   }

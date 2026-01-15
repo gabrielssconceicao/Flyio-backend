@@ -10,7 +10,7 @@ let userRepository: InMemoryUserRepository;
 let sut: EditPasswordUseCase;
 let hasher: TestHasher;
 
-describe('Edit User Profile Use Case', () => {
+describe('Edit User Password Use Case', () => {
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
     hasher = new TestHasher();

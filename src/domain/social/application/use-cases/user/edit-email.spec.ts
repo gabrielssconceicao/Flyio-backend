@@ -9,7 +9,7 @@ import { EditEmailUseCase } from './edit-email';
 let userRepository: InMemoryUserRepository;
 let sut: EditEmailUseCase;
 
-describe('Edit User Profile Use Case', () => {
+describe('Edit User Email Use Case', () => {
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
     sut = new EditEmailUseCase(userRepository);
