@@ -13,6 +13,8 @@ export interface UserProps {
   password_hash: string;
   created_at: Date;
   is_active: boolean;
+  followers_count: number;
+  following_count: number;
   updated_at?: Date;
 }
 
@@ -69,6 +71,14 @@ export class User extends Entity<UserProps> {
     return this.props.updated_at;
   }
 
+  get followers_count() {
+    return this.props.followers_count;
+  }
+
+  get following_count() {
+    return this.props.following_count;
+  }
+
   deactivate() {
     this.props.is_active = false;
     this.touch();
@@ -83,7 +93,10 @@ export class User extends Entity<UserProps> {
   }
 
   static create(
-    props: Optional<UserProps, 'created_at' | 'bio' | 'is_active'>,
+    props: Optional<
+      UserProps,
+      'created_at' | 'bio' | 'is_active' | 'followers_count' | 'following_count'
+    >,
     id?: UniqueEntityId,
   ) {
     const user = new User(
@@ -92,6 +105,8 @@ export class User extends Entity<UserProps> {
         bio: props.bio ?? '',
         created_at: props.created_at ?? new Date(),
         is_active: props.is_active ?? true,
+        followers_count: props.followers_count ?? 0,
+        following_count: props.following_count ?? 0,
       },
       id,
     );
