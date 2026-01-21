@@ -88,10 +88,30 @@ export class User extends Entity<UserProps> {
     this.touch();
   }
 
+  follow(user: User) {
+    this.increaseFollowingCount();
+    user.increaseFollowersCount();
+  }
+
   private touch() {
     this.props.updated_at = new Date();
   }
 
+  private increaseFollowersCount() {
+    this.props.followers_count++;
+  }
+
+  private decreaseFollowersCount() {
+    this.props.followers_count--;
+  }
+
+  private increaseFollowingCount() {
+    this.props.following_count++;
+  }
+
+  private decreaseFollowingCount() {
+    this.props.following_count--;
+  }
   static create(
     props: Optional<
       UserProps,

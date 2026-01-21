@@ -5,7 +5,6 @@ export class UniqueEntityId {
   get value() {
     return this._value;
   }
-
   constructor(value?: string) {
     this._value = value ?? randomUUID();
   }
