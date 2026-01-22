@@ -23,6 +23,7 @@ export class Follow extends Entity<FollowProps> {
 
   static create(props: Optional<FollowProps, 'created_at'>) {
     const follow = new Follow({
+      ...props,
       created_at: props.created_at ?? new Date(),
     });
 

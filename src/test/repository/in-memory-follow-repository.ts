@@ -1,0 +1,26 @@
+import { FollowRepository } from '@/domain/social/application/repository/follow-repository';
+import { Follow } from '@/domain/social/enterprise/entities/follow';
+
+export class InMemoryFollowRepository extends FollowRepository {
+  items: Follow[] = [];
+
+  create(follow: Follow): Promise<void> {
+    this.items.push(follow);
+    return Promise.resolve();
+  }
+
+  async isFollowing(params: {
+    followerId: string;
+    followingId: string;
+  }): Promise<boolean> {
+    const follow = this.items.find(
+      (item) =>
+        item.followerId.value === params.followerId &&
+        item.followingId.value === params.followingId,
+    );
+
+    console.log('isFollowing check:', !!follow);
+
+    return Promise.resolve(!!follow);
+  }
+}
