@@ -17,7 +17,7 @@ type FollowUseCaseResponse = Either<
   null
 >;
 
-export class FollowwUseCase {
+export class FollowUseCase {
   constructor(
     private followRepository: FollowRepository,
     private userRepository: UserRepository,

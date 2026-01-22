@@ -9,6 +9,18 @@ export class InMemoryFollowRepository extends FollowRepository {
     return Promise.resolve();
   }
 
+  async delete(follow: Follow): Promise<void> {
+    const index = this.items.findIndex(
+      (item) =>
+        item.followerId.value === follow.followerId.value &&
+        item.followingId.value === follow.followingId.value,
+    );
+
+    this.items.splice(index, 1);
+
+    return Promise.resolve();
+  }
+
   async isFollowing(params: {
     followerId: string;
     followingId: string;

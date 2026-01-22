@@ -17,7 +17,7 @@ type UnfollowUseCaseResponse = Either<
   null
 >;
 
-export class FollowwUseCase {
+export class UnfollowUseCase {
   constructor(
     private followRepository: FollowRepository,
     private userRepository: UserRepository,
@@ -31,6 +31,13 @@ export class FollowwUseCase {
       return left(new FollowYourselfError('unfollow'));
     }
 
+    const follower = await this.userRepository.findById(followerId);
+    const following = await this.userRepository.findById(followingId);
+
+    if (!follower || !following) {
+      return left(new ResourceNotFoundError('User'));
+    }
+
     const isFollowing = await this.followRepository.isFollowing({
       followerId,
       followingId,
@@ -38,13 +45,6 @@ export class FollowwUseCase {
 
     if (!isFollowing) {
       return left(new NotFollowingError());
-    }
-
-    const follower = await this.userRepository.findById(followerId);
-    const following = await this.userRepository.findById(followingId);
-
-    if (!follower || !following) {
-      return left(new ResourceNotFoundError('User'));
     }
 
     const follow = Follow.create({
