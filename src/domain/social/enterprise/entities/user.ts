@@ -93,6 +93,11 @@ export class User extends Entity<UserProps> {
     user.increaseFollowersCount();
   }
 
+  unfollow(user: User) {
+    this.decreaseFollowingCount();
+    user.decreaseFollowersCount();
+  }
+
   private touch() {
     this.props.updated_at = new Date();
   }

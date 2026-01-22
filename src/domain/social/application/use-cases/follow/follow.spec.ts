@@ -35,6 +35,7 @@ describe('Follow Use Case', () => {
     expect(userRepository.items[0].following_count).toBe(1);
     expect(following.followers_count).toBe(1);
     expect(userRepository.items[1].followers_count).toBe(1);
+    expect(followRepository.items).toHaveLength(1);
   });
 
   it('should not be able to follow yourself', async () => {
