@@ -31,8 +31,13 @@ export class InMemoryFollowRepository extends FollowRepository {
         item.followingId.value === params.followingId,
     );
 
-    console.log('isFollowing check:', !!follow);
-
     return Promise.resolve(!!follow);
+  }
+
+  findFollowingIdsByUserId(userId: string): Promise<Follow[]> {
+    const follows = this.items.filter(
+      (item) => item.followerId.value === userId,
+    );
+    return Promise.resolve(follows);
   }
 }

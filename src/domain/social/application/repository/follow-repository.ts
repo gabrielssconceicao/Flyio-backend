@@ -9,4 +9,5 @@ export abstract class FollowRepository {
   abstract create(follow: Follow): Promise<void>;
   abstract delete(follow: Follow): Promise<void>;
   abstract isFollowing(params: FollowParams): Promise<boolean>;
+  abstract findFollowingIdsByUserId(userId: string): Promise<Follow[]>;
 }
