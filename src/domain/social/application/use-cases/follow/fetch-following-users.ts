@@ -13,7 +13,7 @@ interface FetchFollowingUsersUseCaseRequest {
 
 type FetchFollowingUsersUseCaseResponse = Either<
   ResourceNotFoundError,
-  { users: Array<{ user: User; following: boolean }> }
+  { users: Array<{ user: User; following: boolean }>; count: number }
 >;
 
 export class FetchFollowingUsersUseCase {
@@ -33,23 +33,21 @@ export class FetchFollowingUsersUseCase {
       return left(new ResourceNotFoundError('User'));
     }
 
-    const followingIds = await this.followRepository.findFollowingIdsByUserId(
-      user.id.value,
-    );
+    const { follows: followingIds, count } =
+      await this.followRepository.findFollowingIdsByUserId(user.id, {
+        page,
+        limit,
+      });
 
     const followingUserIds = followingIds.map(
       (follow) => follow.followingId.value,
     );
 
-    const followingUsers = await this.userRepository.findManyByIds(
-      followingUserIds,
-      {
-        page,
-        limit,
-      },
-    );
+    const followingUsers =
+      await this.userRepository.findManyByIds(followingUserIds);
 
     return right({
+      count,
       users: followingUsers.map((user) => ({ user, following: true })),
     });
   }

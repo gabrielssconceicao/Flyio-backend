@@ -45,6 +45,7 @@ describe('Fetch Following Users Use Case', () => {
 
     expect(result.isRight()).toBe(true);
     expect(result.isRight() && result.value.users).toHaveLength(3);
+    expect(result.isRight() && result.value.count).toBe(3);
   });
 
   it('should be able to fetch following users with pagination', async () => {
@@ -66,6 +67,7 @@ describe('Fetch Following Users Use Case', () => {
 
     expect(result.isRight()).toBe(true);
     expect(result.isRight() && result.value.users).toHaveLength(2);
+    expect(result.isRight() && result.value.count).toBe(7);
   });
 
   it('should not be able to fetch following users with non-existing user', async () => {
