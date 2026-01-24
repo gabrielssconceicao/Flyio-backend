@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { User } from '@/domain/social/enterprise/entities/user';
 
@@ -7,6 +8,7 @@ import { UserRepository } from '../../repository/user-repository';
 
 interface FetchFollowingUsersUseCaseRequest {
   username: string;
+  viewerId: string;
   page: number;
   limit?: number;
 }
@@ -24,6 +26,7 @@ export class FetchFollowingUsersUseCase {
 
   async execute({
     username,
+    viewerId,
     page,
     limit = 50,
   }: FetchFollowingUsersUseCaseRequest): Promise<FetchFollowingUsersUseCaseResponse> {
@@ -44,9 +47,22 @@ export class FetchFollowingUsersUseCase {
     const followingUsers =
       await this.userRepository.findManyByIds(followingUserIds);
 
+    const viewerFollowing = await this.followRepository.getFollowingIdsByUserId(
+      new UniqueEntityId(viewerId),
+    );
+
+    const viewerFollowingSet = new Set(
+      viewerFollowing.map((follow) => follow.followingId.value),
+    );
+
+    const users = followingUsers.map((followingUser) => ({
+      user: followingUser,
+      following: viewerFollowingSet.has(followingUser.id.value),
+    }));
+
     return right({
       count,
-      users: followingUsers.map((user) => ({ user, following: true })),
+      users,
     });
   }
 }

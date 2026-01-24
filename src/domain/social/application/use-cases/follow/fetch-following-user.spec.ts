@@ -37,15 +37,18 @@ describe('Fetch Following Users Use Case', () => {
     await followRepository.create(
       makeFollow({ follower_id: user.id, following_id: following_user_3.id }),
     );
-
     const result = await sut.execute({
       username: 'johndoe',
+      viewerId: user.id.value,
       page: 1,
     });
 
     expect(result.isRight()).toBe(true);
     expect(result.isRight() && result.value.users).toHaveLength(3);
     expect(result.isRight() && result.value.count).toBe(3);
+    expect(result.isRight() && result.value.users[0].following).toBe(true);
+    expect(result.isRight() && result.value.users[1].following).toBe(true);
+    expect(result.isRight() && result.value.users[2].following).toBe(true);
   });
 
   it('should be able to fetch following users with pagination', async () => {
@@ -61,6 +64,7 @@ describe('Fetch Following Users Use Case', () => {
     }
     const result = await sut.execute({
       username: 'johndoe',
+      viewerId: user.id.value,
       page: 2,
       limit: 5,
     });
