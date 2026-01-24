@@ -77,6 +77,7 @@ describe('Fetch Following Users Use Case', () => {
   it('should not be able to fetch following users with non-existing user', async () => {
     const result = await sut.execute({
       username: 'non-existing-user',
+      viewerId: 'any-existing-user',
       page: 1,
     });
 
