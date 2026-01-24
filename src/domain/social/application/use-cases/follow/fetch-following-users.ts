@@ -5,16 +5,18 @@ import { User } from '@/domain/social/enterprise/entities/user';
 import { FollowRepository } from '../../repository/follow-repository';
 import { UserRepository } from '../../repository/user-repository';
 
-interface GetFollowingUsersUseCaseRequest {
+interface FetchFollowingUsersUseCaseRequest {
   username: string;
+  page: number;
+  limit?: number;
 }
 
-type GetFollowingUsersUseCaseResponse = Either<
+type FetchFollowingUsersUseCaseResponse = Either<
   ResourceNotFoundError,
   { users: Array<{ user: User; following: boolean }> }
 >;
 
-export class GetFollowingUsersUseCase {
+export class FetchFollowingUsersUseCase {
   constructor(
     private userRepository: UserRepository,
     private followRepository: FollowRepository,
@@ -22,7 +24,9 @@ export class GetFollowingUsersUseCase {
 
   async execute({
     username,
-  }: GetFollowingUsersUseCaseRequest): Promise<GetFollowingUsersUseCaseResponse> {
+    page,
+    limit = 50,
+  }: FetchFollowingUsersUseCaseRequest): Promise<FetchFollowingUsersUseCaseResponse> {
     const user = await this.userRepository.findByUsername(username);
 
     if (!user) {
@@ -37,9 +41,16 @@ export class GetFollowingUsersUseCase {
       (follow) => follow.followingId.value,
     );
 
-    const followingUsers =
-      await this.userRepository.findManyByIds(followingUserIds);
+    const followingUsers = await this.userRepository.findManyByIds(
+      followingUserIds,
+      {
+        page,
+        limit,
+      },
+    );
 
-    return right({ users: followingUsers });
+    return right({
+      users: followingUsers.map((user) => ({ user, following: true })),
+    });
   }
 }

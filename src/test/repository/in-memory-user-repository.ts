@@ -83,4 +83,17 @@ export class InMemoryUserRepository extends UserRepository {
 
     return Promise.resolve(users);
   }
+
+  findManyByIds(ids: string[], pagination: PaginationParams): Promise<User[]> {
+    const filteredUsers = this.items.filter((item) =>
+      ids.includes(item.id.value),
+    );
+
+    const start = (pagination.page - 1) * pagination.limit;
+    const end = start + pagination.limit;
+
+    const users = filteredUsers.slice(start, end);
+
+    return Promise.resolve(users);
+  }
 }
