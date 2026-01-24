@@ -39,9 +39,7 @@ export class FetchFollowingUsersUseCase {
         limit,
       });
 
-    const followingUserIds = followingIds.map(
-      (follow) => follow.followingId.value,
-    );
+    const followingUserIds = followingIds.map((follow) => follow.followingId);
 
     const followingUsers =
       await this.userRepository.findManyByIds(followingUserIds);

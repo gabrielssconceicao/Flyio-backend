@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { User } from '@/domain/social/enterprise/entities/user';
 
@@ -21,7 +22,9 @@ export class EditProfileUseCase {
     userId,
     data,
   }: EditProfileUseCaseRequest): Promise<EditProfileUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.usersRepository.findById(
+      new UniqueEntityId(userId),
+    );
 
     if (!user) {
       return left(new ResourceNotFoundError('User'));

@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PaginationParams } from '@/core/repository/pagination-params';
 import { UserRepository } from '@/domain/social/application/repository/user-repository';
 import { User } from '@/domain/social/enterprise/entities/user';
@@ -54,8 +55,8 @@ export class InMemoryUserRepository extends UserRepository {
     return Promise.resolve(user);
   }
 
-  findById(id: string): Promise<User | null> {
-    const user = this.items.find((item) => item.id.value === id);
+  findById(id: UniqueEntityId): Promise<User | null> {
+    const user = this.items.find((item) => item.id.equals(id));
 
     if (!user) {
       return Promise.resolve(null);
@@ -84,8 +85,10 @@ export class InMemoryUserRepository extends UserRepository {
     return Promise.resolve(users);
   }
 
-  findManyByIds(ids: string[]): Promise<User[]> {
-    const users = this.items.filter((item) => ids.includes(item.id.value));
+  findManyByIds(ids: UniqueEntityId[]): Promise<User[]> {
+    const users = this.items.filter((item) =>
+      ids.some((id) => id.equals(item.id)),
+    );
 
     return Promise.resolve(users);
   }

@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { InvalidUserStateError } from '@/core/errors/invalid-user-state-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
@@ -19,7 +20,9 @@ export class ActivateUserUseCase {
   async execute({
     userId,
   }: ActivateUserUseCaseRequest): Promise<ActivateUserUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.usersRepository.findById(
+      new UniqueEntityId(userId),
+    );
 
     if (!user) {
       return left(new ResourceNotFoundError('User'));
