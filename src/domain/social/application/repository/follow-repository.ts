@@ -12,8 +12,13 @@ export abstract class FollowRepository {
   abstract create(follow: Follow): Promise<void>;
   abstract delete(follow: Follow): Promise<void>;
   abstract isFollowing(params: FollowParams): Promise<boolean>;
+  abstract getFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]>;
   abstract findFollowingIdsByUserId(
     userId: UniqueEntityId,
     pagination: PaginationParams,
   ): Promise<{ follows: Follow[]; count: number }>;
+  abstract findFollowerIdsByUserId(
+    userId: UniqueEntityId,
+    pagination: PaginationParams,
+  ): Promise<{ followers: Follow[]; count: number }>;
 }

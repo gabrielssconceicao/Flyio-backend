@@ -50,4 +50,24 @@ export class InMemoryFollowRepository extends FollowRepository {
     const follows = filteredFollows.slice(start, end);
     return Promise.resolve({ follows, count: filteredFollows.length });
   }
+
+  findFollowerIdsByUserId(
+    userId: UniqueEntityId,
+    pagination: PaginationParams,
+  ): Promise<{ followers: Follow[]; count: number }> {
+    const filteredFollows = this.items
+      .filter((item) => item.followingId.equals(userId))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    const start = (pagination.page - 1) * pagination.limit;
+    const end = start + pagination.limit;
+
+    const followers = filteredFollows.slice(start, end);
+    return Promise.resolve({ followers, count: filteredFollows.length });
+  }
+
+  getFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]> {
+    const follows = this.items.filter((item) => item.followerId.equals(userId));
+    return Promise.resolve(follows);
+  }
 }
