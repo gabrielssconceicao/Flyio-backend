@@ -9,7 +9,10 @@ interface FetchUsersByNameOrUsernameUseCaseRequest {
   limit?: number;
 }
 
-type FetchUsersByNameOrUsernameUseCaseResponse = Either<null, User[]>;
+type FetchUsersByNameOrUsernameUseCaseResponse = Either<
+  null,
+  { users: User[] }
+>;
 
 export class FetchUsersByNameOrUsernameUseCase {
   constructor(private userRepository: UserRepository) {}
@@ -20,6 +23,7 @@ export class FetchUsersByNameOrUsernameUseCase {
     limit = 50,
   }: FetchUsersByNameOrUsernameUseCaseRequest): Promise<FetchUsersByNameOrUsernameUseCaseResponse> {
     const users = await this.userRepository.fetch(search, { page, limit });
-    return right(users);
+    // TODO: add if viwer is following
+    return right({ users });
   }
 }

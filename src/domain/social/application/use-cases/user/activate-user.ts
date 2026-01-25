@@ -11,7 +11,7 @@ interface ActivateUserUseCaseRequest {
 
 type ActivateUserUseCaseResponse = Either<
   ResourceNotFoundError | InvalidUserStateError,
-  void
+  null
 >;
 
 export class ActivateUserUseCase {
@@ -36,6 +36,6 @@ export class ActivateUserUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

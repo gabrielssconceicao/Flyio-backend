@@ -9,7 +9,7 @@ interface GetProfileUseCaseRequest {
   userId: string;
 }
 
-type GetProfileUseCaseResponse = Either<ResourceNotFoundError, User>;
+type GetProfileUseCaseResponse = Either<ResourceNotFoundError, { user: User }>;
 
 export class GetProfileUseCase {
   constructor(private usersRepository: UserRepository) {}
@@ -25,6 +25,6 @@ export class GetProfileUseCase {
       return left(new ResourceNotFoundError('User'));
     }
 
-    return right(user);
+    return right({ user });
   }
 }

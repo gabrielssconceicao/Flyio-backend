@@ -10,7 +10,7 @@ interface EditPasswordUseCaseRequest {
   password: string;
 }
 
-type EditPasswordUseCaseResponse = Either<ResourceNotFoundError, void>;
+type EditPasswordUseCaseResponse = Either<ResourceNotFoundError, null>;
 
 export class EditPasswordUseCase {
   constructor(
@@ -36,6 +36,6 @@ export class EditPasswordUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

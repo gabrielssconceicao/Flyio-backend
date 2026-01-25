@@ -20,7 +20,7 @@ describe('Get User Use Case', () => {
     const response = await sut.execute({ username: 'johndoe' });
 
     expect(response.isRight()).toBe(true);
-    expect(response.isRight() && response.value.username.value).toEqual(
+    expect(response.isRight() && response.value.user.username.value).toEqual(
       'johndoe',
     );
   });

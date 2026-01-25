@@ -13,7 +13,7 @@ interface EditProfileUseCaseRequest {
   }>;
 }
 
-type EditProfileUseCaseResponse = Either<ResourceNotFoundError, User>;
+type EditProfileUseCaseResponse = Either<ResourceNotFoundError, { user: User }>;
 
 export class EditProfileUseCase {
   constructor(private usersRepository: UserRepository) {}
@@ -40,6 +40,6 @@ export class EditProfileUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(user);
+    return right({ user });
   }
 }

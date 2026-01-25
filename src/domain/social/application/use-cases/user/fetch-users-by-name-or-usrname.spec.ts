@@ -23,7 +23,7 @@ describe('Get User Use Case', () => {
     const response = await sut.execute({ search: 'john', page: 1 });
 
     expect(response.isRight()).toBe(true);
-    expect(response.isRight() && response.value).toHaveLength(3);
+    expect(response.isRight() && response.value.users).toHaveLength(3);
   });
   it('should fetch users by name or username paginated', async () => {
     for (let i = 0; i <= 5; i++) {
@@ -38,6 +38,6 @@ describe('Get User Use Case', () => {
     });
 
     expect(response.isRight()).toBe(true);
-    expect(response.value).toHaveLength(1);
+    expect(response.isRight() && response.value.users).toHaveLength(1);
   });
 });

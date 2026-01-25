@@ -13,7 +13,7 @@ interface EditEmailUseCaseRequest {
 
 type EditEmailUseCaseResponse = Either<
   ResourceNotFoundError | UserAlreadyExistError,
-  void
+  null
 >;
 
 export class EditEmailUseCase {
@@ -41,6 +41,6 @@ export class EditEmailUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

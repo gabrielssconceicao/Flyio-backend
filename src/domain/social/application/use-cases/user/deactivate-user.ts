@@ -11,7 +11,7 @@ interface DeactivateUserUseCaseRequest {
 
 type DeactivateUserUseCaseResponse = Either<
   ResourceNotFoundError | InvalidUserStateError,
-  void
+  null
 >;
 
 export class DeactivateUserUseCase {
@@ -36,6 +36,6 @@ export class DeactivateUserUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

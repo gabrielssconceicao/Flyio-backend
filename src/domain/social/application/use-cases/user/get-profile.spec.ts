@@ -19,7 +19,9 @@ describe('Get User Profile Use Case', () => {
     const response = await sut.execute({ userId: 'test-id' });
 
     expect(response.isRight()).toBe(true);
-    expect(response.isRight() && response.value.id.value).toEqual('test-id');
+    expect(response.isRight() && response.value.user.id.value).toEqual(
+      'test-id',
+    );
   });
   it('should not return a user if not found', async () => {
     const response = await sut.execute({ userId: 'fail-test-id' });

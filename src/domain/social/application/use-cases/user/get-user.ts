@@ -8,7 +8,7 @@ interface GetUserUseCaseRequest {
   username: string;
 }
 
-type GetUserUseCaseResponse = Either<ResourceNotFoundError, User>;
+type GetUserUseCaseResponse = Either<ResourceNotFoundError, { user: User }>;
 
 export class GetUserUseCase {
   constructor(private usersRepository: UserRepository) {}
@@ -22,6 +22,8 @@ export class GetUserUseCase {
       return left(new ResourceNotFoundError('User'));
     }
 
-    return right(user);
+    // TODO: add if viwer is following
+
+    return right({ user });
   }
 }
