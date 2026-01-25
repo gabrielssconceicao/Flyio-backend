@@ -1,6 +1,9 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PaginationParams } from '@/core/repository/pagination-params';
-import { FollowRepository } from '@/domain/social/application/repository/follow-repository';
+import {
+  FollowRepository,
+  Metrics,
+} from '@/domain/social/application/repository/follow-repository';
 import { Follow } from '@/domain/social/enterprise/entities/follow';
 
 export class InMemoryFollowRepository extends FollowRepository {
@@ -69,5 +72,14 @@ export class InMemoryFollowRepository extends FollowRepository {
   getFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]> {
     const follows = this.items.filter((item) => item.followerId.equals(userId));
     return Promise.resolve(follows);
+  }
+
+  metrics(id: UniqueEntityId): Promise<Metrics> {
+    const followers = this.items.filter((item) => item.followingId.equals(id));
+    const following = this.items.filter((item) => item.followerId.equals(id));
+    return Promise.resolve({
+      followersCount: followers.length,
+      followingCount: following.length,
+    });
   }
 }

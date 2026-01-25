@@ -8,6 +8,11 @@ type FollowParams = {
   followingId: string;
 };
 
+export type Metrics = {
+  followersCount: number;
+  followingCount: number;
+};
+
 export abstract class FollowRepository {
   abstract create(follow: Follow): Promise<void>;
   abstract delete(follow: Follow): Promise<void>;
@@ -21,4 +26,6 @@ export abstract class FollowRepository {
     userId: UniqueEntityId,
     pagination: PaginationParams,
   ): Promise<{ followers: Follow[]; count: number }>;
+
+  abstract metrics(id: UniqueEntityId): Promise<Metrics>;
 }
