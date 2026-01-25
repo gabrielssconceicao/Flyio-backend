@@ -3,9 +3,9 @@ import { PaginationParams } from '@/core/repository/pagination-params';
 
 import { Follow } from '../../enterprise/entities/follow';
 
-type FollowParams = {
-  followerId: string;
-  followingId: string;
+export type IsFollowingParams = {
+  followerId: UniqueEntityId;
+  followingId: UniqueEntityId;
 };
 
 export type Metrics = {
@@ -16,7 +16,7 @@ export type Metrics = {
 export abstract class FollowRepository {
   abstract create(follow: Follow): Promise<void>;
   abstract delete(follow: Follow): Promise<void>;
-  abstract isFollowing(params: FollowParams): Promise<boolean>;
+  abstract isFollowing(params: IsFollowingParams): Promise<boolean>;
   abstract getFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]>;
   abstract findFollowingIdsByUserId(
     userId: UniqueEntityId,

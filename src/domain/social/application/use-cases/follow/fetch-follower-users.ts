@@ -15,7 +15,7 @@ interface FetchFollowerUsersUseCaseRequest {
 
 type FetchFollowerUsersUseCaseResponse = Either<
   ResourceNotFoundError,
-  { users: Array<{ user: User; following: boolean }>; count: number }
+  { users: Array<{ user: User; isFollowing: boolean }>; count: number }
 >;
 
 export class FetchFollowerUsersUseCase {
@@ -56,7 +56,7 @@ export class FetchFollowerUsersUseCase {
     );
     const users = followerUsers.map((followerUser) => ({
       user: followerUser,
-      following: viewerFollowingSet.has(followerUser.id.value),
+      isFollowing: viewerFollowingSet.has(followerUser.id.value),
     }));
 
     return right({

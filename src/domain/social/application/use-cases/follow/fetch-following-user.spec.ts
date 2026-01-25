@@ -18,37 +18,40 @@ describe('Fetch Following Users Use Case', () => {
   });
 
   it('should be able to fetch following users', async () => {
-    const user = makeUser({ username: makeUsername('johndoe') });
-    const following_user_1 = makeUser();
+    const user = makeUser();
+    const following_user_1 = makeUser({ username: makeUsername('johndoe') });
     const following_user_2 = makeUser();
-    const following_user_3 = makeUser();
 
     await userRepository.create(user);
     await userRepository.create(following_user_1);
     await userRepository.create(following_user_2);
-    await userRepository.create(following_user_3);
 
     await followRepository.create(
-      makeFollow({ follower_id: user.id, following_id: following_user_1.id }),
+      makeFollow({
+        follower_id: following_user_1.id,
+        following_id: following_user_1.id,
+      }),
+    );
+    await followRepository.create(
+      makeFollow({
+        follower_id: following_user_1.id,
+        following_id: following_user_2.id,
+      }),
     );
     await followRepository.create(
       makeFollow({ follower_id: user.id, following_id: following_user_2.id }),
     );
-    await followRepository.create(
-      makeFollow({ follower_id: user.id, following_id: following_user_3.id }),
-    );
     const result = await sut.execute({
-      username: 'johndoe',
+      username: following_user_1.username.value,
       viewerId: user.id.value,
       page: 1,
     });
 
     expect(result.isRight()).toBe(true);
-    expect(result.isRight() && result.value.users).toHaveLength(3);
-    expect(result.isRight() && result.value.count).toBe(3);
-    expect(result.isRight() && result.value.users[0].following).toBe(true);
-    expect(result.isRight() && result.value.users[1].following).toBe(true);
-    expect(result.isRight() && result.value.users[2].following).toBe(true);
+    expect(result.isRight() && result.value.users).toHaveLength(2);
+    expect(result.isRight() && result.value.count).toBe(2);
+    expect(result.isRight() && result.value.users[0].isFollowing).toBe(false);
+    expect(result.isRight() && result.value.users[1].isFollowing).toBe(true);
   });
 
   it('should be able to fetch following users with pagination', async () => {

@@ -65,7 +65,10 @@ export class InMemoryUserRepository extends UserRepository {
     return Promise.resolve(user);
   }
 
-  fetch(search: string, pagination: PaginationParams): Promise<User[]> {
+  fetch(
+    search: string,
+    pagination: PaginationParams,
+  ): Promise<{ users: User[]; count: number }> {
     const { page, limit } = pagination;
 
     const normalizedSearch = search.toLowerCase();
@@ -80,9 +83,9 @@ export class InMemoryUserRepository extends UserRepository {
     const start = (page - 1) * limit;
     const end = start + limit;
 
+    const count = filteredUsers.length;
     const users = filteredUsers.slice(start, end);
-
-    return Promise.resolve(users);
+    return Promise.resolve({ users, count });
   }
 
   findManyByIds(ids: UniqueEntityId[]): Promise<User[]> {

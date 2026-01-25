@@ -15,6 +15,9 @@ export abstract class UserRepository {
   abstract findByUsername(username: string): Promise<User | null>;
   abstract findById(id: UniqueEntityId): Promise<User | null>;
 
-  abstract fetch(search: string, pagination: PaginationParams): Promise<User[]>;
+  abstract fetch(
+    search: string,
+    pagination: PaginationParams,
+  ): Promise<{ users: User[]; count: number }>;
   abstract findManyByIds(ids: UniqueEntityId[]): Promise<User[]>;
 }

@@ -59,8 +59,8 @@ describe('Fetch Follower Users Use Case', () => {
         (item) => item.user.username.value === 'johndoe4',
       );
 
-      expect(user3Follower?.following).toBe(true);
-      expect(user4Follower?.following).toBe(false);
+      expect(user3Follower?.isFollowing).toBe(true);
+      expect(user4Follower?.isFollowing).toBe(false);
     }
   });
   it('should be able to fetch following users with pagination', async () => {

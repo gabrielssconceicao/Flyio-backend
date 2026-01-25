@@ -2,6 +2,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PaginationParams } from '@/core/repository/pagination-params';
 import {
   FollowRepository,
+  IsFollowingParams,
   Metrics,
 } from '@/domain/social/application/repository/follow-repository';
 import { Follow } from '@/domain/social/enterprise/entities/follow';
@@ -26,14 +27,11 @@ export class InMemoryFollowRepository extends FollowRepository {
     return Promise.resolve();
   }
 
-  async isFollowing(params: {
-    followerId: string;
-    followingId: string;
-  }): Promise<boolean> {
+  async isFollowing(params: IsFollowingParams): Promise<boolean> {
     const follow = this.items.find(
       (item) =>
-        item.followerId.value === params.followerId &&
-        item.followingId.value === params.followingId,
+        item.followerId.equals(params.followerId) &&
+        item.followingId.equals(params.followingId),
     );
 
     return Promise.resolve(!!follow);
