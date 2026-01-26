@@ -2,7 +2,7 @@ import { Entity } from '@/core/entities/entity';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
-interface PostProps {
+export interface PostProps {
   author_id: UniqueEntityId;
   content: string;
   created_at: Date;
