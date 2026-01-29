@@ -30,39 +30,104 @@ export class FetchFollowingUsersUseCase {
     page,
     limit = 50,
   }: FetchFollowingUsersUseCaseRequest): Promise<FetchFollowingUsersUseCaseResponse> {
-    const user = await this.userRepository.findByUsername(username);
-
-    if (!user) {
-      return left(new ResourceNotFoundError('User'));
+    const profileUser = await this.getUserByUsername(username);
+    if (profileUser instanceof ResourceNotFoundError) {
+      return left(profileUser);
     }
 
-    const { follows: followingIds, count } =
-      await this.followRepository.findFollowingIdsByUserId(user.id, {
+    const viewer = await this.getUserById(viewerId);
+    if (viewer instanceof ResourceNotFoundError) {
+      return left(viewer);
+    }
+
+    const { followingUserIds, count } = await this.getFollowingUserIds(
+      profileUser.id,
+      page,
+      limit,
+    );
+
+    const followingUsersMap = await this.getUsersMappedById(followingUserIds);
+
+    const viewerFollowingSet = await this.getViewerFollowingSet(viewer.id);
+
+    const users = this.buildResponse(
+      followingUserIds,
+      followingUsersMap,
+      viewerFollowingSet,
+    );
+
+    return right({
+      users,
+      count,
+    });
+  }
+
+  private async getUserByUsername(
+    username: string,
+  ): Promise<User | ResourceNotFoundError> {
+    const user = await this.userRepository.findByUsername(username);
+    if (!user) {
+      return new ResourceNotFoundError('User');
+    }
+    return user;
+  }
+
+  private async getUserById(
+    userId: string,
+  ): Promise<User | ResourceNotFoundError> {
+    const user = await this.userRepository.findById(new UniqueEntityId(userId));
+    if (!user) {
+      return new ResourceNotFoundError('User');
+    }
+    return user;
+  }
+
+  private async getFollowingUserIds(
+    userId: UniqueEntityId,
+    page: number,
+    limit: number,
+  ): Promise<{ followingUserIds: UniqueEntityId[]; count: number }> {
+    const { follows, count } =
+      await this.followRepository.findFollowingIdsByUserId(userId, {
         page,
         limit,
       });
 
-    const followingUserIds = followingIds.map((follow) => follow.followingId);
-
-    const followingUsers =
-      await this.userRepository.findManyByIds(followingUserIds);
-
-    const viewerFollowing = await this.followRepository.getFollowingIdsByUserId(
-      new UniqueEntityId(viewerId),
-    );
-
-    const viewerFollowingSet = new Set(
-      viewerFollowing.map((follow) => follow.followingId.value),
-    );
-
-    const users = followingUsers.map((followingUser) => ({
-      user: followingUser,
-      isFollowing: viewerFollowingSet.has(followingUser.id.value),
-    }));
-
-    return right({
+    return {
+      followingUserIds: follows.map((follow) => follow.followingId),
       count,
-      users,
+    };
+  }
+
+  private async getUsersMappedById(
+    userIds: UniqueEntityId[],
+  ): Promise<Map<string, User>> {
+    const users = await this.userRepository.findManyByIds(userIds);
+
+    return new Map(users.map((user) => [user.id.value, user]));
+  }
+
+  private async getViewerFollowingSet(
+    viewerId: UniqueEntityId,
+  ): Promise<Set<string>> {
+    const viewerFollowing =
+      await this.followRepository.findAllFollowingIdsByUserId(viewerId);
+
+    return new Set(viewerFollowing.map((follow) => follow.followingId.value));
+  }
+
+  private buildResponse(
+    followingUserIds: UniqueEntityId[],
+    usersMap: Map<string, User>,
+    viewerFollowingSet: Set<string>,
+  ): Array<{ user: User; isFollowing: boolean }> {
+    return followingUserIds.map((id) => {
+      const user = usersMap.get(id.value)!;
+
+      return {
+        user,
+        isFollowing: viewerFollowingSet.has(id.value),
+      };
     });
   }
 }

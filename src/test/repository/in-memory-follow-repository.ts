@@ -67,7 +67,7 @@ export class InMemoryFollowRepository extends FollowRepository {
     return Promise.resolve({ followers, count: filteredFollows.length });
   }
 
-  getFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]> {
+  findAllFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]> {
     const follows = this.items.filter((item) => item.followerId.equals(userId));
     return Promise.resolve(follows);
   }

@@ -17,7 +17,9 @@ export abstract class FollowRepository {
   abstract create(follow: Follow): Promise<void>;
   abstract delete(follow: Follow): Promise<void>;
   abstract isFollowing(params: IsFollowingParams): Promise<boolean>;
-  abstract getFollowingIdsByUserId(userId: UniqueEntityId): Promise<Follow[]>;
+  abstract findAllFollowingIdsByUserId(
+    userId: UniqueEntityId,
+  ): Promise<Follow[]>;
   abstract findFollowingIdsByUserId(
     userId: UniqueEntityId,
     pagination: PaginationParams,
