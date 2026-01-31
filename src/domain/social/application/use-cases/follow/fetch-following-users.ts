@@ -48,7 +48,8 @@ export class FetchFollowingUsersUseCase {
 
     const followingUsersMap = await this.getUsersMappedById(followingUserIds);
 
-    const viewerFollowingSet = await this.getViewerFollowingSet(viewer.id);
+    const viewerFollowingSet =
+      await this.followRepository.findAllFollowingIdsByUserId(viewer.id);
 
     const users = this.buildResponse(
       followingUserIds,
@@ -105,15 +106,6 @@ export class FetchFollowingUsersUseCase {
     const users = await this.userRepository.findManyByIds(userIds);
 
     return new Map(users.map((user) => [user.id.value, user]));
-  }
-
-  private async getViewerFollowingSet(
-    viewerId: UniqueEntityId,
-  ): Promise<Set<string>> {
-    const viewerFollowing =
-      await this.followRepository.findAllFollowingIdsByUserId(viewerId);
-
-    return new Set(viewerFollowing.map((follow) => follow.followingId.value));
   }
 
   private buildResponse(

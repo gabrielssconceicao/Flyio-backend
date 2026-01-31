@@ -19,7 +19,7 @@ export abstract class FollowRepository {
   abstract isFollowing(params: IsFollowingParams): Promise<boolean>;
   abstract findAllFollowingIdsByUserId(
     userId: UniqueEntityId,
-  ): Promise<Follow[]>;
+  ): Promise<Set<string>>;
   abstract findFollowingIdsByUserId(
     userId: UniqueEntityId,
     pagination: PaginationParams,
