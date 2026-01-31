@@ -30,7 +30,7 @@ describe('Delete Post Use Case', () => {
     });
 
     expect(response.isRight()).toBe(true);
-    expect(postRepository.items).toHaveLength(0);
+    expect(postRepository.items[0].deleted_at).toBeInstanceOf(Date);
   });
 
   it('should not delete a post if not found', async () => {

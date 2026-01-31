@@ -6,6 +6,7 @@ export interface PostProps {
   author_id: UniqueEntityId;
   content: string;
   created_at: Date;
+  deleted_at: Date | null;
   updated_at?: Date;
 }
 
@@ -25,9 +26,30 @@ export class Post extends Entity<PostProps> {
   get updated_at() {
     return this.props.updated_at;
   }
-  static create(props: Optional<PostProps, 'created_at'>, id?: UniqueEntityId) {
+
+  get deleted_at() {
+    return this.props.deleted_at;
+  }
+
+  delete() {
+    this.props.deleted_at = new Date();
+    this.touch();
+  }
+
+  private touch() {
+    this.props.updated_at = new Date();
+  }
+
+  static create(
+    props: Optional<PostProps, 'created_at' | 'deleted_at'>,
+    id?: UniqueEntityId,
+  ) {
     return new Post(
-      { ...props, created_at: props.created_at ?? new Date() },
+      {
+        ...props,
+        created_at: props.created_at ?? new Date(),
+        deleted_at: null,
+      },
       id,
     );
   }

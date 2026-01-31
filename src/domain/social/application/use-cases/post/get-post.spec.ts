@@ -5,8 +5,6 @@ import { makeUser } from '@/test/factory/make-user';
 import { InMemoryPostRepository } from '@/test/repository/in-memory-post-repository';
 import { InMemoryUserRepository } from '@/test/repository/in-memory-user-repository';
 
-import { PostRepository } from '../../repository/post-repository';
-import { UserRepository } from '../../repository/user-repository';
 import { GetPostUseCase } from './get-post';
 
 let sut: GetPostUseCase;

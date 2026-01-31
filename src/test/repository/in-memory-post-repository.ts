@@ -10,9 +10,9 @@ export class InMemoryPostRepository extends PostRepository {
     return Promise.resolve(post);
   }
 
-  delete(post: Post): Promise<void> {
+  save(post: Post): Promise<void> {
     const index = this.items.findIndex((item) => item.id.equals(post.id));
-    this.items.splice(index, 1);
+    this.items[index] = post;
     return Promise.resolve();
   }
 

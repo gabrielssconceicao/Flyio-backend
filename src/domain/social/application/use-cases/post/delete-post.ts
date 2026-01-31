@@ -31,7 +31,9 @@ export class DeletePostUseCase {
       return left(new NotAllowedError());
     }
 
-    await this.postRepository.delete(post);
+    post.delete();
+
+    await this.postRepository.save(post);
 
     return right(null);
   }
