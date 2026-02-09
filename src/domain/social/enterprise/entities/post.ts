@@ -45,6 +45,13 @@ export class Post extends Entity<PostProps> {
     this.props.likes_count += 1;
   }
 
+  dislike() {
+    if (this.props.likes_count <= 0) {
+      return;
+    }
+    this.props.likes_count -= 1;
+  }
+
   private touch() {
     this.props.updated_at = new Date();
   }

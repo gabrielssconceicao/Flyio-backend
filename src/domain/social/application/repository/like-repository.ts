@@ -9,5 +9,6 @@ export type IsLikedParams = {
 
 export abstract class LikeRepository {
   abstract create(like: Like): Promise<void>;
+  abstract delete(like: Like): Promise<void>;
   abstract isLiked(params: IsLikedParams): Promise<boolean>;
 }

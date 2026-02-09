@@ -12,6 +12,16 @@ export class InMemoryLikeRepository extends LikeRepository {
     return Promise.resolve();
   }
 
+  delete(like: Like): Promise<void> {
+    const index = this.items.findIndex(
+      (item) =>
+        item.user_id.equals(like.user_id) && item.post_id.equals(like.post_id),
+    );
+
+    this.items.splice(index, 1);
+    return Promise.resolve();
+  }
+
   isLiked(params: IsLikedParams): Promise<boolean> {
     return Promise.resolve(
       this.items.some(
