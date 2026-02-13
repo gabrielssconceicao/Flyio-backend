@@ -23,8 +23,10 @@ export class FetchTimelineUseCase {
   }: FetchTimelineUseCaseRequest): Promise<FetchTimelineUseCaseResponse> {
     const posts = await this.postTimelineQueryRepository.fetchTimeline({
       viewerId,
-      page,
-      limit,
+      papagination: {
+        page,
+        limit,
+      },
     });
 
     return right({ posts });
