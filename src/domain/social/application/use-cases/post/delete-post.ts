@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { ForbiddenError } from '@/core/errors/forbidden-error';
+import { NotPostOwnerError } from '@/core/errors/post/not-post-owner-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
 import { PostRepository } from '../../repository/post-repository';
@@ -11,7 +11,7 @@ interface DeletePostUseCaseRequest {
 }
 
 type DeletePostUseCaseResponse = Either<
-  ResourceNotFoundError | ForbiddenError,
+  ResourceNotFoundError | NotPostOwnerError,
   null
 >;
 
@@ -28,9 +28,7 @@ export class DeletePostUseCase {
     }
 
     if (!post.author_id.equals(authorId)) {
-      return left(
-        new ForbiddenError('You are not allowed to delete this post'),
-      );
+      return left(new NotPostOwnerError());
     }
 
     post.delete();

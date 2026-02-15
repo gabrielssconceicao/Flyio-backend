@@ -1,7 +1,7 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { InvalidUserStateError } from '@/core/errors/invalid-user-state-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
+import { UserAlreadyInactiveError } from '@/core/errors/user/user-already-inactive-error';
 
 import { UserRepository } from '../../repository/user-repository';
 
@@ -10,7 +10,7 @@ interface DeactivateUserUseCaseRequest {
 }
 
 type DeactivateUserUseCaseResponse = Either<
-  ResourceNotFoundError | InvalidUserStateError,
+  ResourceNotFoundError | UserAlreadyInactiveError,
   null
 >;
 
@@ -29,7 +29,7 @@ export class DeactivateUserUseCase {
     }
 
     if (!user.is_active) {
-      return left(new InvalidUserStateError());
+      return left(new UserAlreadyInactiveError());
     }
 
     user.deactivate();

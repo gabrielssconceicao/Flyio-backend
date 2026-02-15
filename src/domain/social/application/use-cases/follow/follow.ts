@@ -1,7 +1,7 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { AlreadyFollowingError } from '@/core/errors/already-follow-error';
-import { FollowYourselfError } from '@/core/errors/follow-yourself-error';
+import { AlreadyFollowingError } from '@/core/errors/follow/already-follow-user-error';
+import { FollowYourselfError } from '@/core/errors/follow/follow-yourself-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { Follow } from '@/domain/social/enterprise/entities/follow';
 
@@ -32,15 +32,6 @@ export class FollowUseCase {
       return left(new FollowYourselfError('follow'));
     }
 
-    const isFollowing = await this.followRepository.isFollowing({
-      followerId,
-      followingId,
-    });
-
-    if (isFollowing) {
-      return left(new AlreadyFollowingError());
-    }
-
     const follower = await this.userRepository.findById(
       new UniqueEntityId(followerId),
     );
@@ -50,6 +41,15 @@ export class FollowUseCase {
 
     if (!follower || !following) {
       return left(new ResourceNotFoundError('User'));
+    }
+
+    const isFollowing = await this.followRepository.isFollowing({
+      followerId: follower.id,
+      followingId: following.id,
+    });
+
+    if (isFollowing) {
+      return left(new AlreadyFollowingError());
     }
 
     const follow = Follow.create({

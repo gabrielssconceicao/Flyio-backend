@@ -1,7 +1,7 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { NotFollowingError } from '@/core/errors/already-follow-error';
-import { FollowYourselfError } from '@/core/errors/follow-yourself-error';
+import { FollowYourselfError } from '@/core/errors/follow/follow-yourself-error';
+import { NotFollowingError } from '@/core/errors/follow/not-follow-user-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { Follow } from '@/domain/social/enterprise/entities/follow';
 
@@ -44,8 +44,8 @@ export class UnfollowUseCase {
     }
 
     const isFollowing = await this.followRepository.isFollowing({
-      followerId,
-      followingId,
+      followerId: follower.id,
+      followingId: following.id,
     });
 
     if (!isFollowing) {

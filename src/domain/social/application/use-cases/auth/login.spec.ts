@@ -1,4 +1,4 @@
-import { InvalidCredentialsError } from '@/core/errors/invalid-credentials-error';
+import { InvalidCredentialsError } from '@/core/errors/auth/invalid-credentials-error';
 import { TestComparator } from '@/test/cryptography/test-comparator';
 import { makeEmail, makeUser } from '@/test/factory/make-user';
 import { InMemoryUserRepository } from '@/test/repository/in-memory-user-repository';

@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { NotAllowedError } from '@/core/errors/not-allowed-error';
+import { PostAlreadyDislikedError } from '@/core/errors/like/post-already-disliked-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { Like } from '@/domain/social/enterprise/entities/like';
 
@@ -13,7 +13,7 @@ interface DislikePostUseCaseRequest {
 }
 
 type DislikePostUseCaseResponse = Either<
-  ResourceNotFoundError | NotAllowedError,
+  ResourceNotFoundError | PostAlreadyDislikedError,
   null
 >;
 
@@ -40,7 +40,7 @@ export class DislikePostUseCase {
     });
 
     if (!isLiked) {
-      return left(new NotAllowedError());
+      return left(new PostAlreadyDislikedError());
     }
 
     const like = Like.create({

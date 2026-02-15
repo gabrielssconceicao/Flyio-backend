@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { NotAllowedError } from '@/core/errors/not-allowed-error';
+import { PostAlreadyDislikedError } from '@/core/errors/like/post-already-disliked-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { makeLike } from '@/test/factory/make-like';
 import { makePost } from '@/test/factory/make-post';
@@ -50,7 +50,7 @@ describe('Like Post Use Case', () => {
     });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(NotAllowedError);
+    expect(result.value).toBeInstanceOf(PostAlreadyDislikedError);
   });
 
   it('should  be able to dislike post', async () => {

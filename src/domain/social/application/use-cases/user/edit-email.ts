@@ -1,8 +1,8 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
-import { UserAlreadyExistError } from '@/core/errors/user-already-exist-error';
-import { Email } from '@/domain/social/enterprise/entities/value-obj/email';
+import { UserAlreadyExistError } from '@/core/errors/user/user-already-exist-error';
+import { Email } from '@/domain/social/enterprise/value-obj/email';
 
 import { UserRepository } from '../../repository/user-repository';
 

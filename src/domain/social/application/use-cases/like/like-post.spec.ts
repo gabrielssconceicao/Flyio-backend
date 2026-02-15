@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { NotAllowedError } from '@/core/errors/not-allowed-error';
+import { PostAlreadyLikedError } from '@/core/errors/like/post-already-liked-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { makeLike } from '@/test/factory/make-like';
 import { makePost } from '@/test/factory/make-post';
@@ -60,6 +60,6 @@ describe('Like Post Use Case', () => {
     });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(NotAllowedError);
+    expect(result.value).toBeInstanceOf(PostAlreadyLikedError);
   });
 });

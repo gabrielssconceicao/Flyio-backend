@@ -1,6 +1,7 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { InvalidEmailOrUsernameError } from '@/core/errors/InvalidEmailOrUsernameError';
-import { UserAlreadyExistError } from '@/core/errors/user-already-exist-error';
+import { UserAlreadyExistError } from '@/core/errors/user/user-already-exist-error';
+import { InvalidEmailError } from '@/domain/social/enterprise/value-obj/errors/invalid-email-error';
+import { InvalidUsernameError } from '@/domain/social/enterprise/value-obj/errors/invalid-username-error';
 import { TestHasher } from '@/test/cryptography/test-hasher';
 import { makeEmail, makeUser, makeUsername } from '@/test/factory/make-user';
 import { InMemoryUserRepository } from '@/test/repository/in-memory-user-repository';
@@ -69,7 +70,7 @@ describe('Register Use Case', () => {
     });
 
     expect(response.isLeft()).toBe(true);
-    expect(response.value).toBeInstanceOf(InvalidEmailOrUsernameError);
+    expect(response.value).toBeInstanceOf(InvalidEmailError);
   });
   it('should not register a user with invalid username', async () => {
     const response = await sut.execute({
@@ -80,6 +81,6 @@ describe('Register Use Case', () => {
     });
 
     expect(response.isLeft()).toBe(true);
-    expect(response.value).toBeInstanceOf(InvalidEmailOrUsernameError);
+    expect(response.value).toBeInstanceOf(InvalidUsernameError);
   });
 });

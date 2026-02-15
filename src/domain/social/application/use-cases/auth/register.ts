@@ -1,11 +1,10 @@
 import { Either, left, right } from '@/core/either';
-import { InvalidEmailOrUsernameError } from '@/core/errors/InvalidEmailOrUsernameError';
-import { UserAlreadyExistError } from '@/core/errors/user-already-exist-error';
+import { UserAlreadyExistError } from '@/core/errors/user/user-already-exist-error';
 import { User } from '@/domain/social/enterprise/entities/user';
-import { Email } from '@/domain/social/enterprise/entities/value-obj/email';
-import { InvalidEmailError } from '@/domain/social/enterprise/entities/value-obj/errors/invalid-email-error';
-import { InvalidUsernameError } from '@/domain/social/enterprise/entities/value-obj/errors/invalid-username-error';
-import { Username } from '@/domain/social/enterprise/entities/value-obj/username';
+import { Email } from '@/domain/social/enterprise/value-obj/email';
+import { InvalidEmailError } from '@/domain/social/enterprise/value-obj/errors/invalid-email-error';
+import { InvalidUsernameError } from '@/domain/social/enterprise/value-obj/errors/invalid-username-error';
+import { Username } from '@/domain/social/enterprise/value-obj/username';
 
 import { Hasher } from '../../cryptography/hasher';
 import { UserRepository } from '../../repository/user-repository';
@@ -19,7 +18,7 @@ interface RegisterUseCaseRequest {
 }
 
 type RegisterUseCaseResponse = Either<
-  UserAlreadyExistError | InvalidEmailOrUsernameError,
+  UserAlreadyExistError | InvalidEmailError | InvalidUsernameError,
   null
 >;
 
@@ -34,6 +33,8 @@ export class RegisterUseCase {
   ): Promise<RegisterUseCaseResponse> {
     const { email, name, password, username, bio } = data;
     try {
+      const usernameVO = Username.create(username);
+      const emailVO = Email.create(email);
       const userexists = await this.userRepository.findByEmailOrUsername({
         email,
         username,
@@ -47,8 +48,8 @@ export class RegisterUseCase {
 
       const user = User.create({
         name,
-        username: Username.create(username),
-        email: Email.create(email),
+        username: usernameVO,
+        email: emailVO,
         password_hash: hashed_password,
         bio,
       });
@@ -59,11 +60,10 @@ export class RegisterUseCase {
         error instanceof InvalidUsernameError ||
         error instanceof InvalidEmailError
       ) {
-        return left(new InvalidEmailOrUsernameError());
+        return left(error);
       }
 
-      return left(error);
+      throw error;
     }
-    // trycatch username and email unique constraint
   }
 }

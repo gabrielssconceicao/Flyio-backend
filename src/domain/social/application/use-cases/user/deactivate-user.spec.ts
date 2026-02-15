@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { InvalidUserStateError } from '@/core/errors/invalid-user-state-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
+import { UserAlreadyInactiveError } from '@/core/errors/user/user-already-inactive-error';
 import { makeUser } from '@/test/factory/make-user';
 import { InMemoryUserRepository } from '@/test/repository/in-memory-user-repository';
 
@@ -39,6 +39,6 @@ describe('Deactivate User Use Case', () => {
     const response = await sut.execute({ userId: 'test-id' });
 
     expect(response.isLeft()).toBe(true);
-    expect(response.value).toBeInstanceOf(InvalidUserStateError);
+    expect(response.value).toBeInstanceOf(UserAlreadyInactiveError);
   });
 });

@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
-import { ForbiddenError } from '@/core/errors/forbidden-error';
+import { NotPostOwnerError } from '@/core/errors/post/not-post-owner-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { makePost } from '@/test/factory/make-post';
 import { InMemoryPostRepository } from '@/test/repository/in-memory-post-repository';
@@ -58,6 +58,6 @@ describe('Delete Post Use Case', () => {
     });
 
     expect(response.isLeft()).toBe(true);
-    expect(response.value).toBeInstanceOf(ForbiddenError);
+    expect(response.value).toBeInstanceOf(NotPostOwnerError);
   });
 });

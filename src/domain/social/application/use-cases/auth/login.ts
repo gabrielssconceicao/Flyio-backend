@@ -1,5 +1,5 @@
 import { Either, left, right } from '@/core/either';
-import { InvalidCredentialsError } from '@/core/errors/invalid-credentials-error';
+import { InvalidCredentialsError } from '@/core/errors/auth/invalid-credentials-error';
 import { User } from '@/domain/social/enterprise/entities/user';
 
 import { Comparator } from '../../cryptography/comparator';

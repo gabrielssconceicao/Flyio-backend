@@ -2,8 +2,8 @@ import { Entity } from '@/core/entities/entity';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
-import { Email } from './value-obj/email';
-import { Username } from './value-obj/username';
+import { Email } from '../value-obj/email';
+import { Username } from '../value-obj/username';
 
 export interface UserProps {
   name: string;
