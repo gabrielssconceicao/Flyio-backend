@@ -1,5 +1,5 @@
-import { NotFollowingError } from '@/core/errors/follow/already-follow-user-error';
 import { FollowYourselfError } from '@/core/errors/follow/follow-yourself-error';
+import { NotFollowingError } from '@/core/errors/follow/not-follow-user-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { makeFollow } from '@/test/factory/make-follow';
 import { makeUser } from '@/test/factory/make-user';
