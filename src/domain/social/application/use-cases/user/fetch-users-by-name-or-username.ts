@@ -35,13 +35,10 @@ export class FetchUsersByNameOrUsernameUseCase {
     );
 
     // TODO: add if viwer is following
-    const viewerFollowing = await this.followRepository.getFollowingIdsByUserId(
-      new UniqueEntityId(viewerId),
-    );
-
-    const viewerFollowingSet = new Set(
-      viewerFollowing.map((follow) => follow.followingId.value),
-    );
+    const viewerFollowingSet =
+      await this.followRepository.findAllFollowingIdsByUserId(
+        new UniqueEntityId(viewerId),
+      );
 
     const users = fetchedUsers.map((user) => ({
       user,
