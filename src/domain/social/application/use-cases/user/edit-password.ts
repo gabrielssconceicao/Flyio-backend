@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
 import { Hasher } from '../../cryptography/hasher';
@@ -9,7 +10,7 @@ interface EditPasswordUseCaseRequest {
   password: string;
 }
 
-type EditPasswordUseCaseResponse = Either<ResourceNotFoundError, void>;
+type EditPasswordUseCaseResponse = Either<ResourceNotFoundError, null>;
 
 export class EditPasswordUseCase {
   constructor(
@@ -21,7 +22,9 @@ export class EditPasswordUseCase {
     userId,
     password,
   }: EditPasswordUseCaseRequest): Promise<EditPasswordUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.usersRepository.findById(
+      new UniqueEntityId(userId),
+    );
 
     if (!user) {
       return left(new ResourceNotFoundError('User'));
@@ -33,6 +36,6 @@ export class EditPasswordUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { InvalidUserStateError } from '@/core/errors/invalid-user-state-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 
@@ -10,7 +11,7 @@ interface DeactivateUserUseCaseRequest {
 
 type DeactivateUserUseCaseResponse = Either<
   ResourceNotFoundError | InvalidUserStateError,
-  void
+  null
 >;
 
 export class DeactivateUserUseCase {
@@ -19,7 +20,9 @@ export class DeactivateUserUseCase {
   async execute({
     userId,
   }: DeactivateUserUseCaseRequest): Promise<DeactivateUserUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.usersRepository.findById(
+      new UniqueEntityId(userId),
+    );
 
     if (!user) {
       return left(new ResourceNotFoundError('User'));
@@ -33,6 +36,6 @@ export class DeactivateUserUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

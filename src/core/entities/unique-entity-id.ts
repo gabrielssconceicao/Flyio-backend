@@ -6,6 +6,13 @@ export class UniqueEntityId {
     return this._value;
   }
 
+  equals(id: UniqueEntityId | string): boolean {
+    if (id instanceof UniqueEntityId) {
+      return this.value === id.value;
+    }
+    return this.value === id;
+  }
+
   constructor(value?: string) {
     this._value = value ?? randomUUID();
   }

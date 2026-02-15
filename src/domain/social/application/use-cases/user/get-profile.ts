@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { User } from '@/domain/social/enterprise/entities/user';
 
@@ -8,7 +9,7 @@ interface GetProfileUseCaseRequest {
   userId: string;
 }
 
-type GetProfileUseCaseResponse = Either<ResourceNotFoundError, User>;
+type GetProfileUseCaseResponse = Either<ResourceNotFoundError, { user: User }>;
 
 export class GetProfileUseCase {
   constructor(private usersRepository: UserRepository) {}
@@ -16,12 +17,14 @@ export class GetProfileUseCase {
   async execute({
     userId,
   }: GetProfileUseCaseRequest): Promise<GetProfileUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.usersRepository.findById(
+      new UniqueEntityId(userId),
+    );
 
     if (!user) {
       return left(new ResourceNotFoundError('User'));
     }
 
-    return right(user);
+    return right({ user });
   }
 }

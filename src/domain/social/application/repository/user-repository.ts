@@ -1,3 +1,4 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PaginationParams } from '@/core/repository/pagination-params';
 
 import { User } from '../../enterprise/entities/user';
@@ -12,7 +13,11 @@ export abstract class UserRepository {
   }): Promise<User | null>;
   abstract findByEmail(email: string): Promise<User | null>;
   abstract findByUsername(username: string): Promise<User | null>;
-  abstract findById(id: string): Promise<User | null>;
+  abstract findById(id: UniqueEntityId): Promise<User | null>;
 
-  abstract fetch(search: string, pagination: PaginationParams): Promise<User[]>;
+  abstract fetch(
+    search: string,
+    pagination: PaginationParams,
+  ): Promise<{ users: User[]; count: number }>;
+  abstract findManyByIds(ids: UniqueEntityId[]): Promise<User[]>;
 }

@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { UserAlreadyExistError } from '@/core/errors/user-already-exist-error';
 import { Email } from '@/domain/social/enterprise/entities/value-obj/email';
@@ -12,7 +13,7 @@ interface EditEmailUseCaseRequest {
 
 type EditEmailUseCaseResponse = Either<
   ResourceNotFoundError | UserAlreadyExistError,
-  void
+  null
 >;
 
 export class EditEmailUseCase {
@@ -22,7 +23,9 @@ export class EditEmailUseCase {
     userId,
     email,
   }: EditEmailUseCaseRequest): Promise<EditEmailUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.usersRepository.findById(
+      new UniqueEntityId(userId),
+    );
 
     if (!user) {
       return left(new ResourceNotFoundError('User'));
@@ -38,6 +41,6 @@ export class EditEmailUseCase {
 
     await this.usersRepository.save(user);
 
-    return right(undefined);
+    return right(null);
   }
 }

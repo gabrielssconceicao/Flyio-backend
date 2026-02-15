@@ -22,7 +22,9 @@ describe('Edit User Profile Use Case', () => {
     });
 
     expect(response.isRight()).toBe(true);
-    expect(response.isRight() && response.value.updated_at).not.toBe(undefined);
+    expect(response.isRight() && response.value.user.updated_at).not.toBe(
+      undefined,
+    );
     expect(userRepository.items[0].name).toEqual('Updated Name');
     expect(userRepository.items[0].bio).toEqual('Updated Bio');
   });
