@@ -1,14 +1,28 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { PaginationParams } from '@/core/repository/pagination-params';
 
-import { TimelinePostDTO } from '../dtos/timeline-post.dto';
+import { FetchPostDTO } from '../dtos/timeline-post.dto';
 
-export type PostTimelineQueryParams = {
-  viewerId: string;
-  papagination: PaginationParams;
+type PostTimelineQueryParams = {
+  viewerId: UniqueEntityId;
+  pagination: PaginationParams;
 };
 
-export abstract class PostTimelineQueryRepository {
+type FetchPostsQueryParams = PostTimelineQueryParams & {
+  content: string;
+};
+
+type FetchLikedPostsQueryParams = PostTimelineQueryParams & {
+  userId: UniqueEntityId;
+};
+
+export abstract class PostsQueryRepository {
   abstract fetchTimeline(
     params: PostTimelineQueryParams,
-  ): Promise<TimelinePostDTO[]>;
+  ): Promise<FetchPostDTO[]>;
+
+  abstract fetchPosts(params: FetchPostsQueryParams): Promise<FetchPostDTO[]>;
+  abstract fetchLikedPosts(
+    params: FetchLikedPostsQueryParams,
+  ): Promise<FetchPostDTO[]>;
 }

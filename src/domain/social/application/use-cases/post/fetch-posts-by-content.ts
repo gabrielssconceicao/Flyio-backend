@@ -6,6 +6,7 @@ import { PostsQueryRepository } from '../../queries/post-timeline-query-reposito
 
 interface FetchTimelineUseCaseRequest {
   viewerId: string;
+  content: string;
   page: number;
   limit: number;
 }
@@ -17,11 +18,13 @@ export class FetchTimelineUseCase {
 
   async execute({
     viewerId,
+    content,
     page,
     limit = 50,
   }: FetchTimelineUseCaseRequest): Promise<FetchTimelineUseCaseResponse> {
-    const posts = await this.postTimelineQueryRepository.fetchTimeline({
+    const posts = await this.postTimelineQueryRepository.fetchPosts({
       viewerId: new UniqueEntityId(viewerId),
+      content,
       pagination: {
         page,
         limit,
