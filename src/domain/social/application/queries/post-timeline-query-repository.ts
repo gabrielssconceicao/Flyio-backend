@@ -8,11 +8,11 @@ type PostTimelineQueryParams = {
   pagination: PaginationParams;
 };
 
-type FetchPostsQueryParams = PostTimelineQueryParams & {
+export type FetchPostsQueryParams = PostTimelineQueryParams & {
   content: string;
 };
 
-type FetchLikedPostsQueryParams = PostTimelineQueryParams & {
+export type FetchLikedPostsQueryParams = PostTimelineQueryParams & {
   userId: UniqueEntityId;
 };
 
