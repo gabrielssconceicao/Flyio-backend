@@ -22,8 +22,8 @@ src/
 ## Base
 
 - [x] Criar `UniqueEntityId`
-- [ ] Criar `Entity`
-- [ ] Criar `AggregateRoot`
+- [x] Criar `Entity`
+- [x] Criar `AggregateRoot`
 - [x] Criar utilitário `Optional`
 - [x] Criar implementação de `Either`
 - [x] Criar função `left`
@@ -38,7 +38,7 @@ src/
 - [x] Criar `UnauthorizedError`
 - [x] Criar `ForbiddenError`
 
-## Error Codes
+### Error Codes
 
 - [x] Criar enum `ErrorCode`
 
