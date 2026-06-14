@@ -21,26 +21,26 @@ src/
 
 ## Base
 
-- [ ] Criar `UniqueEntityId`
+- [x] Criar `UniqueEntityId`
 - [ ] Criar `Entity`
 - [ ] Criar `AggregateRoot`
-- [ ] Criar utilitário `Optional`
-- [ ] Criar implementação de `Either`
-- [ ] Criar função `left`
-- [ ] Criar função `right`
+- [x] Criar utilitário `Optional`
+- [x] Criar implementação de `Either`
+- [x] Criar função `left`
+- [x] Criar função `right`
 
 ## Errors
 
-- [ ] Criar `UseCaseError`
-- [ ] Criar `ValidationError`
-- [ ] Criar `ConflictError`
-- [ ] Criar `NotFoundError`
-- [ ] Criar `UnauthorizedError`
-- [ ] Criar `ForbiddenError`
+- [x] Criar `AppError`
+- [x] Criar `ValidationError`
+- [x] Criar `ConflictError`
+- [x] Criar `NotFoundError`
+- [x] Criar `UnauthorizedError`
+- [x] Criar `ForbiddenError`
 
 ## Error Codes
 
-- [ ] Criar enum `ErrorCode`
+- [x] Criar enum `ErrorCode`
 
 ---
 
