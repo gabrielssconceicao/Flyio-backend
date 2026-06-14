@@ -240,6 +240,28 @@ src/
 
 - [ ] Validar tamanho mínimo
 - [ ] Validar tamanho máximo
+- [ ] Não permitir conteúdo vazio
+
+#### ImageUrl
+
+- [ ] Validar URL
+- [ ] Permitir valor opcional
+
+#### Tag
+
+- [ ] Remover "#" automaticamente
+- [ ] Converter para lowercase
+- [ ] Remover espaços extras
+- [ ] Validar tamanho mínimo
+- [ ] Validar tamanho máximo
+
+Exemplos:
+
+```text
+#NestJS    -> nestjs
+#NESTJS    -> nestjs
+#NeStJs    -> nestjs
+```
 
 #### CommentContent
 
@@ -257,6 +279,8 @@ src/
 - [ ] id
 - [ ] author_id
 - [ ] content
+- [ ] image_url (opcional)
+- [ ] tags
 - [ ] likes_count
 - [ ] comments_count
 - [ ] created_at
@@ -265,10 +289,33 @@ src/
 ##### Regras
 
 - [ ] Editar conteúdo
+- [ ] Alterar imagem
+- [ ] Adicionar tag
+- [ ] Remover tag
 - [ ] Incrementar likes
 - [ ] Decrementar likes
 - [ ] Incrementar comentários
 - [ ] Decrementar comentários
+- [ ] Atualizar updated_at
+
+##### Tags
+
+- [ ] Extrair tags automaticamente do conteúdo
+- [ ] Normalizar tags para lowercase
+- [ ] Não permitir tags duplicadas
+
+Exemplo:
+
+```text
+Conteúdo:
+
+"Aprendendo #NestJS #TypeScript #nestjs"
+
+Tags geradas:
+
+nestjs
+typescript
+```
 
 ---
 
@@ -324,6 +371,10 @@ src/
 ### Errors
 
 - [ ] PostNotFoundError
+- [ ] InvalidPostContentError
+- [ ] InvalidImageUrlError
+- [ ] InvalidTagError
+- [ ] NotPostOwnerError
 - [ ] CommentNotFoundError
 - [ ] AlreadyFollowingError
 - [ ] FollowNotFoundError
@@ -363,6 +414,7 @@ src/
 - [ ] delete
 - [ ] findById
 - [ ] findManyByPostId
+- [ ] findManyByTag
 
 #### FollowsRepository
 
