@@ -1,4 +1,4 @@
-import { InvalidUsernameError } from '../error/invalid-username-error';
+import { InvalidUsernameError } from '../errors/invalid-username-error';
 import { Username } from './username';
 
 describe('Value Object: Username', () => {

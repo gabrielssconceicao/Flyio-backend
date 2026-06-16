@@ -1,14 +1,14 @@
 import { Either, left, right } from '@/core/either/either';
 import { ValueObject } from '@/core/value-objects/value-obj';
 
-import { InvalidUsernameError } from '../error/invalid-username-error';
+import { InvalidUsernameError } from '../errors/invalid-username-error';
 
 export class Username extends ValueObject<string> {
   private constructor(username: string) {
     super(username);
   }
 
-  static create(username: string): Either<Error, Username> {
+  static create(username: string): Either<InvalidUsernameError, Username> {
     const normalizedUsername = username.trim();
 
     if (normalizedUsername.length < 3 || normalizedUsername.length > 30) {

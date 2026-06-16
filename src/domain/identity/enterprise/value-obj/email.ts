@@ -3,7 +3,7 @@ import { isEmail } from 'validator';
 import { Either, left, right } from '@/core/either/either';
 import { ValueObject } from '@/core/value-objects/value-obj';
 
-import { InvalidEmailError } from '../error/invalid-email-error';
+import { InvalidEmailError } from '../errors/invalid-email-error';
 
 export class Email extends ValueObject<string> {
   private constructor(email: string) {
