@@ -9,7 +9,7 @@ export class Username extends ValueObject<string> {
   }
 
   static create(username: string): Either<Error, Username> {
-    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedUsername = username.trim();
 
     if (normalizedUsername.length < 3 || normalizedUsername.length > 30) {
       return left(new InvalidUsernameError(normalizedUsername));

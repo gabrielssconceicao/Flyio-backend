@@ -16,7 +16,7 @@ describe('Value Object: Username', () => {
     }
   });
 
-  it.each(['jh', 'j$oh@', 'john'.repeat(10)])('%s should be invalid', (username) => {
+  it.each(['jh', 'j$oh@', 'john'.repeat(10)])('%s should be an invalid username', (username) => {
     const result = Username.create(username);
 
     expect(result.isLeft()).toBe(true);
