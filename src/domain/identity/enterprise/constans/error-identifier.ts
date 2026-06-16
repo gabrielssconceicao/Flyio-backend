@@ -1,0 +1,3 @@
+export const USER_ERROR_IDENTIFIER = {
+  INVALID_USERNAME: 'INVALID_USERNAME',
+} as const;
