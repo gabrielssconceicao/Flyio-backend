@@ -5,7 +5,7 @@ import { Optional } from '@/core/types/optional';
 import { Email } from '../value-obj/email';
 import { Username } from '../value-obj/username';
 
-type UserProps = {
+export type UserProps = {
   name: string;
   bio: string;
   username: Username;

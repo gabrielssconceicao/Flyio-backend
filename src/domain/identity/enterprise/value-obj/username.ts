@@ -15,7 +15,7 @@ export class Username extends ValueObject<string> {
       return left(new InvalidUsernameError(normalizedUsername));
     }
 
-    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    const usernameRegex = /^[a-zA-Z0-9_.]+$/;
 
     if (!usernameRegex.test(username)) {
       return left(new InvalidUsernameError(normalizedUsername));

@@ -1,6 +1,6 @@
 import { ConflictError } from '@/core/errors/conflict-error';
 
-import { IDENTITY_ERROR_IDENTIFIER } from '../constans/error-identifier';
+import { IDENTITY_ERROR_IDENTIFIER } from '../../enterprise/constans/error-identifier';
 
 export class UserAlreadyExistsError extends ConflictError {
   readonly identifier = IDENTITY_ERROR_IDENTIFIER.USER_ALREADY_EXISTS;
