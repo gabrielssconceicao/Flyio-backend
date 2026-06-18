@@ -1,7 +1,5 @@
-import {
-  ExistsByEmailOrUsernameParams,
-  UsersRepository,
-} from '@/domain/identity/application/repository/users-repository';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { EmailOrUsernameParams, UsersRepository } from '@/domain/identity/application/repository/users-repository';
 import { User } from '@/domain/identity/enterprise/entities/user';
 
 export class InMemoryUsersRepository implements UsersRepository {
@@ -9,9 +7,16 @@ export class InMemoryUsersRepository implements UsersRepository {
 
   async create(user: User): Promise<void> {
     this.items.push(user);
+    return Promise.resolve();
   }
 
-  async existsByEmailOrUsername(data: ExistsByEmailOrUsernameParams): Promise<boolean> {
-    return this.items.some((item) => item.email.equals(data.email) || item.username.equals(data.username));
+  async findById(id: UniqueEntityId): Promise<User | null> {
+    return Promise.resolve(this.items.find((item) => item.id.equals(id)) || null);
+  }
+
+  async findByEmailOrUsername(data: EmailOrUsernameParams): Promise<User | null> {
+    return Promise.resolve(
+      this.items.find((item) => item.email.equals(data.email) || item.username.equals(data.username)) || null,
+    );
   }
 }

@@ -9,6 +9,7 @@ import { Username } from '../../enterprise/value-obj/username';
 import { HashGenerator } from '../cryptography/hasher';
 import { UserAlreadyExistsError } from '../errors/user-already-exists-error';
 import { UsersRepository } from '../repository/users-repository';
+import { UserFinder } from '../service/user-finder';
 
 export interface CreateUserRquest {
   name: string;
@@ -23,6 +24,7 @@ type CreateUserResponse = Either<ValidationError | ConflictError, void>;
 export class CreateUserUseCase {
   constructor(
     private readonly hasher: HashGenerator,
+    private readonly userFinder: UserFinder,
     private readonly usersRepository: UsersRepository,
   ) {}
   async handle(data: CreateUserRquest): Promise<CreateUserResponse> {
@@ -41,7 +43,7 @@ export class CreateUserUseCase {
     if (password.isLeft()) {
       return left(password.value);
     }
-    const userExists = await this.usersRepository.existsByEmailOrUsername({
+    const userExists = await this.userFinder.existsByUsernameOrEmail({
       email: email.value,
       username: username.value,
     });

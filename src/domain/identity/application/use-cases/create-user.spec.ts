@@ -7,10 +7,12 @@ import { InvalidEmailError } from '../../enterprise/errors/invalid-email-error';
 import { InvalidPasswordError } from '../../enterprise/errors/invalid-password-error';
 import { InvalidUsernameError } from '../../enterprise/errors/invalid-username-error';
 import { UserAlreadyExistsError } from '../errors/user-already-exists-error';
+import { UserFinder } from '../service/user-finder';
 import { CreateUserRquest, CreateUserUseCase } from './create-user';
 
 let sut: CreateUserUseCase;
 let usersRepository: InMemoryUsersRepository;
+let userFinder: UserFinder;
 let hasher: TestHasher;
 let request: CreateUserRquest;
 
@@ -18,7 +20,8 @@ describe('Create User Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository();
     hasher = new TestHasher();
-    sut = new CreateUserUseCase(hasher, usersRepository);
+    userFinder = new UserFinder(usersRepository);
+    sut = new CreateUserUseCase(hasher, userFinder, usersRepository);
 
     request = {
       name: faker.person.firstName(),

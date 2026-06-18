@@ -7,6 +7,10 @@ export class UniqueEntityId {
     this._value = value ?? randomUUID();
   }
 
+  static createFromText(value?: string): UniqueEntityId {
+    return new UniqueEntityId(value);
+  }
+
   get value(): string {
     return this._value;
   }
