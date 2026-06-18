@@ -11,6 +11,7 @@ export type EmailOrUsernameParams = {
 
 export abstract class UsersRepository {
   abstract create(user: User): Promise<void>;
+  abstract save(user: User): Promise<void>;
 
   abstract findById(id: UniqueEntityId): Promise<User | null>;
   abstract findByEmailOrUsername(data: EmailOrUsernameParams): Promise<User | null>;

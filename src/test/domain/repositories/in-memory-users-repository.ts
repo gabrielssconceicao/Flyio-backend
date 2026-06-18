@@ -10,6 +10,12 @@ export class InMemoryUsersRepository implements UsersRepository {
     return Promise.resolve();
   }
 
+  async save(user: User): Promise<void> {
+    const itemIndex = this.items.findIndex((item) => item.id.equals(user.id));
+    this.items[itemIndex] = user;
+    return Promise.resolve();
+  }
+
   async findById(id: UniqueEntityId): Promise<User | null> {
     return Promise.resolve(this.items.find((item) => item.id.equals(id)) || null);
   }

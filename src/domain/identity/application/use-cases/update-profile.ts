@@ -1,0 +1,43 @@
+import { Either, left, right } from '@/core/either/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+
+import { User } from '../../enterprise/entities/user';
+import { UserNotFoundError } from '../errors/user-not-found-error';
+import { UsersRepository } from '../repository/users-repository';
+import { UserFinder } from '../service/user-finder';
+
+type UpdateProfileRequest = {
+  userId: string;
+  name?: string;
+  bio?: string;
+};
+
+type UpdateProfileResponse = Either<UserNotFoundError, User>;
+
+export class UpdateProfileUseCase {
+  constructor(
+    private readonly userFinder: UserFinder,
+    private readonly usersRepository: UsersRepository,
+  ) {}
+
+  async handle({ userId, name, bio }: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+    const result = await this.userFinder.findById(UniqueEntityId.createFromText(userId));
+
+    if (result.isLeft()) {
+      return left(result.value);
+    }
+
+    const user = result.value;
+
+    if (name !== undefined) {
+      user.name = name;
+    }
+
+    if (bio !== undefined) {
+      user.bio = bio;
+    }
+
+    await this.usersRepository.save(user);
+    return right(user);
+  }
+}
