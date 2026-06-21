@@ -8,4 +8,9 @@ export class InRefreshTokensRepository implements RefreshTokensRepository {
     this.items.push(refreshToken);
     return Promise.resolve();
   }
+
+  async deleteByToken(refreshToken: string): Promise<void> {
+    this.items = this.items.filter((item) => item.token !== refreshToken);
+    return Promise.resolve();
+  }
 }
