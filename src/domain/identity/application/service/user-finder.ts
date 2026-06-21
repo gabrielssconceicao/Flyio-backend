@@ -17,6 +17,7 @@ export class UserFinder {
     return right(user);
   }
 
+  // tirar
   async existsByUsernameOrEmail(data: EmailOrUsernameParams): Promise<boolean> {
     const user = await this.usersRepository.findByEmailOrUsername(data);
     return !!user;
