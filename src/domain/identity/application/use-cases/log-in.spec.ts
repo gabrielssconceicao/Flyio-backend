@@ -33,7 +33,7 @@ describe('Log In Use Case', () => {
     await userRepository.create(
       makeUser({
         username: makeUsername('jonh_doe'),
-        password_hash: await hasher.hash(password),
+        passwordHash: await hasher.hash(password),
       }),
     );
 
@@ -64,7 +64,7 @@ describe('Log In Use Case', () => {
   });
 
   it('should return InvalidCredentialsError if password is invalid', async () => {
-    await userRepository.create(makeUser({ email: makeEmail(email), password_hash: 'hashed_password' }));
+    await userRepository.create(makeUser({ email: makeEmail(email), passwordHash: 'hashed_password' }));
 
     const result = await sut.handle({
       login: email,
@@ -77,7 +77,7 @@ describe('Log In Use Case', () => {
 
   it('should return UserNotActiveError if user is not active', async () => {
     await userRepository.create(
-      makeUser({ email: makeEmail(email), is_active: false, password_hash: await hasher.hash(password) }),
+      makeUser({ email: makeEmail(email), isActive: false, passwordHash: await hasher.hash(password) }),
     );
 
     const result = await sut.handle({

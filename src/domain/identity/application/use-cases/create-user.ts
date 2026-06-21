@@ -58,7 +58,7 @@ export class CreateUserUseCase {
       bio: data.bio,
       username: username.value,
       email: email.value,
-      password_hash: hash,
+      passwordHash: hash,
     });
     await this.usersRepository.create(user);
 

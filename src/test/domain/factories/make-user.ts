@@ -12,7 +12,7 @@ export function makeUser(override: Partial<UserProps> = {}, id?: UniqueEntityId)
       bio: faker.lorem.sentence(),
       username: makeUsername(faker.internet.username()),
       email: makeEmail(faker.internet.email()),
-      password_hash: faker.internet.password(),
+      passwordHash: faker.internet.password(),
       ...override,
     },
     id,

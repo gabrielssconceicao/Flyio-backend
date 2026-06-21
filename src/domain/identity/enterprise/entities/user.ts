@@ -10,10 +10,10 @@ export type UserProps = {
   bio: string;
   username: Username;
   email: Email;
-  password_hash: string;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date | null;
+  passwordHash: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date | null;
 };
 
 export class User extends AggregateRoot<UserProps> {
@@ -21,17 +21,14 @@ export class User extends AggregateRoot<UserProps> {
     super(props, id);
   }
 
-  static create(
-    props: Optional<UserProps, 'bio' | 'created_at' | 'updated_at' | 'is_active'>,
-    id?: UniqueEntityId,
-  ): User {
+  static create(props: Optional<UserProps, 'bio' | 'createdAt' | 'updatedAt' | 'isActive'>, id?: UniqueEntityId): User {
     return new User(
       {
         ...props,
         bio: props.bio ?? '',
-        is_active: props.is_active ?? true,
-        created_at: props.created_at ?? new Date(),
-        updated_at: props.updated_at ?? null,
+        isActive: props.isActive ?? true,
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? null,
       },
       id,
     );
@@ -62,37 +59,37 @@ export class User extends AggregateRoot<UserProps> {
     return this.props.email;
   }
 
-  get password_hash(): string {
-    return this.props.password_hash;
+  get passwordHash(): string {
+    return this.props.passwordHash;
   }
 
-  set password_hash(password_hash: string) {
-    this.props.password_hash = password_hash;
+  set passwordHash(passwordHash: string) {
+    this.props.passwordHash = passwordHash;
     this.touch();
   }
 
-  get is_active(): boolean {
-    return this.props.is_active;
+  get isActive(): boolean {
+    return this.props.isActive;
   }
 
-  get created_at(): Date {
-    return this.props.created_at;
+  get createdAt(): Date {
+    return this.props.createdAt;
   }
 
-  get updated_at(): Date | null {
-    return this.props.updated_at;
+  get updatedAt(): Date | null {
+    return this.props.updatedAt;
   }
 
   activate() {
-    this.props.is_active = true;
+    this.props.isActive = true;
     this.touch();
   }
 
   deactivate() {
-    this.props.is_active = false;
+    this.props.isActive = false;
     this.touch();
   }
   private touch() {
-    this.props.updated_at = new Date();
+    this.props.updatedAt = new Date();
   }
 }

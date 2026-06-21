@@ -37,11 +37,11 @@ export class LoginUseCase {
       return left(new InvalidCredentialsError());
     }
 
-    if (!(await this.comparer.compare(password, user.password_hash))) {
+    if (!(await this.comparer.compare(password, user.passwordHash))) {
       return left(new InvalidCredentialsError());
     }
 
-    if (!user.is_active) {
+    if (!user.isActive) {
       return left(new UserNotActiveError());
     }
 
