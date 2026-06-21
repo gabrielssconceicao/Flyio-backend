@@ -25,4 +25,10 @@ export class InMemoryUsersRepository implements UsersRepository {
       this.items.find((item) => item.email.equals(data.email) || item.username.equals(data.username)) || null,
     );
   }
+
+  async findByLogin(data: { login: string }): Promise<User | null> {
+    return Promise.resolve(
+      this.items.find((item) => item.username.value === data.login || item.email.value === data.login) || null,
+    );
+  }
 }
