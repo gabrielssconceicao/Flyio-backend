@@ -13,4 +13,14 @@ export class InRefreshTokensRepository implements RefreshTokensRepository {
     this.items = this.items.filter((item) => item.token !== refreshToken);
     return Promise.resolve();
   }
+
+  findByToken(refreshToken: string): Promise<RefreshToken | null> {
+    return Promise.resolve(this.items.find((item) => item.token === refreshToken) || null);
+  }
+
+  async save(refreshToken: RefreshToken): Promise<void> {
+    const itemIndex = this.items.findIndex((item) => item.token === refreshToken.token);
+    this.items[itemIndex] = refreshToken;
+    return Promise.resolve();
+  }
 }

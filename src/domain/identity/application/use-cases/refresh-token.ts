@@ -27,6 +27,8 @@ export class RefreshTokenUseCase {
     const storedToken = await this.refreshTokenRepository.findByToken(refreshToken);
 
     if (!storedToken) {
+      console.log('refresh token not found');
+
       return left(new InvalidRefreshTokenError());
     }
 
