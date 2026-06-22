@@ -5,8 +5,8 @@ import { Optional } from '@/core/types/optional';
 export type RefreshTokenProps = {
   userId: UniqueEntityId;
   token: string;
-  createdAt: Date;
   expiresAt: Date;
+  createdAt: Date;
 };
 
 export class RefreshToken extends Entity<RefreshTokenProps> {
@@ -32,5 +32,10 @@ export class RefreshToken extends Entity<RefreshTokenProps> {
 
   isExpired(): boolean {
     return new Date() > this.props.expiresAt;
+  }
+
+  refresh({ expiresAt, token }: { expiresAt: Date; token: string }) {
+    this.props.token = token;
+    this.props.expiresAt = expiresAt;
   }
 }

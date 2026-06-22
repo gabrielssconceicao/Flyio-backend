@@ -9,4 +9,5 @@ export type SignedToken = {
 export abstract class TokenGenerator {
   abstract sign(payload: TokenPayload): Promise<SignedToken>;
   abstract signRefreshToken(payload: TokenPayload): Promise<SignedToken>;
+  abstract verify(token: string): Promise<TokenPayload>;
 }
