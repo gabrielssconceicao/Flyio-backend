@@ -1,4 +1,4 @@
-import { TestHasher } from '@/test/domain/cryptografy/test-hasher';
+import { TestComparer } from '@/test/domain/cryptografy/test-comparer';
 import { makeEmail, makeUser, makeUsername } from '@/test/domain/factories/make-user';
 import { TestJWT } from '@/test/domain/jwt/test-jwt';
 import { InRefreshTokensRepository } from '@/test/domain/repositories/in-memory-refresh-tokens-repository';
@@ -9,7 +9,7 @@ import { UserNotActiveError } from '../errors/user-not-active';
 import { LoginUseCase } from './log-in';
 
 let sut: LoginUseCase;
-let hasher: TestHasher;
+let comparer: TestComparer;
 let userRepository: InMemoryUsersRepository;
 let refreshTokensRepository: InRefreshTokensRepository;
 let jwt: TestJWT;
@@ -19,11 +19,11 @@ let email: string;
 
 describe('Log In Use Case', () => {
   beforeEach(() => {
-    hasher = new TestHasher();
+    comparer = new TestComparer();
     userRepository = new InMemoryUsersRepository();
     refreshTokensRepository = new InRefreshTokensRepository();
     jwt = new TestJWT();
-    sut = new LoginUseCase(userRepository, refreshTokensRepository, hasher, jwt);
+    sut = new LoginUseCase(userRepository, refreshTokensRepository, comparer, jwt);
 
     password = 'Test@123';
     email = 'jonh@doe.com';
@@ -33,7 +33,7 @@ describe('Log In Use Case', () => {
     await userRepository.create(
       makeUser({
         username: makeUsername('jonh_doe'),
-        passwordHash: await hasher.hash(password),
+        passwordHash: `hashed-${password}`,
       }),
     );
 
@@ -77,7 +77,7 @@ describe('Log In Use Case', () => {
 
   it('should return UserNotActiveError if user is not active', async () => {
     await userRepository.create(
-      makeUser({ email: makeEmail(email), isActive: false, passwordHash: await hasher.hash(password) }),
+      makeUser({ email: makeEmail(email), isActive: false, passwordHash: `hashed-${password}` }),
     );
 
     const result = await sut.handle({
