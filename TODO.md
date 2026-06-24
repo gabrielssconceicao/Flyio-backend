@@ -56,32 +56,32 @@ src/
 
 ##### Propriedades
 
-- [ ] id
-- [ ] name
-- [ ] username
-- [ ] email
+- [x] id
+- [x] name
+- [x] username
+- [x] email
 - [ ] password_hash
-- [ ] bio
-- [ ] is_active
+- [x] bio
+- [x] is_active
 - [ ] followers_count
 - [ ] following_count
-- [ ] created_at
-- [ ] updated_at
+- [x] created_at
+- [x] updated_at
 
 ##### Regras
 
-- [ ] Alterar nome
-- [ ] Alterar username
+- [x] Alterar nome
+- [x] Alterar username
 - [ ] Alterar email
-- [ ] Alterar bio
-- [ ] Alterar senha
+- [x] Alterar bio
+- [x] Alterar senha
 - [ ] Ativar conta
 - [ ] Desativar conta
 - [ ] Incrementar followers
 - [ ] Decrementar followers
 - [ ] Incrementar following
 - [ ] Decrementar following
-- [ ] Atualizar updated_at
+- [x] Atualizar updated_at
 
 ---
 
@@ -89,16 +89,16 @@ src/
 
 ##### Propriedades
 
-- [ ] id
-- [ ] user_id
-- [ ] token
-- [ ] expires_at
-- [ ] created_at
+- [x] id
+- [x] user_id
+- [x] token
+- [x] expires_at
+- [x] created_at
 
 ##### Regras
 
-- [ ] Verificar se está expirado
-- [ ] Verificar se pertence ao usuário
+- [x] Verificar se está expirado
+- [x] Verificar se pertence ao usuário
 
 ---
 
@@ -106,33 +106,33 @@ src/
 
 #### Email
 
-- [ ] Validar formato
-- [ ] Retornar InvalidEmailError
+- [x] Validar formato
+- [x] Retornar InvalidEmailError
 
 #### Username
 
-- [ ] Validar tamanho mínimo
-- [ ] Validar tamanho máximo
-- [ ] Validar caracteres permitidos
+- [x] Validar tamanho mínimo
+- [x] Validar tamanho máximo
+- [x] Validar caracteres permitidos
 
 #### Password
 
-- [ ] Validar tamanho mínimo
-- [ ] Validar tamanho máximo
+- [x] Validar tamanho mínimo
+- [x] Validar tamanho máximo
 
 ---
 
 ### Errors
 
-- [ ] InvalidEmailError
-- [ ] InvalidUsernameError
-- [ ] InvalidPasswordError
-- [ ] EmailAlreadyExistsError
-- [ ] UsernameAlreadyExistsError
-- [ ] UserNotFoundError
-- [ ] InvalidCredentialsError
-- [ ] InvalidRefreshTokenError
-- [ ] ExpiredRefreshTokenError
+- [x] InvalidEmailError
+- [x] InvalidUsernameError
+- [x] InvalidPasswordError
+- [x] EmailAlreadyExistsError
+- [x] UsernameAlreadyExistsError
+- [x] UserNotFoundError
+- [x] InvalidCredentialsError
+- [x] InvalidRefreshTokenError
+- [x] ExpiredRefreshTokenError
 
 ---
 
@@ -148,20 +148,19 @@ src/
 
 #### UsersRepository
 
-- [ ] create
-- [ ] save
-- [ ] delete
-- [ ] findById
-- [ ] findByEmail
-- [ ] findByUsername
+- [x] create
+- [x] save
+- [x] delete
+- [x] findById
+- [x] findByEmail
+- [x] findByUsername
 
 #### RefreshTokensRepository
 
-- [ ] create
-- [ ] findByToken
-- [ ] findManyByUserId
-- [ ] delete
-- [ ] deleteManyByUserId
+- [x] create
+- [x] findByToken
+- [x] delete
+- [x] save
 
 ---
 
@@ -169,8 +168,8 @@ src/
 
 #### Password
 
-- [ ] HashGenerator
-- [ ] HashComparer
+- [x] HashGenerator
+- [x] HashComparer
 
 #### Token
 
@@ -183,33 +182,33 @@ src/
 
 #### RegisterUser
 
-- [ ] Validar email
-- [ ] Validar username
-- [ ] Validar senha
-- [ ] Verificar email único
-- [ ] Verificar username único
-- [ ] Gerar hash da senha
-- [ ] Criar usuário
+- [x] Validar email
+- [x] Validar username
+- [x] Validar senha
+- [x] Verificar email único
+- [x] Verificar username único
+- [x] Gerar hash da senha
+- [x] Criar usuário
 
 #### AuthenticateUser
 
-- [ ] Buscar usuário
-- [ ] Validar senha
-- [ ] Gerar Access Token
-- [ ] Gerar Refresh Token
-- [ ] Salvar Refresh Token
+- [x] Buscar usuário
+- [x] Validar senha
+- [x] Gerar Access Token
+- [x] Gerar Refresh Token
+- [x] Salvar Refresh Token
 
 #### RefreshAccessToken
 
-- [ ] Buscar Refresh Token
-- [ ] Verificar expiração
-- [ ] Gerar novo Access Token
-- [ ] Gerar novo Refresh Token
-- [ ] Invalidar Refresh Token antigo
+- [x] Buscar Refresh Token
+- [x] Verificar expiração
+- [x] Gerar novo Access Token
+- [x] Gerar novo Refresh Token
+- [x] Invalidar Refresh Token antigo
 
 #### LogoutUser
 
-- [ ] Remover Refresh Token
+- [x] Remover Refresh Token
 
 #### LogoutAllDevices
 
@@ -217,16 +216,16 @@ src/
 
 #### UpdateUser
 
-- [ ] Atualizar perfil
+- [x] Atualizar perfil
 
 #### ChangePassword
 
-- [ ] Validar senha atual
-- [ ] Gerar novo hash
+- [x] Validar senha atual
+- [x] Gerar novo hash
 
 #### DeactivateUser
 
-- [ ] Desativar conta
+- [x] Desativar conta
 
 ---
 
