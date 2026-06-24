@@ -60,7 +60,7 @@ src/
 - [x] name
 - [x] username
 - [x] email
-- [ ] passwordHash
+- [x] passwordHash
 - [x] bio
 - [x] isActive
 - [ ] followersCount
@@ -75,7 +75,7 @@ src/
 - [ ] Alterar email
 - [x] Alterar bio
 - [x] Alterar senha
-- [ ] Ativar conta
+- [x] Ativar conta
 - [ ] Desativar conta
 - [ ] Incrementar followers
 - [ ] Decrementar followers

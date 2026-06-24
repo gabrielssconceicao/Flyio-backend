@@ -16,5 +16,6 @@ export abstract class UsersRepository {
   abstract findById(id: UniqueEntityId): Promise<User | null>;
   abstract findByLogin(login: string): Promise<User | null>;
   abstract findByUsername(username: Username): Promise<User | null>;
+  abstract findByEmail(email: Email): Promise<User | null>;
   abstract findByEmailOrUsername(data: EmailOrUsernameParams): Promise<User | null>;
 }
