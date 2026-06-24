@@ -2,9 +2,9 @@ import { Either, left, right } from '@/core/either/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { NotFoundError } from '@/core/errors/not-found-error';
 
-import { User } from '../../enterprise/entities/user';
-import { UserNotFoundError } from '../errors/user-not-found-error';
-import { UsersRepository } from '../repository/users-repository';
+import { User } from '../../../enterprise/entities/user';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
+import { UsersRepository } from '../../repository/users-repository';
 
 type UpdateProfileRequest = {
   userId: string;

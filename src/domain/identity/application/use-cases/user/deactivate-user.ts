@@ -3,10 +3,10 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { NotFoundError } from '@/core/errors/not-found-error';
 import { UnauthorizedError } from '@/core/errors/unauthorized-error';
 
-import { HashComparer } from '../cryptography/comparer';
-import { InvalidCredentialsError } from '../errors/invalid-credentials-error';
-import { UserNotFoundError } from '../errors/user-not-found-error';
-import { UsersRepository } from '../repository/users-repository';
+import { HashComparer } from '../../cryptography/comparer';
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
+import { UsersRepository } from '../../repository/users-repository';
 
 type DeactiveUserRequest = {
   userId: string;

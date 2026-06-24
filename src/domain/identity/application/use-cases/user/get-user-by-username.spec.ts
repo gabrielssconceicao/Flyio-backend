@@ -1,9 +1,9 @@
 import { makeUser, makeUsername } from '@/test/domain/factories/make-user';
 import { InMemoryUsersRepository } from '@/test/domain/repositories/in-memory-users-repository';
 
-import { InvalidUsernameError } from '../../enterprise/errors/invalid-username-error';
-import { UserNotFoundError } from '../errors/user-not-found-error';
-import { UserFinder } from '../service/user-finder';
+import { InvalidUsernameError } from '../../../enterprise/errors/invalid-username-error';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
+import { UserFinder } from '../../service/user-finder';
 import { GetUserByUsernameUseCase } from './get-user-by-username';
 
 let sut: GetUserByUsernameUseCase;

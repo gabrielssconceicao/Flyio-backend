@@ -3,8 +3,8 @@ import { TestComparer } from '@/test/domain/cryptografy/test-comparer';
 import { makeUser } from '@/test/domain/factories/make-user';
 import { InMemoryUsersRepository } from '@/test/domain/repositories/in-memory-users-repository';
 
-import { InvalidCredentialsError } from '../errors/invalid-credentials-error';
-import { UserNotFoundError } from '../errors/user-not-found-error';
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
 import { DeactivateUser } from './deactivate-user';
 
 let sut: DeactivateUser;

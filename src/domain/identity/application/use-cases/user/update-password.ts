@@ -3,12 +3,12 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { UnauthorizedError } from '@/core/errors/unauthorized-error';
 import { ValidationError } from '@/core/errors/validation-error';
 
-import { Password } from '../../enterprise/value-obj/password';
-import { HashComparer } from '../cryptography/comparer';
-import { HashGenerator } from '../cryptography/hasher';
-import { InvalidCredentialsError } from '../errors/invalid-credentials-error';
-import { UserNotFoundError } from '../errors/user-not-found-error';
-import { UsersRepository } from '../repository/users-repository';
+import { Password } from '../../../enterprise/value-obj/password';
+import { HashComparer } from '../../cryptography/comparer';
+import { HashGenerator } from '../../cryptography/hasher';
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
+import { UsersRepository } from '../../repository/users-repository';
 
 export type UpdatePasswordRequest = {
   userId: string;

@@ -2,13 +2,13 @@ import { Either, left, right } from '@/core/either/either';
 import { ConflictError } from '@/core/errors/conflict-error';
 import { ValidationError } from '@/core/errors/validation-error';
 
-import { User } from '../../enterprise/entities/user';
-import { Email } from '../../enterprise/value-obj/email';
-import { Password } from '../../enterprise/value-obj/password';
-import { Username } from '../../enterprise/value-obj/username';
-import { HashGenerator } from '../cryptography/hasher';
-import { UserAlreadyExistsError } from '../errors/user-already-exists-error';
-import { UsersRepository } from '../repository/users-repository';
+import { User } from '../../../enterprise/entities/user';
+import { Email } from '../../../enterprise/value-obj/email';
+import { Password } from '../../../enterprise/value-obj/password';
+import { Username } from '../../../enterprise/value-obj/username';
+import { HashGenerator } from '../../cryptography/hasher';
+import { UserAlreadyExistsError } from '../../errors/user-already-exists-error';
+import { UsersRepository } from '../../repository/users-repository';
 
 export interface CreateUserRquest {
   name: string;

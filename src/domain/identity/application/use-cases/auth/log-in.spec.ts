@@ -4,8 +4,8 @@ import { TestJWT } from '@/test/domain/jwt/test-jwt';
 import { InRefreshTokensRepository } from '@/test/domain/repositories/in-memory-refresh-tokens-repository';
 import { InMemoryUsersRepository } from '@/test/domain/repositories/in-memory-users-repository';
 
-import { InvalidCredentialsError } from '../errors/invalid-credentials-error';
-import { UserNotActiveError } from '../errors/user-not-active';
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error';
+import { UserNotActiveError } from '../../errors/user-not-active';
 import { LoginUseCase } from './log-in';
 
 let sut: LoginUseCase;

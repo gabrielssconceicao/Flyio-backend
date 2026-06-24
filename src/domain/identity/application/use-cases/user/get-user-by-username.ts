@@ -2,9 +2,9 @@ import { Either, left, right } from '@/core/either/either';
 import { NotFoundError } from '@/core/errors/not-found-error';
 import { ValidationError } from '@/core/errors/validation-error';
 
-import { User } from '../../enterprise/entities/user';
-import { Username } from '../../enterprise/value-obj/username';
-import { UserFinder } from '../service/user-finder';
+import { User } from '../../../enterprise/entities/user';
+import { Username } from '../../../enterprise/value-obj/username';
+import { UserFinder } from '../../service/user-finder';
 
 type GetUserByUsernameRequest = {
   username: string;

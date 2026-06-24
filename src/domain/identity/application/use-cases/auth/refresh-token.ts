@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either/either';
 import { UnauthorizedError } from '@/core/errors/unauthorized-error';
 
-import { InvalidRefreshTokenError } from '../errors/invalid-refresh-token-error';
-import { TokenGenerator } from '../jwt/token-genetator';
-import { RefreshTokensRepository } from '../repository/refresh-tokens-repository';
+import { InvalidRefreshTokenError } from '../../errors/invalid-refresh-token-error';
+import { TokenGenerator } from '../../jwt/token-genetator';
+import { RefreshTokensRepository } from '../../repository/refresh-tokens-repository';
 
 type RefreshTokenRequest = {
   refreshToken: string;

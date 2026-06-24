@@ -3,10 +3,10 @@ import { faker } from '@faker-js/faker';
 import { TestHasher } from '@/test/domain/cryptografy/test-hasher';
 import { InMemoryUsersRepository } from '@/test/domain/repositories/in-memory-users-repository';
 
-import { InvalidEmailError } from '../../enterprise/errors/invalid-email-error';
-import { InvalidPasswordError } from '../../enterprise/errors/invalid-password-error';
-import { InvalidUsernameError } from '../../enterprise/errors/invalid-username-error';
-import { UserAlreadyExistsError } from '../errors/user-already-exists-error';
+import { InvalidEmailError } from '../../../enterprise/errors/invalid-email-error';
+import { InvalidPasswordError } from '../../../enterprise/errors/invalid-password-error';
+import { InvalidUsernameError } from '../../../enterprise/errors/invalid-username-error';
+import { UserAlreadyExistsError } from '../../errors/user-already-exists-error';
 import { CreateUserRquest, CreateUserUseCase } from './create-user';
 
 let sut: CreateUserUseCase;

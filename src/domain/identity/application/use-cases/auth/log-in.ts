@@ -1,13 +1,13 @@
 import { Either, left, right } from '@/core/either/either';
 import { UnauthorizedError } from '@/core/errors/unauthorized-error';
 
-import { RefreshToken } from '../../enterprise/entities/refresh-token';
-import { HashComparer } from '../cryptography/comparer';
-import { InvalidCredentialsError } from '../errors/invalid-credentials-error';
-import { UserNotActiveError } from '../errors/user-not-active';
-import { TokenGenerator } from '../jwt/token-genetator';
-import { RefreshTokensRepository } from '../repository/refresh-tokens-repository';
-import { UsersRepository } from '../repository/users-repository';
+import { RefreshToken } from '../../../enterprise/entities/refresh-token';
+import { HashComparer } from '../../cryptography/comparer';
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error';
+import { UserNotActiveError } from '../../errors/user-not-active';
+import { TokenGenerator } from '../../jwt/token-genetator';
+import { RefreshTokensRepository } from '../../repository/refresh-tokens-repository';
+import { UsersRepository } from '../../repository/users-repository';
 
 type LoginRequest = {
   login: string;

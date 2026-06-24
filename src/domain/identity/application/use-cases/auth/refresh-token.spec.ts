@@ -2,7 +2,7 @@ import { makeRefreshToken } from '@/test/domain/factories/make-refresh-token';
 import { InvalidTestJWT, TestJWT } from '@/test/domain/jwt/test-jwt';
 import { InRefreshTokensRepository } from '@/test/domain/repositories/in-memory-refresh-tokens-repository';
 
-import { InvalidRefreshTokenError } from '../errors/invalid-refresh-token-error';
+import { InvalidRefreshTokenError } from '../../errors/invalid-refresh-token-error';
 import { RefreshTokenUseCase } from './refresh-token';
 
 let sut: RefreshTokenUseCase;

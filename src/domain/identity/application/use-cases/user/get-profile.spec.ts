@@ -2,8 +2,8 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { makeUser } from '@/test/domain/factories/make-user';
 import { InMemoryUsersRepository } from '@/test/domain/repositories/in-memory-users-repository';
 
-import { UserNotFoundError } from '../errors/user-not-found-error';
-import { UserFinder } from '../service/user-finder';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
+import { UserFinder } from '../../service/user-finder';
 import { GetProfileUseCase } from './get-profile';
 
 let sut: GetProfileUseCase;

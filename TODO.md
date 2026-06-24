@@ -60,13 +60,13 @@ src/
 - [x] name
 - [x] username
 - [x] email
-- [ ] password_hash
+- [ ] passwordHash
 - [x] bio
-- [x] is_active
-- [ ] followers_count
-- [ ] following_count
-- [x] created_at
-- [x] updated_at
+- [x] isActive
+- [ ] followersCount
+- [ ] followingCount
+- [x] createdAt
+- [x] updatedAt
 
 ##### Regras
 
@@ -90,15 +90,38 @@ src/
 ##### Propriedades
 
 - [x] id
-- [x] user_id
+- [x] userId
 - [x] token
-- [x] expires_at
-- [x] created_at
+- [x] expiresAt
+- [x] createdAt
 
 ##### Regras
 
 - [x] Verificar se está expirado
-- [x] Verificar se pertence ao usuário
+
+### ActivationToken
+
+- [ ] id
+- [ ] user_id
+- [ ] token
+- [ ] expires_at
+- [ ] created_at
+
+##### Regras
+
+- [x] Verificar se está expirado
+
+### PasswordResetToken
+
+- [ ] id
+- [ ] user_id
+- [ ] token
+- [ ] expires_at
+- [ ] created_at
+
+##### Regras
+
+- [x] Verificar se está expirado
 
 ---
 
@@ -136,12 +159,6 @@ src/
 
 ---
 
-### Events (Futuro)
-
-- [ ] UserCreatedEvent
-
----
-
 ## Application
 
 ### Repositories
@@ -162,6 +179,18 @@ src/
 - [x] delete
 - [x] save
 
+#### ActivateRepository
+
+- [ ] create
+- [ ] findByToken
+- [ ] delete
+
+#### RecoverPasswordRepository
+
+- [ ] create
+- [ ] findByToken
+- [ ] delete
+
 ---
 
 ### Cryptography
@@ -180,7 +209,19 @@ src/
 
 ### Use Cases
 
-#### RegisterUser
+---
+
+#### User
+
+##### Get Profile
+
+- [x] Validar usuario
+
+##### Get User by username
+
+- [x] Validar usuario
+
+##### Register User
 
 - [x] Validar email
 - [x] Validar username
@@ -190,7 +231,31 @@ src/
 - [x] Gerar hash da senha
 - [x] Criar usuário
 
-#### AuthenticateUser
+##### Update User
+
+- [x] Atualizar perfil
+
+##### Change Password
+
+- [x] Validar senha atual
+- [x] Gerar novo hash
+
+##### Deactivate User
+
+- [x] Desativar conta
+
+##### Activate User
+
+- [ ] Buscar token de ativação
+- [ ] Validar o token
+- [ ] Activar o usuario
+- [ ] Apagar o token
+
+---
+
+#### Auth
+
+##### Login
 
 - [x] Buscar usuário
 - [x] Validar senha
@@ -198,7 +263,7 @@ src/
 - [x] Gerar Refresh Token
 - [x] Salvar Refresh Token
 
-#### RefreshAccessToken
+##### Refresh Token
 
 - [x] Buscar Refresh Token
 - [x] Verificar expiração
@@ -206,26 +271,33 @@ src/
 - [x] Gerar novo Refresh Token
 - [x] Invalidar Refresh Token antigo
 
-#### LogoutUser
+##### LogoutUser
 
 - [x] Remover Refresh Token
 
-#### LogoutAllDevices
+##### LogoutAllDevices
 
 - [ ] Remover todos os Refresh Tokens do usuário
 
-#### UpdateUser
+---
 
-- [x] Atualizar perfil
+#### Activation
 
-#### ChangePassword
+#### Password Recovery
 
-- [x] Validar senha atual
-- [x] Gerar novo hash
+##### Send Activation Code
 
-#### DeactivateUser
+- [ ] Verificar email
+- [ ] Buscar usuario pelo email
+- [ ] criar token de ativação
+- [ ] Salvar token
+- [ ] Enviar código
 
-- [x] Desativar conta
+##### Activate User
+
+- [ ] Buscar token
+- [ ] atualizar senha
+- [ ] apagar token
 
 ---
 
@@ -654,40 +726,3 @@ typescript
 - [ ] Timeline
 
 ---
-
-# Regras de Negócio
-
-## Usuários
-
-- [ ] Email único
-- [ ] Username único
-- [ ] Senha criptografada
-
-## Likes
-
-- [ ] Não curtir duas vezes o mesmo post
-- [ ] Não remover like inexistente
-
-## Follow
-
-- [ ] Não seguir duas vezes o mesmo usuário
-- [ ] Não remover follow inexistente
-- [ ] Não seguir a si mesmo
-
-## Permissões
-
-- [ ] Apenas autor pode editar post
-- [ ] Apenas autor pode excluir post
-- [ ] Apenas autor pode editar comentário
-- [ ] Apenas autor pode excluir comentário
-
-## Autenticação
-
-- [ ] Access Token expira em 15 minutos
-- [ ] Refresh Token expira em 30 dias
-- [ ] Refresh Token salvo no banco
-- [ ] Refresh Token enviado por cookie HttpOnly
-- [ ] Refresh Token pode ser revogado
-- [ ] Logout invalida Refresh Token
-- [ ] Logout de todos dispositivos invalida todos os Refresh Tokens
-- [ ] Implementar Refresh Token Rotation

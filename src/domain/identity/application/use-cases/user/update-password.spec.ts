@@ -4,9 +4,9 @@ import { TestHasher } from '@/test/domain/cryptografy/test-hasher';
 import { makeUser } from '@/test/domain/factories/make-user';
 import { InMemoryUsersRepository } from '@/test/domain/repositories/in-memory-users-repository';
 
-import { InvalidPasswordError } from '../../enterprise/errors/invalid-password-error';
-import { InvalidCredentialsError } from '../errors/invalid-credentials-error';
-import { UserNotFoundError } from '../errors/user-not-found-error';
+import { InvalidPasswordError } from '../../../enterprise/errors/invalid-password-error';
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error';
+import { UserNotFoundError } from '../../errors/user-not-found-error';
 import { UpdatePasswordRequest, UpdatePasswordUseCase } from './update-password';
 
 let sut: UpdatePasswordUseCase;

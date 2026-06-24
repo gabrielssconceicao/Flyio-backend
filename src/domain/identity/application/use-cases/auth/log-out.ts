@@ -1,6 +1,6 @@
 import { Either, right } from '@/core/either/either';
 
-import { RefreshTokensRepository } from '../repository/refresh-tokens-repository';
+import { RefreshTokensRepository } from '../../repository/refresh-tokens-repository';
 
 type LogoutRequest = {
   refreshToken: string;
