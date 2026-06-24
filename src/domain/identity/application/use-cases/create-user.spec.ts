@@ -7,12 +7,10 @@ import { InvalidEmailError } from '../../enterprise/errors/invalid-email-error';
 import { InvalidPasswordError } from '../../enterprise/errors/invalid-password-error';
 import { InvalidUsernameError } from '../../enterprise/errors/invalid-username-error';
 import { UserAlreadyExistsError } from '../errors/user-already-exists-error';
-import { UserFinder } from '../service/user-finder';
 import { CreateUserRquest, CreateUserUseCase } from './create-user';
 
 let sut: CreateUserUseCase;
 let usersRepository: InMemoryUsersRepository;
-let userFinder: UserFinder;
 let hasher: TestHasher;
 let request: CreateUserRquest;
 
@@ -20,8 +18,7 @@ describe('Create User Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository();
     hasher = new TestHasher();
-    userFinder = new UserFinder(usersRepository);
-    sut = new CreateUserUseCase(hasher, userFinder, usersRepository);
+    sut = new CreateUserUseCase(usersRepository, hasher);
 
     request = {
       name: faker.person.firstName(),
@@ -37,7 +34,7 @@ describe('Create User Use Case', () => {
 
     expect(response.isRight()).toBe(true);
     expect(usersRepository.items).toHaveLength(1);
-    expect(response.value).toBe(undefined);
+    expect(response.value).toBeUndefined();
   });
 
   it('should not be able to create a user with invalid username', async () => {
@@ -70,10 +67,7 @@ describe('Create User Use Case', () => {
     });
 
     expect(response.isLeft()).toBe(true);
-
-    if (response.isLeft()) {
-      expect(response.value).toBeInstanceOf(UserAlreadyExistsError);
-    }
+    expect(response.value).toBeInstanceOf(UserAlreadyExistsError);
   });
 
   it('should not be able to create a user with same username', async () => {
@@ -85,9 +79,6 @@ describe('Create User Use Case', () => {
     });
 
     expect(response.isLeft()).toBe(true);
-
-    if (response.isLeft()) {
-      expect(response.value).toBeInstanceOf(UserAlreadyExistsError);
-    }
+    expect(response.value).toBeInstanceOf(UserAlreadyExistsError);
   });
 });

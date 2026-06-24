@@ -28,29 +28,24 @@ describe('Deactivate User Use Case', () => {
   });
 
   it('should deactivate a user', async () => {
-    const result = await sut.handle({ password, userId: id });
+    const response = await sut.handle({ password, userId: id });
 
-    expect(result.isRight()).toBe(true);
-
-    if (result.isLeft()) {
-      throw new Error('Expected Right');
-    }
-
+    expect(response.isRight()).toBe(true);
     expect(usersRepository.items[0].isActive).toBe(false);
-    expect(result.value).toBeUndefined();
+    expect(response.value).toBeUndefined();
   });
 
   it('should return a UserNotFoundError if user is not found', async () => {
-    const result = await sut.handle({ password, userId: 'invalid-id' });
+    const response = await sut.handle({ password, userId: 'invalid-id' });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(UserNotFoundError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(UserNotFoundError);
   });
 
   it('should return an InvalidCredentialsError if password is invalid', async () => {
-    const result = await sut.handle({ password: 'invalid-password', userId: id });
+    const response = await sut.handle({ password: 'invalid-password', userId: id });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidCredentialsError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidCredentialsError);
   });
 });

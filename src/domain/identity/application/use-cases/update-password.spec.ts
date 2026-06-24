@@ -28,54 +28,52 @@ describe('Update Password Use Case', () => {
       currentPassword: 'old-password',
       newPassword: 'newPassword@123',
     };
-    const userId = UniqueEntityId.createFromText('user-id');
-    const user = makeUser(
-      {
-        passwordHash: await hasher.hash('old-password'),
-      },
-      userId,
-    );
 
-    await usersRepository.create(user);
+    await usersRepository.create(
+      makeUser(
+        {
+          passwordHash: `hashed-${request.currentPassword}`,
+        },
+        UniqueEntityId.createFromText('user-id'),
+      ),
+    );
   });
 
   it('should update password successfully', async () => {
-    const result = await sut.handle(request);
+    const response = await sut.handle(request);
 
-    expect(result.isRight()).toBe(true);
-
-    const updatedUser = usersRepository.items[0];
-
-    expect(updatedUser.passwordHash).toBe(await hasher.hash('newPassword@123'));
+    expect(response.isRight()).toBe(true);
+    expect(response.value).toBeUndefined();
+    expect(usersRepository.items[0].passwordHash).toBe(`hashed-newPassword@123`);
   });
 
   it('should not update password if user is not found', async () => {
-    const result = await sut.handle({
+    const response = await sut.handle({
       ...request,
       userId: 'invalid-user-id',
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(UserNotFoundError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(UserNotFoundError);
   });
 
   it('should not update password if current password is invalid', async () => {
-    const result = await sut.handle({
+    const response = await sut.handle({
       ...request,
       currentPassword: 'invalid-password',
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidCredentialsError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidCredentialsError);
   });
 
   it('should not update password if new password is invalid', async () => {
-    const result = await sut.handle({
+    const response = await sut.handle({
       ...request,
       newPassword: 'invalid-password',
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidPasswordError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidPasswordError);
   });
 });

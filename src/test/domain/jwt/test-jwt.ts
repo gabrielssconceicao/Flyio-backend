@@ -6,7 +6,7 @@ export class TestJWT implements TokenGenerator {
   }
 
   signRefreshToken(payload: TokenPayload): Promise<SignedToken> {
-    return Promise.resolve({ token: `${payload.sub}-refresh-token`, expiresAt: new Date() });
+    return Promise.resolve({ token: `${Math.random()}-${payload.sub}-refresh-token`, expiresAt: new Date() });
   }
 
   verify(token: string): Promise<TokenPayload> {

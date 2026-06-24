@@ -26,9 +26,9 @@ export class InMemoryUsersRepository implements UsersRepository {
     );
   }
 
-  async findByLogin(data: { login: string }): Promise<User | null> {
+  async findByLogin(login: string): Promise<User | null> {
     return Promise.resolve(
-      this.items.find((item) => item.username.value === data.login || item.email.value === data.login) || null,
+      this.items.find((item) => item.username.value === login || item.email.value === login) || null,
     );
   }
 }

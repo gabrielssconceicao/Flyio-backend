@@ -24,9 +24,10 @@ describe('Get Profile Use Case', () => {
     const response = await sut.handle({ userId: 'teste-id' });
 
     expect(response.isRight()).toBe(true);
-    if (response.isRight()) {
-      expect(response.value.id).toEqual(id);
+    if (response.isLeft()) {
+      throw new Error('Should be right');
     }
+    expect(response.value.id).toEqual(id);
   });
 
   it('should return UseNotFoundError if user not found', async () => {

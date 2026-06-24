@@ -31,7 +31,7 @@ export class LoginUseCase {
   ) {}
 
   async handle({ login, password }: LoginRequest): Promise<LoginResponse> {
-    const user = await this.userRepository.findByLogin({ login });
+    const user = await this.userRepository.findByLogin(login);
 
     if (!user) {
       return left(new InvalidCredentialsError());

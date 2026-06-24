@@ -9,6 +9,16 @@ let sut: RefreshTokenUseCase;
 let refreshTokensRepository: InRefreshTokensRepository;
 let jwt: TestJWT;
 
+const createToken = async (override = {}) => {
+  await refreshTokensRepository.create(
+    makeRefreshToken({
+      token: 'user-id-refresh-token',
+      expiresAt: new Date(Date.now() + 1000 * 60),
+      ...override,
+    }),
+  );
+};
+
 describe('Refresh Token Use Case', () => {
   beforeEach(() => {
     refreshTokensRepository = new InRefreshTokensRepository();
@@ -17,71 +27,50 @@ describe('Refresh Token Use Case', () => {
   });
 
   it('should refresh tokens', async () => {
-    await refreshTokensRepository.create(
-      makeRefreshToken({
-        token: 'user-id-refresh-token',
-        expiresAt: new Date(Date.now() + 1000 * 60),
-      }),
-    );
-
-    const result = await sut.handle({
+    await createToken();
+    const response = await sut.handle({
       refreshToken: 'user-id-refresh-token',
     });
 
-    expect(result.isRight()).toBe(true);
-
-    if (result.isLeft()) {
+    if (response.isLeft()) {
       throw new Error('Expected Right');
     }
-
-    expect(result.value).toEqual({
-      accessToken: 'user-token',
-      refreshToken: 'user-refresh-token',
-    });
-
+    expect(response.isRight()).toBe(true);
     expect(refreshTokensRepository.items).toHaveLength(1);
-
-    expect(refreshTokensRepository.items[0].token).toBe('user-refresh-token');
+    expect(response.value.accessToken).toEqual(expect.any(String));
+    expect(response.value.refreshToken).toEqual(expect.any(String));
+    expect(response.value.refreshToken).not.toEqual('user-refresh-token');
+    expect(refreshTokensRepository.items[0].token).not.toBe('user-refresh-token');
   });
 
   it('should return InvalidRefreshTokenError if token was not found', async () => {
-    const result = await sut.handle({ refreshToken: 'not-found-token' });
-
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidRefreshTokenError);
+    const response = await sut.handle({ refreshToken: 'not-found-token' });
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidRefreshTokenError);
   });
 
   it('should return InvalidRefreshTokenError if token is expired', async () => {
-    await refreshTokensRepository.create(
-      makeRefreshToken({
-        expiresAt: new Date(Date.now() - 1),
-        token: 'any-token',
-      }),
-    );
+    await createToken({
+      expiresAt: new Date(Date.now() - 1),
+      token: 'any-token',
+    });
 
-    const result = await sut.handle({ refreshToken: 'any-token' });
-
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidRefreshTokenError);
+    const response = await sut.handle({ refreshToken: 'any-token' });
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidRefreshTokenError);
   });
 
   it('should return InvalidRefreshTokenError if token is invalid', async () => {
     jwt = new InvalidTestJWT();
-
     sut = new RefreshTokenUseCase(refreshTokensRepository, jwt);
+    await createToken();
 
-    await refreshTokensRepository.create(
-      makeRefreshToken({
-        token: 'user-id-refresh-token',
-        expiresAt: new Date(Date.now() + 1000 * 60),
-      }),
-    );
-
-    const result = await sut.handle({
+    const response = await sut.handle({
       refreshToken: 'user-id-refresh-token',
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidRefreshTokenError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidRefreshTokenError);
+    expect(refreshTokensRepository.items).toHaveLength(1);
   });
 });

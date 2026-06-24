@@ -16,8 +16,10 @@ describe('Logout Use Case', () => {
     const refreshToken = 'any_token';
     await tokensRepository.create(makeRefreshToken({ token: refreshToken }));
 
-    await sut.handle({ refreshToken });
+    const response = await sut.handle({ refreshToken });
 
+    expect(response.isRight()).toBe(true);
+    expect(response.value).toBeUndefined();
     expect(tokensRepository.items).toHaveLength(0);
   });
 });

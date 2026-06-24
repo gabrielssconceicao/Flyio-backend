@@ -16,6 +16,17 @@ let jwt: TestJWT;
 
 let password: string;
 let email: string;
+const createUser = async (overrive = {}) => {
+  const user = makeUser({
+    username: makeUsername('jonh_doe'),
+    email: makeEmail(email),
+    passwordHash: `hashed-${password}`,
+    ...overrive,
+  });
+
+  await userRepository.create(user);
+  return user;
+};
 
 describe('Log In Use Case', () => {
   beforeEach(() => {
@@ -30,62 +41,57 @@ describe('Log In Use Case', () => {
   });
 
   it('should generate access token and refresh token', async () => {
-    await userRepository.create(
-      makeUser({
-        username: makeUsername('jonh_doe'),
-        passwordHash: `hashed-${password}`,
-      }),
-    );
+    await createUser();
 
-    const result = await sut.handle({
+    const response = await sut.handle({
       login: 'jonh_doe',
       password: password,
     });
 
-    expect(result.isRight()).toBe(true);
-
-    if (result.isRight()) {
-      expect(refreshTokensRepository.items[0].token).toEqual(result.value.refreshToken);
-      expect(result.value.accessToken).toEqual(expect.any(String));
-      expect(result.value.refreshToken).toEqual(expect.any(String));
+    if (response.isLeft()) {
+      throw new Error('Should be right');
     }
+
+    expect(response.isRight()).toBe(true);
+    expect(refreshTokensRepository.items[0].token).toEqual(response.value.refreshToken);
+    expect(response.value.accessToken).toEqual(expect.any(String));
+    expect(response.value.refreshToken).toEqual(expect.any(String));
   });
 
   it('should return InvalidCredentialsError if user is not found', async () => {
-    await userRepository.create(makeUser());
+    await createUser();
 
-    const result = await sut.handle({
+    const response = await sut.handle({
       login: 'any_login',
       password: 'any_password',
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidCredentialsError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidCredentialsError);
   });
 
   it('should return InvalidCredentialsError if password is invalid', async () => {
-    await userRepository.create(makeUser({ email: makeEmail(email), passwordHash: 'hashed_password' }));
-
-    const result = await sut.handle({
+    await createUser();
+    const response = await sut.handle({
       login: email,
       password: 'invalid_password',
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(InvalidCredentialsError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(InvalidCredentialsError);
   });
 
   it('should return UserNotActiveError if user is not active', async () => {
-    await userRepository.create(
-      makeUser({ email: makeEmail(email), isActive: false, passwordHash: `hashed-${password}` }),
-    );
+    await createUser({
+      isActive: false,
+    });
 
-    const result = await sut.handle({
+    const response = await sut.handle({
       login: email,
       password: password,
     });
 
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(UserNotActiveError);
+    expect(response.isLeft()).toBe(true);
+    expect(response.value).toBeInstanceOf(UserNotActiveError);
   });
 });

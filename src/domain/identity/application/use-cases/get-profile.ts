@@ -1,25 +1,25 @@
 import { Either, left, right } from '@/core/either/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
+import { NotFoundError } from '@/core/errors/not-found-error';
 
 import { User } from '../../enterprise/entities/user';
-import { UserNotFoundError } from '../errors/user-not-found-error';
 import { UserFinder } from '../service/user-finder';
 
 type GetProfileRequest = {
   userId: string;
 };
 
-type GetProfileResponse = Either<UserNotFoundError, User>;
+type GetProfileResponse = Either<NotFoundError, User>;
 
 export class GetProfileUseCase {
   constructor(private readonly userFinder: UserFinder) {}
 
   async handle({ userId }: GetProfileRequest): Promise<GetProfileResponse> {
-    const response = await this.userFinder.findById(UniqueEntityId.createFromText(userId));
-    if (response.isLeft()) {
-      return left(response.value);
+    const userOrError = await this.userFinder.findById(UniqueEntityId.createFromText(userId));
+    if (userOrError.isLeft()) {
+      return left(userOrError.value);
     }
 
-    return right(response.value);
+    return right(userOrError.value);
   }
 }
