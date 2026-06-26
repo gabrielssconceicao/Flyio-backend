@@ -16,7 +16,7 @@ export class GetProfileByUsernameUseCase {
   constructor(private readonly userQuery: UsersQuery) {}
 
   async handle({ username, viwerId }: GetProfileByUsernameRequest): Promise<GetProfileByUsernameResponse> {
-    const profile = await this.userQuery.findProfileByUsername({ username: username.trim(), viewerId: viwerId || '' });
+    const profile = await this.userQuery.findProfileByUsername({ query: username.trim(), viewerId: viwerId || '' });
 
     if (!profile) {
       return left(new UserNotFoundError());
