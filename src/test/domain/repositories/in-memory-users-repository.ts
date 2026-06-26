@@ -1,7 +1,6 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { EmailOrUsernameParams, UsersRepository } from '@/domain/identity/application/repository/users-repository';
 import { User } from '@/domain/identity/enterprise/entities/user';
-import { Username } from '@/domain/identity/enterprise/value-obj/username';
 
 export class InMemoryUsersRepository implements UsersRepository {
   public items: User[] = [];
@@ -21,13 +20,14 @@ export class InMemoryUsersRepository implements UsersRepository {
     return Promise.resolve(this.items.find((item) => item.id.equals(id)) || null);
   }
 
-  async findByUsername(username: Username): Promise<User | null> {
-    return Promise.resolve(this.items.find((item) => item.username.equals(username)) || null);
+  async findByUsername(username: string): Promise<User | null> {
+    return Promise.resolve(this.items.find((item) => item.username.toString() === username) || null);
   }
 
   async findByEmailOrUsername(data: EmailOrUsernameParams): Promise<User | null> {
     return Promise.resolve(
-      this.items.find((item) => item.email.equals(data.email) || item.username.equals(data.username)) || null,
+      this.items.find((item) => item.email.toString() === data.email || item.username.toString() === data.username) ||
+        null,
     );
   }
 

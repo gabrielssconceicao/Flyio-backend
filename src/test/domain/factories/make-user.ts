@@ -22,15 +22,11 @@ export function makeUser(override: Partial<UserProps> = {}, id?: UniqueEntityId)
 export function makeUsername(string: string): Username {
   const username = Username.create(string);
 
-  if (username.isRight()) {
-    return username.value;
-  }
+  return username.value;
 }
 
 export function makeEmail(string: string): Email {
   const email = Email.create(string);
 
-  if (email.isRight()) {
-    return email.value;
-  }
+  return email.value;
 }
